@@ -1,0 +1,28 @@
+<x-app-layout>
+    <x-slot name="header">
+        <div class="flex flex-col sm:flex-row justify-between items-center">
+            <h2 class="font-semibold text-xl text-gray-800 dark:text-gray-200 leading-tight">
+                {{ __('Dashboard') }}
+            </h2>
+            <nav class="mt-4 sm:mt-0">
+                <ul class="flex space-x-4">
+                    <li>
+                        <a href="{{ route('finance.index') }}" class="text-blue-500 hover:underline">
+                            My Financial Status
+                        </a>
+                    </li>
+                </ul>
+            </nav>
+        </div>
+    </x-slot>
+
+    <div class="py-12">
+        <div class="max-w-7xl mx-auto sm:px-6 lg:px-8">
+            <div class="bg-white dark:bg-gray-800 overflow-hidden shadow-sm sm:rounded-lg">
+                <div class="p-6 text-gray-900 dark:text-gray-100">
+                    {{ __("You're logged in!") }}
+                </div>
+            </div>
+        </div>
+    </div>
+</x-app-layout>

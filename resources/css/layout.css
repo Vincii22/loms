@@ -1,0 +1,47 @@
+/* Fixed navigation bar */
+.fixed-header {
+    position: fixed;
+    top: 0;
+    left: 0;
+    right: 0;
+    height: 64px; /* Adjust as needed */
+    z-index: 1000;
+    background-color: white; /* Ensure background color */
+}
+
+/* Layout container to manage sidebar and content */
+.layout-container {
+    display: flex;
+    margin-top: 64px; /* Adjust to the height of the fixed header */
+    height: calc(100vh - 64px); /* Full height minus header height */
+}
+
+/* Fixed sidebar */
+.fixed-sidebar {
+    width: 15%; /* Adjust as needed */
+    background-color: white;
+    border-right: 1px solid #ddd;
+    z-index: 999;
+}
+
+/* Main content area */
+.main-content {
+    flex: 1; /* Take up remaining space */
+    overflow-y: auto;
+    background-color: white; /* Ensure background color */
+}
+
+/* Responsive adjustments */
+@media (max-width: 768px) {
+    .fixed-sidebar {
+        width: 100%;
+        height: auto;
+        position: relative; /* Remove fixed positioning on small screens */
+        border-right: none;
+    }
+
+    .layout-container {
+        flex-direction: column;
+        margin-top: 64px; /* Adjust to the height of the fixed header */
+    }
+}
