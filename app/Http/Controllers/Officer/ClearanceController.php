@@ -6,49 +6,74 @@ use App\Http\Controllers\Controller;
 use Illuminate\Http\Request;
 use App\Models\User;
 use App\Models\Clearance;
-
+use App\Models\Organization;
+use App\Models\Course;
+use App\Models\Year;
 
 class ClearanceController extends Controller
 {
     public function index(Request $request)
     {
-        $statusFilter = $request->query('status'); // Get the status filter from the request
+        $searchName = $request->input('search_name');
+        $searchSchoolId = $request->input('search_school_id');
+        $filterOrganization = $request->input('filter_organization');
+        $filterCourse = $request->input('filter_course');
+        $filterYear = $request->input('filter_year');
+        $status = $request->input('status');
 
-        // Fetch users with their clearance records
-        $query = User::with('clearance');
+        $clearances = User::with(['clearance', 'organization', 'course', 'year'])
+            ->when($searchName, function ($query, $searchName) {
+                return $query->where('name', 'like', "%{$searchName}%");
+            })
+            ->when($searchSchoolId, function ($query, $searchSchoolId) {
+                return $query->where('school_id', 'like', "%{$searchSchoolId}%");
+            })
+            ->when($filterOrganization, function ($query, $filterOrganization) {
+                return $query->where('organization_id', $filterOrganization);
+            })
+            ->when($filterCourse, function ($query, $filterCourse) {
+                return $query->where('course_id', $filterCourse);
+            })
+            ->when($filterYear, function ($query, $filterYear) {
+                return $query->where('year_id', $filterYear);
+            })
+            ->when($status, function ($query, $status) {
+                return $query->whereHas('clearance', function ($query) use ($status) {
+                    $query->where('status', $status);
+                });
+            })
+            ->paginate(10);
 
-        if ($statusFilter) {
-            // Filter by status if provided
-            $query->whereHas('clearance', function($q) use ($statusFilter) {
-                $q->where('status', $statusFilter);
-            });
-        }
-
-        $clearances = $query->paginate(10); // Adjust the number of items per page as needed
+        $organizations = Organization::all();
+        $courses = Course::all();
+        $years = Year::all();
 
         return view('officer.clearance.index', [
             'clearances' => $clearances,
-            'statusFilter' => $statusFilter // Pass the status filter to the view
+            'organizations' => $organizations,
+            'courses' => $courses,
+            'years' => $years
         ]);
     }
 
     public function update(Request $request, $id)
     {
         $request->validate([
-            'status' => 'required|in:eligible,not eligible,cleared'
+            'status' => 'required|string|in:eligible,not eligible,cleared',
         ]);
 
-        $clearance = Clearance::where('user_id', $id)->first();
+        $user = User::findOrFail($id);
+        $clearance = $user->clearance;
+
         if ($clearance) {
             $clearance->update(['status' => $request->status]);
         } else {
-            // Create a new clearance record if none exists
             Clearance::create([
                 'user_id' => $id,
-                'status' => $request->status
+                'status' => $request->status,
             ]);
         }
 
-        return redirect()->route('clearances.index')->with('success', 'Clearance status updated.');
+        return redirect()->route('clearance.index')->with('success', 'Clearance status updated successfully!');
     }
 }

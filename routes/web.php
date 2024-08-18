@@ -9,6 +9,7 @@ use App\Http\Controllers\Officer\SanctionController;
 use App\Http\Controllers\Officer\StudentsController;
 use App\Http\Controllers\Officer\FinanceController;
 use App\Http\Controllers\Officer\FeesController;
+use App\Http\Controllers\Officer\AuditController;
 use App\Http\Controllers\ProfileController;
 use App\Http\Controllers\StudentFinanceController;
 use Illuminate\Support\Facades\Route;
@@ -46,6 +47,7 @@ Route::prefix('officer')->middleware('auth:officer')->group(function () {
     Route::resource('activities', ActivityController::class);
     Route::resource('sanctions', SanctionController::class);
     Route::resource('clearances', ClearanceController::class);
+    Route::resource('audit', AuditController::class);
 
 });
 

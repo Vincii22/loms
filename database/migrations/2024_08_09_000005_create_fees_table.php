@@ -15,6 +15,8 @@ return new class extends Migration
             $table->id();
             $table->string('name');
             $table->decimal('default_amount', 8, 2);
+            $table->foreignId('semester_id')->nullable()->constrained('semesters');
+            $table->string('school_year')->nullable();
             $table->timestamps();
         });
     }

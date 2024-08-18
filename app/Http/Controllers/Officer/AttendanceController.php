@@ -5,20 +5,67 @@ namespace App\Http\Controllers\Officer;
 use App\Http\Controllers\Controller;
 use App\Models\Attendance;
 use App\Models\Activity;
+use App\Models\Organization;
+use App\Models\Course;
+use App\Models\Year;
 use App\Models\User;
 use App\Models\Sanction;
 use Illuminate\Http\Request;
 use Carbon\Carbon;
+use Illuminate\Support\Facades\DB;
 class AttendanceController extends Controller
 {
 
-    public function index()
+    public function index(Request $request)
     {
-        $attendances = Attendance::with('user', 'activity')
-        ->paginate(10); // Adjust the number of items per page as needed
+     // Get filter inputs
+     $searchName = $request->input('search_name');
+     $searchSchoolId = $request->input('search_school_id');
+     $filterOrganization = $request->input('filter_organization');
+     $filterCourse = $request->input('filter_course');
+     $filterYear = $request->input('filter_year');
+     $filterActivity = $request->input('filter_activity');
 
-    return view('officer.attendance.index', compact('attendances'));
+     $query = Attendance::with('user', 'activity')
+         ->when($searchName, function ($query, $searchName) {
+             return $query->whereHas('user', function ($query) use ($searchName) {
+                 $query->where('name', 'like', '%' . $searchName . '%');
+             });
+         })
+         ->when($searchSchoolId, function ($query, $searchSchoolId) {
+             return $query->whereHas('user', function ($query) use ($searchSchoolId) {
+                 $query->where('school_id', 'like', '%' . $searchSchoolId . '%');
+             });
+         })
+         ->when($filterOrganization, function ($query, $filterOrganization) {
+             return $query->whereHas('user.organization', function ($query) use ($filterOrganization) {
+                 $query->where('id', $filterOrganization);
+             });
+         })
+         ->when($filterCourse, function ($query, $filterCourse) {
+             return $query->whereHas('user.course', function ($query) use ($filterCourse) {
+                 $query->where('id', $filterCourse);
+             });
+         })
+         ->when($filterYear, function ($query, $filterYear) {
+             return $query->whereHas('user.year', function ($query) use ($filterYear) {
+                 $query->where('id', $filterYear);
+             });
+         })
+         ->when($filterActivity, function ($query, $filterActivity) {
+             return $query->where('activity_id', $filterActivity);
+         });
 
+     // Paginate the results
+     $attendances = $query->paginate(10);
+
+     // Fetch all organizations, courses, years, and activities for filtering options
+     $organizations = Organization::all();
+     $courses = Course::all();
+     $years = Year::all();
+     $activities = Activity::all();
+
+     return view('officer.attendance.index', compact('attendances', 'organizations', 'courses', 'years', 'activities'));
      }
 
 

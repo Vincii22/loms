@@ -3,7 +3,7 @@
 @section('content')
     <h1>Edit Finance Entry</h1>
 
-    <form action="{{ route('officer.finance.update', $finance->id) }}" method="POST">
+    <form action="{{ route('finances.update', $finance->id) }}" method="POST">
         @csrf
         @method('PUT')
         <div>

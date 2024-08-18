@@ -18,6 +18,9 @@ return new class extends Migration
             $table->dateTime('start_time');
             $table->dateTime('end_time')->nullable();
             $table->string('location')->nullable();
+            $table->foreignId('semester_id')->nullable()->constrained('semesters');
+            $table->string('school_year')->nullable();
+            $table->string('image')->nullable();
             $table->timestamps();
         });
     }

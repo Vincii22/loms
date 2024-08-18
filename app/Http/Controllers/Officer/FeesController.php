@@ -3,6 +3,7 @@
 namespace App\Http\Controllers\Officer;
 
 use App\Models\Fees;
+use App\Models\Semester;
 use Illuminate\Http\Request;
 use App\Http\Controllers\Controller;
 
@@ -13,7 +14,7 @@ class FeesController extends Controller
      */
     public function index()
     {
-        $fees = Fees::all();
+        $fees = Fees::with('semester')->get();
         return view('officer.fees.index', compact('fees'));
     }
 
@@ -22,7 +23,8 @@ class FeesController extends Controller
      */
     public function create()
     {
-        return view('officer.fees.create');
+        $semesters = Semester::all();
+        return view('officer.fees.create', compact('semesters'));
     }
 
     /**
@@ -33,26 +35,13 @@ class FeesController extends Controller
         $request->validate([
             'name' => 'required|string|max:255',
             'default_amount' => 'required|numeric|min:0',
+            'semester_id' => 'nullable|exists:semesters,id',
+            'school_year' => 'nullable|string|max:255',
         ]);
 
-        Fees::create([
-            'name' => $request->input('name'),
-            'default_amount' => $request->input('default_amount'),
-        ]);
+        Fees::create($request->all());
 
         return redirect()->route('fees.index')->with('success', 'Fee created successfully.');
-
-    }
-
-    /**
-     * Display the specified resource.
-     */
-    public function show(Fees $fee)
-    {
-        $finances = $fee->finances()->with('user')->get();
-        $fees = Fees::all(); // Fetch all fees for the filter dropdown
-
-        return view('officer.finances.index', compact('fee', 'finances', 'fees'));
     }
 
     /**
@@ -60,23 +49,23 @@ class FeesController extends Controller
      */
     public function edit(Fees $fee)
     {
-        return view('officer.fees.edit', compact('fee'));
+        $semesters = Semester::all();
+        return view('officer.fees.edit', compact('fee', 'semesters'));
     }
 
     /**
      * Update the specified resource in storage.
      */
-    public function update(Request $request, Fees $fees)
+    public function update(Request $request, Fees $fee)
     {
         $request->validate([
             'name' => 'required|string|max:255',
             'default_amount' => 'required|numeric|min:0',
+            'semester_id' => 'nullable|exists:semesters,id',
+            'school_year' => 'nullable|string|max:255',
         ]);
 
-        $fees->update([
-            'name' => $request->input('name'),
-            'default_amount' => $request->input('default_amount'),
-        ]);
+        $fee->update($request->all());
 
         return redirect()->route('fees.index')->with('success', 'Fee updated successfully.');
     }
@@ -84,9 +73,9 @@ class FeesController extends Controller
     /**
      * Remove the specified resource from storage.
      */
-    public function destroy(Fees $fees)
+    public function destroy(Fees $fee)
     {
-        $fees->delete();
+        $fee->delete();
         return redirect()->route('fees.index')->with('success', 'Fee deleted successfully.');
     }
 }
