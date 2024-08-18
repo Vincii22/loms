@@ -3,6 +3,40 @@
     <div class="container mx-auto mt-4 p-6 bg-white shadow-md rounded-lg">
         <h1 class="text-2xl font-bold mb-4">Attendance Records</h1>
         <a href="{{ route('attendance.create') }}" class="inline-block bg-blue-500 text-white px-4 py-2 rounded hover:bg-blue-600 mb-3">Add Attendance</a>
+        <form method="GET" action="{{ route('attendance.index') }}">
+            <input type="text" name="search_name" placeholder="Search by name" value="{{ request('search_name') }}">
+            <input type="text" name="search_school_id" placeholder="Search by school ID" value="{{ request('search_school_id') }}">
+
+            <select name="filter_organization">
+                <option value="">Select Organization</option>
+                @foreach($organizations as $organization)
+                    <option value="{{ $organization->id }}" {{ request('filter_organization') == $organization->id ? 'selected' : '' }}>{{ $organization->name }}</option>
+                @endforeach
+            </select>
+
+            <select name="filter_course">
+                <option value="">Select Course</option>
+                @foreach($courses as $course)
+                    <option value="{{ $course->id }}" {{ request('filter_course') == $course->id ? 'selected' : '' }}>{{ $course->name }}</option>
+                @endforeach
+            </select>
+
+            <select name="filter_year">
+                <option value="">Select Year</option>
+                @foreach($years as $year)
+                    <option value="{{ $year->id }}" {{ request('filter_year') == $year->id ? 'selected' : '' }}>{{ $year->year }}</option>
+                @endforeach
+            </select>
+
+            <select name="filter_activity">
+                <option value="">Select Activity</option>
+                @foreach($activities as $activity)
+                    <option value="{{ $activity->id }}" {{ request('filter_activity') == $activity->id ? 'selected' : '' }}>{{ $activity->name }}</option>
+                @endforeach
+            </select>
+
+            <button type="submit">Filter</button>
+        </form>
 
         @if(session('success'))
             <div class="bg-green-500 text-white p-4 mb-4 rounded relative">
@@ -51,11 +85,12 @@
                     @endforelse
                 </tbody>
             </table>
+
         </div>
 
         <!-- Pagination links -->
         <div class="mt-4">
-            {{ $attendances->links('pagination::tailwind') }}
+            {{ $attendances->links() }}
         </div>
     </div>
     @endsection

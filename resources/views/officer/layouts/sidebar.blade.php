@@ -1,4 +1,3 @@
-<!-- resources/views/layouts/sidebar.blade.php -->
 <aside class="fixed top-16 left-0 w-64 bg-white border-r border-gray-200 md:w-64 md:h-[calc(100vh-64px)]">
     <!-- Sidebar Header -->
     <div class="flex flex-col h-full md:relative">
@@ -19,15 +18,38 @@
                 <ul class="space-y-4">
                     <li><a href="{{ route('officer.dashboard') }}" class="hover:text-gray-300">Dashboard</a></li>
                     <li><a href="{{ route('students.index') }}" class="hover:text-gray-300">Students</a></li>
-                    <li><a href="{{ route('activities.index') }}" class="hover:text-gray-300">Activities</a></li>
-                    <li><a href="{{ route('attendance.index') }}" class="hover:text-gray-300">Attendance</a></li>
-                    <li><a href="{{ route('fees.index') }}" class="hover:text-gray-300">Fee</a></li>
-                    <li><a href="{{ route('finances.index') }}" class="hover:text-gray-300">Finance</a></li>
+
+                    <!-- Dropdown for Attendance -->
+                    <li>
+                        <button class="w-full text-left flex justify-between items-center focus:outline-none" onclick="toggleDropdown('attendance-dropdown')">
+                            Attendance
+                            <svg class="h-5 w-5 transition-transform duration-200 transform" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 9l-7 7-7-7" />
+                            </svg>
+                        </button>
+                        <ul id="attendance-dropdown" class="hidden space-y-2 ml-4">
+                            <li><a href="{{ route('attendance.index') }}" class="hover:text-gray-300">Manage Attendance</a></li>
+                            <li><a href="{{ route('activities.index') }}" class="hover:text-gray-300">Activities</a></li>
+                        </ul>
+                    </li>
+
+                    <!-- Dropdown for Finance -->
+                    <li>
+                        <button class="w-full text-left flex justify-between items-center focus:outline-none" onclick="toggleDropdown('finance-dropdown')">
+                            Finance
+                            <svg class="h-5 w-5 transition-transform duration-200 transform" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 9l-7 7-7-7" />
+                            </svg>
+                        </button>
+                        <ul id="finance-dropdown" class="hidden space-y-2 ml-4">
+                            <li><a href="{{ route('finances.index') }}" class="hover:text-gray-300">Manage Finances</a></li>
+                            <li><a href="{{ route('fees.index') }}" class="hover:text-gray-300">Manage Fees</a></li>
+                            <li><a href="{{ route('audit.index') }}" class="hover:text-gray-300">Manage Audit</a></li>
+                        </ul>
+                    </li>
+
                     <li><a href="{{ route('sanctions.index') }}" class="hover:text-gray-300">Sanction</a></li>
                     <li><a href="{{ route('clearances.index') }}" class="hover:text-gray-300">Clearance</a></li>
-                    <li><a href="{{ route('fees.index') }}" class="hover:text-gray-300">Profile</a></li>
-                    <li><a href="{{ route('dashboard') }}" class="hover:text-gray-300">Settings</a></li>
-                    <li><a href="{{ route('dashboard') }}" class="hover:text-gray-300">Logout</a></li>
                 </ul>
             </nav>
         </div>
@@ -64,26 +86,25 @@
         <nav>
             <ul class="space-y-4">
                 <li><a href="{{ route('dashboard') }}" class="hover:text-gray-300">Dashboard</a></li>
-                <li><a href="{{ route('finance.index') }}" class="hover:text-gray-300">Attendance</a></li>
-                <li><a href="{{ route('finance.index') }}" class="hover:text-gray-300">Finance</a></li>
-                <li><a href="{{ route('finance.index') }}" class="hover:text-gray-300">Sanction</a></li>
-                <li><a href="{{ route('finance.index') }}" class="hover:text-gray-300">Clearance</a></li>
-                <li><a href="{{ route('finance.index') }}" class="hover:text-gray-300">Profile</a></li>
-                <li><a href="{{ route('dashboard') }}" class="hover:text-gray-300">Settings</a></li>
-                <li><a href="{{ route('dashboard') }}" class="hover:text-gray-300">Logout</a></li>
+                <!-- Repeat the dropdown structure for mobile if needed -->
+                <li><a href="{{ route('attendance.index') }}" class="hover:text-gray-300">Attendance</a></li>
+                <li><a href="{{ route('finances.index') }}" class="hover:text-gray-300">Finance</a></li>
+                <li><a href="{{ route('sanctions.index') }}" class="hover:text-gray-300">Sanction</a></li>
+                <li><a href="{{ route('clearances.index') }}" class="hover:text-gray-300">Clearance</a></li>
             </ul>
         </nav>
     </div>
 </div>
 
-<!-- JavaScript to toggle mobile menu -->
+<!-- JavaScript to toggle dropdowns and mobile menu -->
 <script>
+    function toggleDropdown(dropdownId) {
+        var dropdown = document.getElementById(dropdownId);
+        dropdown.classList.toggle('hidden');
+    }
+
     document.getElementById('menu-toggle').addEventListener('click', function() {
         var mobileMenu = document.getElementById('mobile-menu');
-        if (mobileMenu.classList.contains('hidden')) {
-            mobileMenu.classList.remove('hidden');
-        } else {
-            mobileMenu.classList.add('hidden');
-        }
+        mobileMenu.classList.toggle('hidden');
     });
 </script>

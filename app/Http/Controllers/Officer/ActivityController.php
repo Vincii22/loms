@@ -4,8 +4,9 @@ namespace App\Http\Controllers\Officer;
 
 use App\Http\Controllers\Controller;
 use App\Models\Activity;
+use App\Models\Semester;
 use Illuminate\Http\Request;
-
+use Illuminate\Support\Facades\Storage;
 class ActivityController extends Controller
 {
     /**
@@ -22,7 +23,8 @@ class ActivityController extends Controller
      */
     public function create()
     {
-        return view('officer.activities.create');
+        $semesters = Semester::all();
+        return view('officer.activities.create', compact('semesters'));
     }
 
     /**
@@ -36,9 +38,19 @@ class ActivityController extends Controller
             'start_time' => 'required|date',
             'end_time' => 'nullable|date|after_or_equal:start_time',
             'location' => 'nullable|string|max:255',
+            'semester_id' => 'nullable|exists:semesters,id',
+            'school_year' => 'nullable|string|max:255',
+            'image' => 'nullable|image|mimes:jpeg,png,jpg,gif|max:2048',
         ]);
 
-        Activity::create($request->all());
+        $data = $request->except('image');
+
+        if ($request->hasFile('image')) {
+            $imagePath = $request->file('image')->store('public/images');
+            $data['image'] = basename($imagePath);
+        }
+
+        Activity::create($data);
 
         return redirect()->route('activities.index')->with('success', 'Activity created successfully.');
     }
@@ -56,7 +68,9 @@ class ActivityController extends Controller
      */
     public function edit(string $id)
     {
-        return view('officer.activities.edit', compact('activity'));
+        $activity = Activity::findOrFail($id);
+        $semesters = Semester::all();
+        return view('officer.activities.edit', compact('activity', 'semesters'));
     }
 
     /**
@@ -70,10 +84,25 @@ class ActivityController extends Controller
             'start_time' => 'required|date',
             'end_time' => 'nullable|date|after_or_equal:start_time',
             'location' => 'nullable|string|max:255',
+            'semester_id' => 'nullable|exists:semesters,id',
+            'school_year' => 'nullable|string|max:255',
+            'image' => 'nullable|image|mimes:jpeg,png,jpg,gif|max:2048',
+
         ]);
 
-        $activity->update($request->all());
+        $data = $request->except('image');
 
+        if ($request->hasFile('image')) {
+            // Delete old image if it exists
+            if ($activity->image) {
+                Storage::delete('public/images/' . $activity->image);
+            }
+
+            $imagePath = $request->file('image')->store('public/images');
+            $data['image'] = basename($imagePath);
+        }
+
+        $activity->update($data);
         return redirect()->route('activities.index')->with('success', 'Activity updated successfully.');
     }
 

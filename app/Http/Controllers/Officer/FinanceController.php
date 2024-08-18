@@ -2,9 +2,13 @@
 
 namespace App\Http\Controllers\Officer;
 
+
 use App\Models\Finance;
 use App\Models\User;
 use App\Models\Fees;
+use App\Models\Organization;
+use App\Models\Course;
+use App\Models\Year;
 use App\Models\Sanction;
 use Illuminate\Http\Request;
 use App\Http\Controllers\Controller;
@@ -16,17 +20,51 @@ class FinanceController extends Controller
     // Finance-related methods
     public function index(Request $request)
     {
-        $feeId = $request->query('fee_id');
-        $financesQuery = Finance::with('user', 'fee');
+        $searchName = $request->input('search_name');
+        $searchSchoolId = $request->input('search_school_id');
+        $filterOrganization = $request->input('filter_organization');
+        $filterCourse = $request->input('filter_course');
+        $filterYear = $request->input('filter_year');
+        $feeId = $request->input('fee_id');
 
-        if ($feeId) {
-            $financesQuery->where('fee_id', $feeId);
-        }
+        $finances = Finance::with('user', 'fee')
+            ->when($searchName, function ($query, $searchName) {
+                return $query->whereHas('user', function ($query) use ($searchName) {
+                    $query->where('name', 'like', '%' . $searchName . '%');
+                });
+            })
+            ->when($searchSchoolId, function ($query, $searchSchoolId) {
+                return $query->whereHas('user', function ($query) use ($searchSchoolId) {
+                    $query->where('school_id', 'like', '%' . $searchSchoolId . '%');
+                });
+            })
+            ->when($filterOrganization, function ($query, $filterOrganization) {
+                return $query->whereHas('user.organization', function ($query) use ($filterOrganization) {
+                    $query->where('id', $filterOrganization);
+                });
+            })
+            ->when($filterCourse, function ($query, $filterCourse) {
+                return $query->whereHas('user.course', function ($query) use ($filterCourse) {
+                    $query->where('id', $filterCourse);
+                });
+            })
+            ->when($filterYear, function ($query, $filterYear) {
+                return $query->whereHas('user.year', function ($query) use ($filterYear) {
+                    $query->where('id', $filterYear);
+                });
+            })
+            ->when($feeId, function ($query, $feeId) {
+                return $query->where('fee_id', $feeId);
+            })
+            ->paginate(10);
 
-        $finances = $financesQuery->get();
-        $fees = Fees::all(); // Fetch all fees
+        // Fetch all organizations, courses, years, and fees for filtering options
+        $organizations = Organization::all();
+        $courses = Course::all();
+        $years = Year::all();
+        $fees = Fees::all();
 
-        return view('officer.finances.index', compact('finances', 'fees'));
+        return view('officer.finances.index', compact('finances', 'organizations', 'courses', 'years', 'fees'));
     }
 
     public function create()
@@ -88,19 +126,35 @@ class FinanceController extends Controller
 
     public function updatePaymentStatus(Request $request)
     {
-        // Update payment status logic here...
+          // Validate the request
+    $request->validate([
+        'student_id' => 'required|exists:users,id',
+        'fee_id' => 'required|exists:fees,id',
+        'status' => 'required|in:paid,unpaid',
+    ]);
 
-        // After updating payment, check for unpaid fees and add sanctions
-        $this->checkAndSanctionUnpaidStudents();
+    // Retrieve the fee based on the provided fee_id
+    $fee = Fees::find($request->fee_id);
+
+    // Update the payment status of the fee
+    $fee->status = $request->status;
+    $fee->save();
+
+    // After updating payment, check for unpaid fees and add sanctions
+    $this->checkAndSanctionUnpaidStudents();
     }
 
     protected function checkAndSanctionUnpaidStudents()
     {
-        $unpaidStudents = User::whereHas('fees', function ($query) {
+        // Fetch students with unpaid fees
+        $studentsWithUnpaidFees = User::whereHas('fees', function ($query) {
             $query->where('status', 'unpaid');
         })->get();
 
-        foreach ($unpaidStudents as $student) {
+        foreach ($studentsWithUnpaidFees as $student) {
+            // Fetch unpaid fees for the student
+            $unpaidFees = $student->fees->where('status', 'unpaid');
+
             // Check if the student is already sanctioned for unpaid fees
             $existingSanction = Sanction::where('student_id', $student->id)
                 ->where('type', 'finance')
@@ -108,12 +162,14 @@ class FinanceController extends Controller
                 ->first();
 
             if (!$existingSanction) {
+                $fineAmount = $unpaidFees->count() * 100; // Example fine calculation based on number of unpaid fees
+
                 Sanction::create([
                     'student_id' => $student->id,
                     'type' => 'finance',
                     'description' => 'Unpaid fees',
-                    'fine_amount' => 100, // Example fine amount
-                    'required_action' => 'Pay outstanding fees', // Required action
+                    'fine_amount' => $fineAmount,
+                    'required_action' => 'Pay outstanding fees',
                     'resolved' => false,
                 ]);
             }

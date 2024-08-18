@@ -18,7 +18,12 @@ class Semester extends Model
 
     public function finances()
     {
-        return $this->hasMany(Finance::class, 'finance_id');
+        return $this->hasMany(Finance::class);
+    }
+
+    public function activities()
+    {
+        return $this->hasMany(Activity::class);
     }
     use HasFactory;
 }

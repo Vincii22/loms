@@ -15,9 +15,17 @@ class Activity extends Model
         'start_time',
         'end_time',
         'location',
+        'semester_id',
+        'school_year',
+        'image',
     ];
     public function attendances()
     {
         return $this->hasMany(Attendance::class);
+    }
+
+    public function semester()
+    {
+        return $this->belongsTo(Semester::class);
     }
 }

@@ -5,17 +5,61 @@ use App\Models\Sanction;
 use App\Models\User;
 use App\Models\Attendance;
 use App\Models\Finance;
+use App\Models\Organization;
+use App\Models\Course;
+use App\Models\Year;
+
 use App\Http\Controllers\Controller;
 use Illuminate\Http\Request;
 
 class SanctionController extends Controller
 {
-    public function index()
+    public function index(Request $request)
     {
-        $this->checkSanctions();
+        $searchName = $request->input('search_name');
+        $searchSchoolId = $request->input('search_school_id');
+        $filterOrganization = $request->input('filter_organization');
+        $filterCourse = $request->input('filter_course');
+        $filterYear = $request->input('filter_year');
 
-        $sanctions = Sanction::with('student')->get(); // Use 'student' here
-        return view('officer.sanctions.index', compact('sanctions'));
+        $sanctions = Sanction::with('student.organization', 'student.course', 'student.year')
+            ->when($searchName, function ($query, $searchName) {
+                return $query->whereHas('student', function ($query) use ($searchName) {
+                    $query->where('name', 'like', '%' . $searchName . '%');
+                });
+            })
+            ->when($searchSchoolId, function ($query, $searchSchoolId) {
+                return $query->whereHas('student', function ($query) use ($searchSchoolId) {
+                    $query->where('school_id', 'like', '%' . $searchSchoolId . '%');
+                });
+            })
+            ->when($filterOrganization, function ($query, $filterOrganization) {
+                return $query->whereHas('student.organization', function ($query) use ($filterOrganization) {
+                    $query->where('id', $filterOrganization);
+                });
+            })
+            ->when($filterCourse, function ($query, $filterCourse) {
+                return $query->whereHas('student.course', function ($query) use ($filterCourse) {
+                    $query->where('id', $filterCourse);
+                });
+            })
+            ->when($filterYear, function ($query, $filterYear) {
+                return $query->whereHas('student.year', function ($query) use ($filterYear) {
+                    $query->where('id', $filterYear);
+                });
+            })
+            ->paginate(5);
+
+        // Debugging: Dump the query and results
+        // dd($sanctions);
+
+        // Fetch all organizations, courses, and years for filtering options
+        $organizations = Organization::all();
+        $courses = Course::all();
+        $years = Year::all();
+
+        return view('officer.sanctions.index', compact('sanctions', 'organizations', 'courses', 'years'));
+
     }
 
     public function edit($id)
@@ -56,21 +100,13 @@ class SanctionController extends Controller
         $usersWithUnpaidFees = User::whereHas('finances', function ($query) {
             $query->where('status', '!=', 'Paid'); // Ensure 'Paid' matches your enum value
         })->get();
+
         foreach ($usersWithUnpaidFees as $user) {
-            $unpaidFees = Finance::where('user_id', $user->id)
-                                 ->where('status', 'unpaid')
-                                 ->get();
+            $unpaidFees = $user->finances->where('status', 'unpaid');
 
             foreach ($unpaidFees as $fee) {
-                // Check if fee relationship is correctly accessed
-                $feeRecord = $fee->fee;
-                if ($feeRecord) {
-                    $feeName = $feeRecord->name; // Access name attribute from fee relationship
-                } else {
-                    $feeName = 'Unknown Fee'; // Fallback if fee is null
-                }
+                $feeName = optional($fee->fee)->name ?? 'Unknown Fee';
 
-                // Create a sanction with detailed type including the fee name
                 Sanction::firstOrCreate([
                     'student_id' => $user->id,
                     'type' => "Unpaid Fees - $feeName",
@@ -87,31 +123,26 @@ class SanctionController extends Controller
         })->get();
 
         foreach ($usersAbsent as $user) {
-            // Fetch the most recent attendance record for the user
-            $attendance = Attendance::where('student_id', $user->id)
-                ->latest() // Get the most recent attendance record
-                ->first();
+            $attendance = $user->attendances()->latest()->first();
 
             if ($attendance) {
-                $activityName = $attendance->activity->name; // Assuming the Attendance model has a relationship with Activity
+                $activityName = optional($attendance->activity)->name ?? 'Unknown Activity';
 
-                // Check if a sanction already exists for this user and activity
                 $existingSanction = Sanction::where([
-                    ['student_id', '=', $user->id],
-                    ['type', '=', "Absence from $activityName"]
+                    ['student_id', $user->id],
+                    ['type', "Absence from $activityName"]
                 ])->first();
 
                 if (!$existingSanction) {
-                    // Create a sanction only if it does not already exist
                     Sanction::create([
                         'student_id' => $user->id,
-                        'type' => "Absence from $activityName", // Include activity name in the type
+                        'type' => "Absence from $activityName",
                         'description' => 'Absent from mandatory activity',
-                        'fine_amount' => 50, // Example fine amount
+                        'fine_amount' => 50,
                         'resolved' => false,
                     ]);
                 }
             }
-         }
-}
+        }
+    }
 }
