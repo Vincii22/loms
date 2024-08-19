@@ -24,11 +24,11 @@ class Sanction extends Model
 
     public function fee()
 {
-    return $this->belongsTo(Fees::class);
+    return $this->belongsTo(Fees::class, 'fee_id');
 }
 
 public function attendance()
 {
-    return $this->belongsTo(Attendance::class);
+    return $this->belongsTo(Attendance::class, 'attendance_id');
 }
 }

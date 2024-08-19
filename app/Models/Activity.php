@@ -28,4 +28,9 @@ class Activity extends Model
     {
         return $this->belongsTo(Semester::class);
     }
+
+    protected $casts = [
+        'start_time' => 'datetime',
+        'end_time' => 'datetime',
+    ];
 }

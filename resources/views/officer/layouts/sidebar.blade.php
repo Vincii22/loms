@@ -8,7 +8,7 @@
                 <img src="{{ asset('images/licoes.png') }}" alt="Logo" class="h-28">
             </div>
             <div class="text-center border-t border-gray-200 mt-4 p-2 w-full bg-[#5C0E0F] md:h-1/4">
-                <p class="text-xl font-semibold text-white">{{ Auth::user()->name }}</p>
+                <p class="text-xl font-semibold text-white">{{ Auth::user()->role->name }}</p>
             </div>
         </header>
 

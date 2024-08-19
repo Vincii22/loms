@@ -63,6 +63,30 @@ public function clearance()
     return $this->hasOne(Clearance::class);
 }
 
+public static function boot()
+{
+    parent::boot();
+
+    // Automatically create a clearance record when a user is created
+    static::created(function ($user) {
+        $user->clearance()->create(['status' => 'eligible']);
+    });
+}
+
+
+public function updateClearanceStatus()
+{
+    // Check if the user has any sanctions
+    if ($this->sanctions()->exists()) {
+        // Update the clearance status to 'not eligible'
+        $this->clearance()->update(['status' => 'not eligible']);
+    } else {
+        // Otherwise, set the status to 'eligible'
+        $this->clearance()->update(['status' => 'eligible']);
+    }
+}
+
+
     /**
      * The attributes that should be hidden for serialization.
      *

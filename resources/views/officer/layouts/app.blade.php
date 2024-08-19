@@ -13,8 +13,9 @@
     <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.6.0/jquery.min.js"></script>
 
     <!-- Scripts and Styles -->
-    @vite(['resources/css/app.css', 'resources/js/app.js'])
+    @vite(['resources/css/app.css', 'resources/js/app.js', 'resources/css/layout.css'])
     <link rel="stylesheet" href="{{ asset('css/layout.css') }}">
+
 
     <style>
         /* Fixed navigation bar */
@@ -92,7 +93,7 @@
         @endisset
 
         <!-- Main Content -->
-        <main class="main-content p-6">
+        <main class="main-content p-0">
             @yield('content')
             {{ $slot }}
         </main>

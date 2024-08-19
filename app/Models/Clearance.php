@@ -14,4 +14,9 @@ class Clearance extends Model
     {
         return $this->belongsTo(User::class, 'user_id');
     }
+
+    public function sanctions()
+    {
+        return $this->hasMany(Sanction::class);
+    }
 }

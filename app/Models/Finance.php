@@ -4,7 +4,6 @@ namespace App\Models;
 
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
-
 class Finance extends Model
 {
     use HasFactory;
@@ -13,7 +12,7 @@ class Finance extends Model
         'user_id',
         'fee_id',
         'default_amount',
-        'status'
+        'status',
     ];
 
     public function user()
