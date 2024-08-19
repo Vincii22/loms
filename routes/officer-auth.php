@@ -10,6 +10,7 @@ use App\Http\Controllers\Officer\Auth\PasswordResetLinkController;
 use App\Http\Controllers\Officer\Auth\RegisteredUserController;
 use App\Http\Controllers\Officer\Auth\VerifyEmailController;
 use App\Http\Controllers\Officer\ProfileController;
+use App\Http\Controllers\Officer\DashboardController;
 use Illuminate\Support\Facades\Route;
 
 Route::middleware('guest:officer')->prefix('officer')->name('officer.')->group(function () {
@@ -42,6 +43,7 @@ Route::middleware('auth:officer')->prefix('officer')->name('officer.')->group(fu
         return view('officer.dashboard');
     })->middleware(['verified'])->name('dashboard');
 
+    Route::get('/dashboard', [DashboardController::class, 'index'])->middleware(['verified'])->name('dashboard');
         Route::get('/profile', [ProfileController::class, 'edit'])->name('profile.edit');
         Route::patch('/profile', [ProfileController::class, 'update'])->name('profile.update');
         Route::delete('/profile', [ProfileController::class, 'destroy'])->name('profile.destroy');

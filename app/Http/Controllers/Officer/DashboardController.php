@@ -2,33 +2,59 @@
 
 namespace App\Http\Controllers\Officer;
 
-use App\Models\Finance;
-use App\Models\Attendance;
+use App\Models\User;
+use App\Models\Organization;
+use App\Models\Course;
+use App\Models\Year;
+use App\Models\Activity;
+use App\Models\Fees;
 use App\Models\Sanction;
-use App\Models\Clearance;
+use App\Models\Clearance; // Import Clearance model
 use Illuminate\Http\Request;
 use App\Http\Controllers\Controller;
-use Illuminate\Support\Facades\Auth;
-
 
 class DashboardController extends Controller
 {
-    public function dashboard()
+    public function index(Request $request)
     {
-        $totalPaid = Finance::where('status', 'Paid')->sum('default_amount');
-        $totalNotPaid = Finance::where('status', 'Not Paid')->sum('default_amount');
-
-        $totalPresent = Attendance::where('status', 'Present')->count();
-        $totalAbsent = Attendance::where('status', 'Absent')->count();
-
+        // Fetching data for the dashboard
+        $totalActivities = Activity::count();
+        $totalFees = Fees::count();
+        $totalStudents = User::count();
+        $organizationCounts = Organization::withCount('users')->get()->pluck('users_count', 'name')->toArray();
+        $programCounts = Course::withCount('users')->get()->pluck('users_count', 'name')->toArray();
+        $yearCounts = Year::withCount('users')->get()->pluck('users_count', 'name')->toArray();
         $totalSanctions = Sanction::count();
-        $resolvedSanctions = Sanction::where('resolved', true)->count();
-        $unresolvedSanctions = Sanction::where('resolved', false)->count();
 
-        $totalCleared = Clearance::where('status', 'cleared')->count();
-        $notEligible = Clearance::where('status', 'not eligible')->count();
-        $eligibleNotCleared = Clearance::where('status', 'eligible')->count();
+        // Fetch clearance counts
+        $clearanceCounts = Clearance::selectRaw('status, COUNT(*) as count')
+            ->groupBy('status')
+            ->pluck('count', 'status')
+            ->toArray();
 
-        return view('officer.dashboard', compact('totalPaid', 'totalNotPaid', 'totalPresent', 'totalAbsent', 'totalSanctions', 'resolvedSanctions', 'unresolvedSanctions', 'totalCleared', 'notEligible', 'eligibleNotCleared'));
+
+            // dd($clearanceCounts);
+
+        $eligibleCount = $clearanceCounts['eligible'] ?? 0;
+        $notEligibleCount = $clearanceCounts['not eligible'] ?? 0;
+        $clearedCount = $clearanceCounts['cleared'] ?? 0;
+
+        // Optional: Handle semester and year filters
+        $semester = $request->input('semester');
+        $year = $request->input('year');
+
+        // Pass data to the view
+        return view('officer.dashboard', [
+            'totalStudents' => $totalStudents,
+            'organizationCounts' => $organizationCounts,
+            'programCounts' => $programCounts,
+            'yearCounts' => $yearCounts,
+            'totalActivities' => $totalActivities,
+            'totalFees' => $totalFees,
+            'totalSanctions' => $totalSanctions,
+            'eligibleCount' => $eligibleCount,
+            'notEligibleCount' => $notEligibleCount,
+            'clearedCount' => $clearedCount,
+        ]);
     }
 }

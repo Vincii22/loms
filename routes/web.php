@@ -10,17 +10,19 @@ use App\Http\Controllers\Officer\StudentsController;
 use App\Http\Controllers\Officer\FinanceController;
 use App\Http\Controllers\Officer\FeesController;
 use App\Http\Controllers\Officer\AuditController;
+use App\Http\Controllers\Officer\DashboardController;
 use App\Http\Controllers\ProfileController;
 use App\Http\Controllers\StudentFinanceController;
+use App\Http\Controllers\StudentDashboardController;
 use Illuminate\Support\Facades\Route;
 
 Route::get('/', function () {
     return view('welcome');
 });
 
-Route::get('/dashboard', function () {
-    return view('dashboard');
-})->middleware(['auth', 'verified'])->name('dashboard');
+Route::get('/dashboard', [StudentDashboardController::class, 'index'])
+    ->middleware(['auth', 'verified'])
+    ->name('dashboard');
 
 Route::middleware('auth')->group(function () {
     Route::get('/profile', [ProfileController::class, 'edit'])->name('profile.edit');
@@ -39,6 +41,7 @@ Route::prefix('admin')->middleware('auth:admin')->group(function () {
     Route::resource('officers', OfficerController::class);
 });
 
+
 Route::prefix('officer')->middleware('auth:officer')->group(function () {
     Route::resource('students', StudentsController::class);
     Route::resource('finances', FinanceController::class);
@@ -48,8 +51,10 @@ Route::prefix('officer')->middleware('auth:officer')->group(function () {
     Route::resource('sanctions', SanctionController::class);
     Route::resource('clearances', ClearanceController::class);
     Route::resource('audit', AuditController::class);
-
 });
+
+Route::get('/officer/dashboard', [DashboardController::class, 'index'])->name('officer.dashboard');
+
 
 require __DIR__.'/auth.php';
 require __DIR__.'/admin-auth.php';

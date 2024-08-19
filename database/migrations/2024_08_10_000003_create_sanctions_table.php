@@ -14,6 +14,9 @@ return new class extends Migration
         Schema::create('sanctions', function (Blueprint $table) {
             $table->id();
             $table->unsignedBigInteger('student_id');
+            $table->unsignedBigInteger('fee_id')->nullable();
+            $table->unsignedBigInteger('attendance_id')->nullable();
+
             $table->string('type'); // Example: 'attendance', 'finance'
             $table->text('description');
             $table->decimal('fine_amount', 8, 2)->nullable(); // Fine amount, nullable if there's no fine
@@ -21,6 +24,8 @@ return new class extends Migration
             $table->boolean('resolved')->default(false);
             $table->timestamps();
 
+            $table->foreign('fee_id')->references('id')->on('fees')->onDelete('set null');
+            $table->foreign('attendance_id')->references('id')->on('attendances')->onDelete('set null');
             $table->foreign('student_id')->references('id')->on('users')->onDelete('cascade');
         });
     }

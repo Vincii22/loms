@@ -12,7 +12,7 @@ use App\Models\Year;
 use App\Models\Sanction;
 use Illuminate\Http\Request;
 use App\Http\Controllers\Controller;
-
+use Illuminate\Support\Facades\Log;
 class FinanceController extends Controller
 {
     // Other methods related to officers
@@ -112,48 +112,91 @@ class FinanceController extends Controller
             'status' => 'required|in:Paid,Not Paid',
         ]);
 
-        $finance->update($request->all());
+        $finance->status = $request->input('status');
+        $finance->save();
 
-        return redirect()->route('officer.finances.index')->with('success', 'Finance entry updated successfully.');
+        return redirect()->route('finances.index')->with('success', 'Finance entry updated successfully.');
     }
 
     public function destroy(Finance $finance)
     {
-        $finance->delete();
-        return redirect()->route('officer.finances.index')->with('success', 'Finance entry deleted successfully.');
-    }
+       // Log the sanctions that are about to be deleted
+    $sanctions = Sanction::where('student_id', $finance->user_id)
+    ->where('type', 'LIKE', 'Unpaid Fees%')
+    ->get();
 
+    Log::info('Sanctions to be deleted: ' . $sanctions->pluck('type')->toJson());
+
+    // Remove related sanctions
+    Sanction::where('student_id', $finance->user_id)
+    ->where('type', 'LIKE', 'Unpaid Fees%')
+    ->delete();
+
+    // Delete the finance record
+    $finance->delete();
+
+    return redirect()->route('finances.index')->with('success', 'Finance entry deleted successfully.');
+}
 
     public function updatePaymentStatus(Request $request)
     {
-          // Validate the request
+        // Validate the request
     $request->validate([
         'student_id' => 'required|exists:users,id',
         'fee_id' => 'required|exists:fees,id',
-        'status' => 'required|in:paid,unpaid',
+        'status' => 'required|in:Paid,Not Paid', // Ensure this matches the database status
     ]);
 
-    // Retrieve the fee based on the provided fee_id
-    $fee = Fees::find($request->fee_id);
+    // Retrieve the finance entry and update its status
+    $finance = Finance::where('user_id', $request->student_id)
+                      ->where('fee_id', $request->fee_id)
+                      ->firstOrFail();
 
-    // Update the payment status of the fee
-    $fee->status = $request->status;
-    $fee->save();
+    $finance->status = $request->status;
+    $finance->save();
 
-    // After updating payment, check for unpaid fees and add sanctions
-    $this->checkAndSanctionUnpaidStudents();
+    // Debugging: Check if the record is correctly fetched
+    Log::info('Finance updated:', $finance->toArray());
+
+    // After updating the payment status, handle sanctions
+    if ($request->status === 'Paid') {
+        // Debugging: Check if sanctions related to this finance exist
+        $sanctions = Sanction::where('student_id', $request->student_id)
+                             ->where('type', 'LIKE', 'Unpaid Fees%')
+                             ->get();
+
+        Log::info('Sanctions found for update:', $sanctions->toArray());
+
+        // Update any existing sanctions related to this finance
+        Sanction::where('student_id', $request->student_id)
+                ->where('type', 'LIKE', 'Unpaid Fees%')
+                ->update(['resolved' => 1]); // Set resolved to Yes (1)
+
+        // Debugging: Check if update was successful
+        $updatedSanctions = Sanction::where('student_id', $request->student_id)
+                                    ->where('type', 'LIKE', 'Unpaid Fees%')
+                                    ->get();
+
+        Log::info('Sanctions after update:', $updatedSanctions->toArray());
+
+    } else {
+        // Call the existing method to check for unpaid fees and add sanctions
+        $this->checkAndSanctionUnpaidStudents();
+    }
+
+    return redirect()->back()->with('success', 'Payment status updated successfully.');
     }
 
     protected function checkAndSanctionUnpaidStudents()
     {
         // Fetch students with unpaid fees
-        $studentsWithUnpaidFees = User::whereHas('fees', function ($query) {
-            $query->where('status', 'unpaid');
+        $studentsWithUnpaidFees = User::whereHas('finances', function ($query) {
+            $query->where('status', 'Not Paid'); // Updated to match database status
         })->get();
 
         foreach ($studentsWithUnpaidFees as $student) {
             // Fetch unpaid fees for the student
-            $unpaidFees = $student->fees->where('status', 'unpaid');
+            $unpaidFees = $student->finances->where('status', 'Not Paid'); // Updated to match database status
 
             // Check if the student is already sanctioned for unpaid fees
             $existingSanction = Sanction::where('student_id', $student->id)
