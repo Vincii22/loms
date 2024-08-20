@@ -74,6 +74,6 @@ class ClearanceController extends Controller
             ]);
         }
 
-        return redirect()->route('clearance.index')->with('success', 'Clearance status updated successfully!');
+        return redirect()->route('clearances.index')->with('success', 'Clearance status updated successfully!');
     }
 }

@@ -28,8 +28,8 @@
                             </svg>
                         </button>
                         <ul id="attendance-dropdown" class="hidden space-y-2 ml-4">
+                            <li><a href="{{ route('activities.index') }}" class="hover:text-gray-300">Manage Activities</a></li>
                             <li><a href="{{ route('attendance.index') }}" class="hover:text-gray-300">Manage Attendance</a></li>
-                            <li><a href="{{ route('activities.index') }}" class="hover:text-gray-300">Activities</a></li>
                         </ul>
                     </li>
 
@@ -42,8 +42,8 @@
                             </svg>
                         </button>
                         <ul id="finance-dropdown" class="hidden space-y-2 ml-4">
-                            <li><a href="{{ route('finances.index') }}" class="hover:text-gray-300">Manage Finances</a></li>
                             <li><a href="{{ route('fees.index') }}" class="hover:text-gray-300">Manage Fees</a></li>
+                            <li><a href="{{ route('finances.index') }}" class="hover:text-gray-300">Manage Finances</a></li>
                             <li><a href="{{ route('audit.index') }}" class="hover:text-gray-300">Manage Audit</a></li>
                         </ul>
                     </li>

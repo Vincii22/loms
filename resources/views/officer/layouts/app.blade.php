@@ -93,7 +93,7 @@
         @endisset
 
         <!-- Main Content -->
-        <main class="main-content p-0">
+        <main class="main-content p-6">
             @yield('content')
             {{ $slot }}
         </main>
