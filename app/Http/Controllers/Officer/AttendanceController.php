@@ -18,57 +18,56 @@ class AttendanceController extends Controller
 
     public function index(Request $request)
     {
-     // Get filter inputs
-     $searchName = $request->input('search_name');
-     $searchSchoolId = $request->input('search_school_id');
-     $filterOrganization = $request->input('filter_organization');
-     $filterCourse = $request->input('filter_course');
-     $filterYear = $request->input('filter_year');
-     $filterActivity = $request->input('filter_activity');
+        // Get filter inputs
+        $searchName = $request->input('search_name');
+        $searchSchoolId = $request->input('search_school_id');
+        $filterOrganization = $request->input('filter_organization');
+        $filterCourse = $request->input('filter_course');
+        $filterYear = $request->input('filter_year');
+        $filterActivity = $request->input('filter_activity');
 
-     $query = Attendance::with('user', 'activity')
-         ->when($searchName, function ($query, $searchName) {
-             return $query->whereHas('user', function ($query) use ($searchName) {
-                 $query->where('name', 'like', '%' . $searchName . '%');
-             });
-         })
-         ->when($searchSchoolId, function ($query, $searchSchoolId) {
-             return $query->whereHas('user', function ($query) use ($searchSchoolId) {
-                 $query->where('school_id', 'like', '%' . $searchSchoolId . '%');
-             });
-         })
-         ->when($filterOrganization, function ($query, $filterOrganization) {
-             return $query->whereHas('user.organization', function ($query) use ($filterOrganization) {
-                 $query->where('id', $filterOrganization);
-             });
-         })
-         ->when($filterCourse, function ($query, $filterCourse) {
-             return $query->whereHas('user.course', function ($query) use ($filterCourse) {
-                 $query->where('id', $filterCourse);
-             });
-         })
-         ->when($filterYear, function ($query, $filterYear) {
-             return $query->whereHas('user.year', function ($query) use ($filterYear) {
-                 $query->where('id', $filterYear);
-             });
-         })
-         ->when($filterActivity, function ($query, $filterActivity) {
-             return $query->where('activity_id', $filterActivity);
-         });
+        // Query with filters
+        $attendancesQuery = Attendance::with('user', 'activity')
+            ->when($searchName, function ($query, $searchName) {
+                return $query->whereHas('user', function ($query) use ($searchName) {
+                    $query->where('name', 'like', '%' . $searchName . '%');
+                });
+            })
+            ->when($searchSchoolId, function ($query, $searchSchoolId) {
+                return $query->whereHas('user', function ($query) use ($searchSchoolId) {
+                    $query->where('school_id', 'like', '%' . $searchSchoolId . '%');
+                });
+            })
+            ->when($filterOrganization, function ($query, $filterOrganization) {
+                return $query->whereHas('user.organization', function ($query) use ($filterOrganization) {
+                    $query->where('id', $filterOrganization);
+                });
+            })
+            ->when($filterCourse, function ($query, $filterCourse) {
+                return $query->whereHas('user.course', function ($query) use ($filterCourse) {
+                    $query->where('id', $filterCourse);
+                });
+            })
+            ->when($filterYear, function ($query, $filterYear) {
+                return $query->whereHas('user.year', function ($query) use ($filterYear) {
+                    $query->where('id', $filterYear);
+                });
+            })
+            ->when($filterActivity, function ($query, $filterActivity) {
+                return $query->where('activity_id', $filterActivity);
+            });
 
-     // Paginate the results
-     $attendances = $query->paginate(10);
+        // Paginate the filtered attendances
+        $attendances = $attendancesQuery->paginate(10);
 
-     // Fetch all organizations, courses, years, and activities for filtering options
-     $organizations = Organization::all();
-     $courses = Course::all();
-     $years = Year::all();
-     $activities = Activity::all();
+        // Fetch all organizations, courses, years, and activities for filtering options
+        $organizations = Organization::all();
+        $courses = Course::all();
+        $years = Year::all();
+        $activities = Activity::all();
 
-     return view('officer.attendance.index', compact('attendances', 'organizations', 'courses', 'years', 'activities'));
-     }
-
-
+        return view('officer.attendance.index', compact('attendances', 'organizations', 'courses', 'years', 'activities', 'filterActivity'));
+    }
 
 
     public function create()
@@ -81,18 +80,14 @@ class AttendanceController extends Controller
         public function store(Request $request)
         {
             $request->validate([
-                'student_id' => 'required|exists:users,id', // Check if the student exists
+                'student_id' => 'required|exists:users,id',
                 'activity_id' => 'required|exists:activities,id',
                 'time_in' => 'nullable|date_format:H:i',
                 'time_out' => 'nullable|date_format:H:i',
             ]);
 
             // Determine the status based on time_in and time_out
-            if ($request->time_in && $request->time_out) {
-                $status = 'Present';
-            } else {
-                $status = 'Absent';
-            }
+            $status = $request->time_in && $request->time_out ? 'Present' : 'Absent';
 
             // Create the attendance record
             Attendance::create([
@@ -104,7 +99,8 @@ class AttendanceController extends Controller
             ]);
 
             // Redirect with a success message
-            return redirect()->route('attendance.index')->with('success', 'Attendance record added successfully.');
+            return redirect()->route('attendance.index', ['filter_activity' => $request->activity_id])
+                ->with('success', 'Attendance record added successfully.');
         }
 
 
@@ -132,45 +128,36 @@ class AttendanceController extends Controller
      */
     public function update(Request $request, $id)
     {
-       // Validate the request data
-    $request->validate([
-        'student_id' => 'required|exists:users,id', // Check if the student exists
-        'activity_id' => 'required|exists:activities,id',
-        'time_in' => 'nullable|date_format:H:i',
-        'time_out' => 'nullable|date_format:H:i',
-    ]);
+        // Find the attendance record
+        $attendance = Attendance::findOrFail($id);
 
-    $attendance = Attendance::findOrFail($id);
+        // Validate the request
+        $request->validate([
+            'edit_type' => 'required|in:time_in,time_out',
+            'time_value' => 'nullable|date_format:H:i',
+        ]);
 
-    // Determine the status based on time_in and time_out
-    if ($request->has('time_in') && $request->has('time_out')) {
-        $status = 'Present';
-    } else {
-        $status = 'Absent';
+        // Determine which field to update
+        $editType = $request->input('edit_type');
+        $timeValue = $request->input('time_value');
+
+        // Update only the selected field
+        if ($editType === 'time_in') {
+            $attendance->time_in = $timeValue;
+        } elseif ($editType === 'time_out') {
+            $attendance->time_out = $timeValue;
+        }
+
+        // Update the status based on the presence of both time_in and time_out
+        $attendance->status = ($attendance->time_in && $attendance->time_out) ? 'Present' : 'Absent';
+
+        // Save the changes
+        $attendance->save();
+
+        // Redirect with success message
+        return redirect()->route('attendance.index', ['filter_activity' => $attendance->activity_id])
+                         ->with('success', 'Attendance record updated successfully.');
     }
-
-    // Update the attendance record
-    $attendance->update([
-        'student_id' => $request->student_id,
-        'activity_id' => $request->activity_id,
-        'time_in' => $request->time_in,
-        'time_out' => $request->time_out,
-        'status' => $status,
-    ]);
-
-    // Redirect with a success message
-    return redirect()->route('attendance.index')->with('success', 'Attendance record updated successfully.');
-}
-
-
-    public function destroy(Attendance $attendance)
-    {
-        $attendance->delete();
-
-        return redirect()->route('attendance.index')->with('success', 'Attendance deleted successfully.');
-    }
-
-
 
 
     public function markAttendance(Request $request)
