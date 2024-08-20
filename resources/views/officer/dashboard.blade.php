@@ -91,7 +91,7 @@
 
                             <!-- Program Counts Chart -->
                             <div class="flex-1 min-w-[300px] max-w-[400px]" style="height: 300px;">
-                                <h3 class="text-xl font-semibold mb-2">Program Counts</h3>
+                                <h3 class="text-xl font-semibold mb-2">Course Counts</h3>
                                 <canvas id="programBarChart" style="width: 100%; height: 100%;"></canvas>
                             </div>
 

@@ -17,55 +17,42 @@
     <link rel="stylesheet" href="{{ asset('css/layout.css') }}">
 
     <style>
-        /* Fixed navigation bar */
-        .fixed-header {
-            position: fixed;
-            top: 0;
-            left: 0;
-            right: 0;
-            height: 64px; /* Adjust as needed */
-            z-index: 1000;
-        }
-
-        /* Fixed sidebar below the navigation bar */
+        /* Ensure the sidebar is properly sized */
         .fixed-sidebar {
             position: fixed;
-            top: 64px; /* Adjust to the height of the fixed header */
+            top: 64px; /* Same as before */
             left: 0;
-            width: 240px; /* Adjust as needed */
-            height: calc(100vh - 64px); /* Full height minus header height */
+            width: 240px; /* Ensure this is consistent */
+            height: calc(100vh - 64px); /* Same as before */
             background-color: white;
             border-right: 1px solid #ddd;
             z-index: 999;
+            box-sizing: border-box; /* Ensure padding/border don't affect width */
         }
 
-        /* Content wrapper adjusts for header and sidebar */
+        /* Ensure the content wrapper is correctly positioned */
         .content-wrapper {
-            margin-top: 64px; /* Adjust to the height of the fixed header */
-            margin-left: 240px; /* Adjust to the width of the fixed sidebar */
+            margin-top: 64px; /* Same as before */
+            margin-left: 240px; /* Ensure this matches the sidebar width */
             display: flex;
             flex-direction: column;
-            height: calc(100vh - 64px); /* Full height minus header height */
+            height: calc(100vh - 64px); /* Same as before */
+            box-sizing: border-box; /* Ensure padding/border don't affect layout */
         }
 
-        /* Ensure the content does not overlap */
-        .main-content {
-            flex: 1;
-            overflow-y: auto;
-            background-color: white;
-        }
-
+        /* Handle smaller screen sizes */
         @media (max-width: 768px) {
             .fixed-sidebar {
-                width: 100%;
-                height: auto;
-                top: 64px; /* Adjust to the height of the fixed header */
+                width: 100%; /* Sidebar becomes full width */
+                height: auto; /* Sidebar adjusts its height */
             }
 
             .content-wrapper {
-                margin-left: 0;
+                margin-left: 0; /* No margin for small screens */
+                margin-top: auto; /* Adjust margin-top to fit */
             }
         }
+
     </style>
 </head>
 <body class="font-sans antialiased">
