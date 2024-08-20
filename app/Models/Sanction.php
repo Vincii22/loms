@@ -22,6 +22,11 @@ class Sanction extends Model
         return $this->belongsTo(User::class, 'student_id');
     }
 
+    public function activity()
+{
+    return $this->belongsTo(Activity::class);
+}
+
     public function fee()
 {
     return $this->belongsTo(Fees::class, 'fee_id');

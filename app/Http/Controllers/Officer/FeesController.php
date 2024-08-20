@@ -3,6 +3,8 @@
 namespace App\Http\Controllers\Officer;
 
 use App\Models\Fees;
+use App\Models\Finance;
+use App\Models\User;
 use App\Models\Semester;
 use Illuminate\Http\Request;
 use App\Http\Controllers\Controller;
@@ -39,9 +41,20 @@ class FeesController extends Controller
             'school_year' => 'nullable|string|max:255',
         ]);
 
-        Fees::create($request->all());
+        $fee = Fees::create($request->all());
 
-        return redirect()->route('fees.index')->with('success', 'Fee created successfully.');
+        // Create finance entries for all students with the new fee
+        $students = User::all(); // Get all students
+        foreach ($students as $student) {
+            Finance::create([
+                'user_id' => $student->id,
+                'fee_id' => $fee->id,
+                'default_amount' => $fee->default_amount,
+                'status' => 'Not Paid', // Default status
+            ]);
+        }
+
+        return redirect()->route('fees.index')->with('success', 'Fee created successfully and all students have been assigned the fee.');
     }
 
     /**

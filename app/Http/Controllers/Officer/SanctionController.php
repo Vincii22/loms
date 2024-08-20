@@ -23,6 +23,7 @@ class SanctionController extends Controller
         $filterOrganization = $request->input('filter_organization');
         $filterCourse = $request->input('filter_course');
         $filterYear = $request->input('filter_year');
+        $filterType = $request->input('filter_type'); // New filter
 
         // Log request inputs
         Debugbar::info($request->all());
@@ -53,7 +54,10 @@ class SanctionController extends Controller
                     $query->where('id', $filterYear);
                 });
             })
-            ->paginate(5);
+            ->when($filterType, function ($query, $filterType) {
+                return $query->where('type', $filterType);
+            })
+            ->paginate();
 
         // Log the query and results
         Debugbar::info($sanctions);
@@ -67,6 +71,7 @@ class SanctionController extends Controller
         Debugbar::info($organizations);
         Debugbar::info($courses);
         Debugbar::info($years);
+
         $this->checkSanctions();
         return view('officer.sanctions.index', compact('sanctions', 'organizations', 'courses', 'years'));
     }
