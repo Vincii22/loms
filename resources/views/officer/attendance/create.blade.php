@@ -19,7 +19,7 @@
             <div class="mb-4">
                 <label for="student_id" class="block text-sm font-medium text-gray-700">Student</label>
                 <select name="student_id" id="student_id" class="mt-1 block w-full">
-                    @foreach($students as $user) <!-- Fetch users instead of students -->
+                    @foreach($students as $user)
                         <option value="{{ $user->id }}">{{ $user->name }}</option>
                     @endforeach
                 </select>
@@ -32,7 +32,7 @@
                 <label for="activity_id" class="form-label">Activity</label>
                 <select name="activity_id" id="activity_id" class="form-control" required>
                     @foreach($activities as $activity)
-                        <option value="{{ $activity->id }}">{{ $activity->name }}</option>
+                        <option value="{{ $activity->id }}" {{ request('activity') == $activity->id ? 'selected' : '' }}>{{ $activity->name }}</option>
                     @endforeach
                 </select>
             </div>
@@ -50,8 +50,6 @@
             <button type="submit" class="btn btn-primary">Add Attendance</button>
             <a href="{{ route('attendance.index') }}" class="btn btn-secondary">Back</a>
         </form>
-
-
     </div>
     @endsection
 </x-officer-app-layout>

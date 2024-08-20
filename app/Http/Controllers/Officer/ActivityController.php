@@ -5,6 +5,7 @@ namespace App\Http\Controllers\Officer;
 use App\Http\Controllers\Controller;
 use App\Models\Activity;
 use App\Models\Semester;
+use App\Models\User;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Storage;
 class ActivityController extends Controller
@@ -50,9 +51,21 @@ class ActivityController extends Controller
             $data['image'] = basename($imagePath);
         }
 
-        Activity::create($data);
+        // Create the new activity
+        $activity = Activity::create($data);
 
-        return redirect()->route('activities.index')->with('success', 'Activity created successfully.');
+        // Fetch all students
+        $students = User::all();
+
+        // Create attendance records with "Absent" status
+        foreach ($students as $student) {
+            $activity->attendances()->create([
+                'student_id' => $student->id,
+                'status' => 'Absent',
+            ]);
+        }
+
+        return redirect()->route('activities.index')->with('success', 'Activity created successfully with default attendance records.');
     }
 
     /**
