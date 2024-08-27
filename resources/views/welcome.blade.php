@@ -32,8 +32,8 @@
 
 
         <!-- Right Side: Login -->
-        <div class="bg-[#5C0E0F] text-white p-8 lg:ml-4 rounded-3xl h-[63%] w-[45%] md:w-[60%] lg:w-[30%] flex items-center justify-center mr-20"> <!-- Added margin-right -->
-            <div class="space-y-6">
+        <div class="bg-[#5C0E0F] text-white p-8 lg:ml-4 rounded-3xl relative h-[63%] w-[45%] md:w-[60%] lg:w-[30%] flex items-center justify-center mr-20"> <!-- Added margin-right -->
+            <div class="space-y-6 w-full">
                 <h1 class="text-3xl font-bold mb-6 text-center">Login</h1>
                 @if (Route::has('login'))
                 <nav class="space-y-4 text-center">

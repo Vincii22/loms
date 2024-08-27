@@ -17,7 +17,9 @@
         <div class="flex-1 overflow-auto p-4" style="background-color: #5C0E0F; color: white; height: 65%;">
             <nav>
                 <ul class="space-y-4">
-                    <li><a href="{{ route('dashboard') }}" class="hover:text-gray-300">Dashboard</a></li>
+                    <li><a href="{{ route('admin.dashboard') }}" class="hover:text-gray-300">Dashboard</a></li>
+                    <li><a href="{{ route('students.index') }}" class="hover:text-gray-300">Students</a></li>
+                    <li><a href="{{ route('officers.index') }}" class="hover:text-gray-300">Officers</a></li>
                     <li><a href="{{ route('finance.index') }}" class="hover:text-gray-300">Attendance</a></li>
                     <li><a href="{{ route('finance.index') }}" class="hover:text-gray-300">Finance</a></li>
                     <li><a href="{{ route('finance.index') }}" class="hover:text-gray-300">Sanction</a></li>

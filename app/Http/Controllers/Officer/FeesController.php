@@ -5,9 +5,11 @@ namespace App\Http\Controllers\Officer;
 use App\Models\Fees;
 use App\Models\Finance;
 use App\Models\User;
+use App\Models\Sanction;
 use App\Models\Semester;
 use Illuminate\Http\Request;
 use App\Http\Controllers\Controller;
+use Illuminate\Support\Facades\Log;
 
 class FeesController extends Controller
 {
@@ -88,7 +90,22 @@ class FeesController extends Controller
      */
     public function destroy(Fees $fee)
     {
+        // Log the fee being deleted
+        Log::info('Deleting Fee ID: ' . $fee->id);
+
+        // Fetch and delete related sanctions
+        $deletedSanctionsCount = Sanction::where('type', 'LIKE', 'Unpaid Fees%')
+            ->whereHas('student.finances', function ($query) use ($fee) {
+                $query->where('fee_id', $fee->id);
+            })
+            ->delete();
+
+        Log::info('Number of sanctions deleted: ' . $deletedSanctionsCount);
+
+        // Delete the fee
         $fee->delete();
-        return redirect()->route('fees.index')->with('success', 'Fee deleted successfully.');
+
+        return redirect()->route('fees.index')->with('success', 'Fee and related sanctions deleted successfully.');
     }
+
 }

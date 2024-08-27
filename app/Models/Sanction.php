@@ -11,7 +11,6 @@ class Sanction extends Model
     protected $fillable = [
         'student_id',
         'type',
-        'description',
         'fine_amount',
         'required_action',
         'resolved',
@@ -35,5 +34,10 @@ class Sanction extends Model
 public function attendance()
 {
     return $this->belongsTo(Attendance::class, 'attendance_id');
+}
+
+public function finance()
+{
+    return $this->belongsTo(Finance::class, 'student_id', 'user_id');
 }
 }

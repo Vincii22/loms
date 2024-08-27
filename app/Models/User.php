@@ -76,15 +76,26 @@ public static function boot()
 
 public function updateClearanceStatus()
 {
-    // Check if the user has any sanctions
-    if ($this->sanctions()->exists()) {
-        // Update the clearance status to 'not eligible'
-        $this->clearance()->update(['status' => 'not eligible']);
+    // Check if the user has any unresolved sanctions
+    $hasUnresolvedSanctions = $this->sanctions()->where('resolved', false)->exists();
+
+    if ($hasUnresolvedSanctions) {
+        // If there are unresolved sanctions, set the status to 'not eligible'
+        if ($this->clearance) {
+            $this->clearance->update(['status' => 'not eligible']);
+        } else {
+            $this->clearance()->create(['status' => 'not eligible']);
+        }
     } else {
-        // Otherwise, set the status to 'eligible'
-        $this->clearance()->update(['status' => 'eligible']);
+        // If there are no unresolved sanctions, set the status to 'eligible'
+        if ($this->clearance) {
+            $this->clearance->update(['status' => 'eligible']);
+        } else {
+            $this->clearance()->create(['status' => 'eligible']);
+        }
     }
 }
+
 
 
     /**

@@ -30,45 +30,6 @@
                     <label for="search_school_id" class="block text-sm font-medium text-gray-700">Search by School ID</label>
                     <input type="text" name="search_school_id" id="search_school_id" placeholder="Search by school ID" value="{{ request('search_school_id') }}" class="form-input mt-1 block w-full rounded-md border-gray-300 shadow-sm focus:border-indigo-500 focus:ring-indigo-500 sm:text-sm">
                 </div>
-
-                <!-- Select Organization -->
-                <div class="w-full md:w-1/2 lg:w-1/4 px-2 mb-4">
-                    <label for="filter_organization" class="block text-sm font-medium text-gray-700">Select Organization</label>
-                    <select name="filter_organization" id="filter_organization" class="form-select mt-1 block w-full rounded-md border-gray-300 shadow-sm focus:border-indigo-500 focus:ring-indigo-500 sm:text-sm">
-                        <option value="">Select Organization</option>
-                        @foreach($organizations as $organization)
-                            <option value="{{ $organization->id }}" {{ request('filter_organization') == $organization->id ? 'selected' : '' }}>
-                                {{ $organization->name }}
-                            </option>
-                        @endforeach
-                    </select>
-                </div>
-
-                <!-- Select Course -->
-                <div class="w-full md:w-1/2 lg:w-1/4 px-2 mb-4">
-                    <label for="filter_course" class="block text-sm font-medium text-gray-700">Select Course</label>
-                    <select name="filter_course" id="filter_course" class="form-select mt-1 block w-full rounded-md border-gray-300 shadow-sm focus:border-indigo-500 focus:ring-indigo-500 sm:text-sm">
-                        <option value="">Select Course</option>
-                        @foreach($courses as $course)
-                            <option value="{{ $course->id }}" {{ request('filter_course') == $course->id ? 'selected' : '' }}>
-                                {{ $course->name }}
-                            </option>
-                        @endforeach
-                    </select>
-                </div>
-
-                <!-- Select Year -->
-                <div class="w-full md:w-1/2 lg:w-1/4 px-2 mb-4">
-                    <label for="filter_year" class="block text-sm font-medium text-gray-700">Select Year</label>
-                    <select name="filter_year" id="filter_year" class="form-select mt-1 block w-full rounded-md border-gray-300 shadow-sm focus:border-indigo-500 focus:ring-indigo-500 sm:text-sm">
-                        <option value="">Select Year</option>
-                        @foreach($years as $year)
-                            <option value="{{ $year->id }}" {{ request('filter_year') == $year->id ? 'selected' : '' }}>
-                                {{ $year->year }}
-                            </option>
-                        @endforeach
-                    </select>
-                </div>
             </div>
 
             <button type="submit" class="bg-[#5C0E0F] text-white px-4 py-2 rounded-md hover:bg-[#470A0B] mt-4">Filter</button>

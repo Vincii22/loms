@@ -1,6 +1,7 @@
 <?php
 use App\Http\Controllers\Admin\StudentController;
 use App\Http\Controllers\Admin\OfficerController;
+use App\Http\Controllers\Officer\ReportsController;
 use App\Http\Controllers\StudentAttendanceController;
 use App\Http\Controllers\Officer\ActivityController;
 use App\Http\Controllers\Officer\AttendanceController;
@@ -45,17 +46,26 @@ Route::prefix('admin')->middleware('auth:admin')->group(function () {
 Route::prefix('officer')->middleware('auth:officer')->group(function () {
     Route::resource('students', StudentsController::class);
     Route::resource('finances', FinanceController::class);
+    Route::post('/finances/update-payment-status', [FinanceController::class, 'updatePaymentStatus'])->name('finances.updatePaymentStatus');
     Route::resource('fees', FeesController::class);
     Route::resource('attendance', AttendanceController::class);
+    Route::get('/attendance/mark-by-barcode', [AttendanceController::class, 'markAttendanceByBarcode'])->name('attendance.mark');
+    Route::post('/attendance/confirm', [AttendanceController::class, 'confirmAttendance'])->name('attendance.confirm');
     Route::resource('activities', ActivityController::class);
     Route::resource('sanctions', SanctionController::class);
     Route::resource('clearances', ClearanceController::class);
     Route::resource('audit', AuditController::class);
 });
 
+Route::get('officer/reports/attendance', [ReportsController::class, 'attendanceReport'])->name('reports.attendance');
+Route::get('officer/reports/finance', [ReportsController::class, 'financeReport'])->name('reports.finance');
+Route::get('officer/reports/sanction', [ReportsController::class, 'sanctionReport'])->name('reports.sanction');
+Route::get('officer/reports/clearance', [ReportsController::class, 'clearanceReport'])->name('reports.clearance');
+Route::get('officer/reports/student', [ReportsController::class, 'studentReport'])->name('reports.student');
+
+
 Route::get('/officer/dashboard', [DashboardController::class, 'index'])->name('officer.dashboard');
-
-
+Route::post('/finances/update-payment-status', [FinanceController::class, 'updatePaymentStatus'])->name('finances.updatePaymentStatus')->middleware('auth:officer');
 require __DIR__.'/auth.php';
 require __DIR__.'/admin-auth.php';
 require __DIR__.'/officer-auth.php';

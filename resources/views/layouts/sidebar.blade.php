@@ -21,9 +21,6 @@
                     <li><a href="{{ route('finance.index') }}" class="hover:text-gray-300">Finance</a></li>
                     <li><a href="{{ route('finance.index') }}" class="hover:text-gray-300">Sanction</a></li>
                     <li><a href="{{ route('finance.index') }}" class="hover:text-gray-300">Clearance</a></li>
-                    <li><a href="{{ route('finance.index') }}" class="hover:text-gray-300">Profile</a></li>
-                    <li><a href="{{ route('dashboard') }}" class="hover:text-gray-300">Settings</a></li>
-                    <li><a href="{{ route('dashboard') }}" class="hover:text-gray-300">Logout</a></li>
                 </ul>
             </nav>
         </div>
@@ -64,9 +61,7 @@
                 <li><a href="{{ route('finance.index') }}" class="hover:text-gray-300">Finance</a></li>
                 <li><a href="{{ route('finance.index') }}" class="hover:text-gray-300">Sanction</a></li>
                 <li><a href="{{ route('finance.index') }}" class="hover:text-gray-300">Clearance</a></li>
-                <li><a href="{{ route('finance.index') }}" class="hover:text-gray-300">Profile</a></li>
-                <li><a href="{{ route('dashboard') }}" class="hover:text-gray-300">Settings</a></li>
-                <li><a href="{{ route('dashboard') }}" class="hover:text-gray-300">Logout</a></li>
+
             </ul>
         </nav>
     </div>

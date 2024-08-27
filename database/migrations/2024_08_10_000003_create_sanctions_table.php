@@ -18,7 +18,6 @@ return new class extends Migration
             $table->unsignedBigInteger('attendance_id')->nullable();
 
             $table->string('type'); // Example: 'attendance', 'finance'
-            $table->text('description');
             $table->decimal('fine_amount', 8, 2)->nullable(); // Fine amount, nullable if there's no fine
             $table->text('required_action')->nullable(); // Required action to resolve the sanction
             $table->boolean('resolved')->default(false);

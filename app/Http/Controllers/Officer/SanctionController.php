@@ -26,7 +26,6 @@ class SanctionController extends Controller
         $filterType = $request->input('filter_type'); // New filter
 
         // Log request inputs
-        Debugbar::info($request->all());
 
         $sanctions = Sanction::with('student.organization', 'student.course', 'student.year')
             ->when($searchName, function ($query, $searchName) {
@@ -60,7 +59,6 @@ class SanctionController extends Controller
             ->paginate();
 
         // Log the query and results
-        Debugbar::info($sanctions);
 
         // Fetch all organizations, courses, and years for filtering options
         $organizations = Organization::all();
@@ -68,9 +66,7 @@ class SanctionController extends Controller
         $years = Year::all();
 
         // Log fetched data
-        Debugbar::info($organizations);
-        Debugbar::info($courses);
-        Debugbar::info($years);
+
 
         $this->checkSanctions();
         return view('officer.sanctions.index', compact('sanctions', 'organizations', 'courses', 'years'));
@@ -89,16 +85,16 @@ class SanctionController extends Controller
         $request->validate([
             'fine_amount' => 'nullable|numeric|min:0',
             'required_action' => 'nullable|string|max:255',
-            'resolved' => 'nullable|boolean', // This ensures 'resolved' is either true or false
+            'resolved' => 'nullable|boolean',
         ]);
 
         $sanction->update([
             'fine_amount' => $request->input('fine_amount'),
             'required_action' => $request->input('required_action'),
-            'resolved' => $request->has('resolved') ? true : false, // Ensure resolved is either true or false
+            'resolved' => $request->has('resolved') ? true : false,
         ]);
 
-        // Update user's clearance status based on sanctions
+        // Update clearance status after sanction update
         $user = $sanction->student;
         $user->updateClearanceStatus();
 
@@ -117,69 +113,79 @@ class SanctionController extends Controller
         Log::info('Running checkSanctions...');
 
         // Check for unpaid fees and create sanctions
-        $studentsWithUnpaidFees = User::whereHas('finances', function ($query) {
+        User::whereHas('finances', function ($query) {
             $query->where('status', 'Not Paid');
-        })->get();
+        })->chunk(100, function ($students) {
+            foreach ($students as $student) {
+                $unpaidFees = $student->finances->where('status', 'Not Paid');
 
-        foreach ($studentsWithUnpaidFees as $student) {
-            $unpaidFees = $student->finances->where('status', 'Not Paid');
+                foreach ($unpaidFees as $fee) {
+                    $feeName = optional($fee->fee)->name ?? 'Unknown Fee';
 
-            foreach ($unpaidFees as $fee) {
-                $feeName = optional($fee->fee)->name ?? 'Unknown Fee';
+                    // Check if a sanction for this fee already exists
+                    $existingSanction = Sanction::where([
+                        ['student_id', $student->id],
+                        ['type', "Unpaid Fees - $feeName"]
+                    ])->first();
 
-                Sanction::firstOrCreate([
-                    'student_id' => $student->id,
-                    'type' => "Unpaid Fees - $feeName",
-                    'description' => "Unpaid $feeName for the current term",
-                    'fine_amount' => 100,
-                    'resolved' => false,
-                ]);
+                    if (!$existingSanction) {
+                        Sanction::create([
+                            'student_id' => $student->id,
+                            'type' => "Unpaid Fees - $feeName",
+                            'fine_amount' => 100,
+                            'resolved' => false,
+                        ]);
 
-                // Ensure the clearance record exists
-                if ($student->clearance) {
-                    $student->clearance->status = 'not eligible';
-                    $student->clearance->save();
-                } else {
-                    $student->clearance()->create(['status' => 'not eligible']);
-                }
-            }
-        }
-
-        // Check for absences and create sanctions
-        $studentsAbsent = User::whereHas('attendances', function ($query) {
-            $query->where('status', 'absent');
-        })->get();
-
-        foreach ($studentsAbsent as $student) {
-            $attendance = $student->attendances()->latest()->first();
-
-            if ($attendance) {
-                $activityName = optional($attendance->activity)->name ?? 'Unknown Activity';
-
-                $existingSanction = Sanction::where([
-                    ['student_id', $student->id],
-                    ['type', "Absence from $activityName"]
-                ])->first();
-
-                if (!$existingSanction) {
-                    Sanction::create([
-                        'student_id' => $student->id,
-                        'type' => "Absence from $activityName",
-                        'description' => 'Absent from mandatory activity',
-                        'fine_amount' => 50,
-                        'resolved' => false,
-                    ]);
-
-                    // Ensure the clearance record exists
-                    if ($student->clearance) {
-                        $student->clearance->status = 'not eligible';
-                        $student->clearance->save();
-                    } else {
-                        $student->clearance()->create(['status' => 'not eligible']);
+                        // Ensure the clearance record exists
+                        $clearance = $student->clearance()->first();
+                        if ($clearance) {
+                            $clearance->status = 'not eligible';
+                            $clearance->save();
+                        } else {
+                            $student->clearance()->create(['status' => 'not eligible']);
+                        }
                     }
                 }
             }
-        }
+        });
+
+        // Check for absences and create sanctions
+        User::whereHas('attendances', function ($query) {
+            $query->where('status', 'absent');
+        })->chunk(100, function ($studentsAbsent) {
+            foreach ($studentsAbsent as $student) {
+                $attendance = $student->attendances()->latest()->first();
+
+                if ($attendance) {
+                    $activityName = optional($attendance->activity)->name ?? 'Unknown Activity';
+
+                    $existingSanction = Sanction::where([
+                        ['student_id', $student->id],
+                        ['type', "Absence from $activityName"]
+                    ])->first();
+
+                    if (!$existingSanction) {
+                        Sanction::create([
+                            'student_id' => $student->id,
+                            'type' => "Absence from $activityName",
+                            'description' => 'Absent from mandatory activity',
+                            'fine_amount' => 50,
+                            'resolved' => false,
+                        ]);
+
+                        // Ensure the clearance record exists
+                        $clearance = $student->clearance()->first();
+                        if ($clearance) {
+                            $clearance->status = 'not eligible';
+                            $clearance->save();
+                        } else {
+                            $student->clearance()->create(['status' => 'not eligible']);
+                        }
+                    }
+                }
+            }
+        });
     }
+
 
 }
