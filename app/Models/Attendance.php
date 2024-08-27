@@ -4,7 +4,7 @@ namespace App\Models;
 
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
-
+use Illuminate\Support\Facades\Log;
 class Attendance extends Model
 {
 
@@ -41,4 +41,19 @@ class Attendance extends Model
             }
         });
     }
+
+    public function removeSanctionsIfPresent()
+    {
+        Log::info("Removing sanctions for student ID: {$this->student_id} with status: {$this->status}");
+
+        if ($this->status === 'Present') {
+            $deleted = Sanction::where('student_id', $this->student_id)
+                ->where('type', 'LIKE', 'Absence from%')
+                ->delete();
+
+            Log::info("Sanctions removed for student ID: {$this->student_id}. Records deleted: {$deleted}");
+        }
+    }
 }
+
+

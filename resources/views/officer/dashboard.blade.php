@@ -7,29 +7,24 @@
             </h2>
 
             <!-- Filter Form -->
-            <div class="mt-4 flex space-x-4">
+            <div class="mt-4 flex space-x-4 items-center">
                 <form method="GET" action="{{ route('officer.dashboard') }}" class="flex items-center space-x-4">
-                    <!-- Semester Dropdown -->
-                    <select name="semester" class="bg-gray-100 border border-gray-300 rounded-md py-2 px-4">
-                        <option value="" disabled selected>Select Semester</option>
-                        <!-- Replace these options with your actual semesters -->
-                        <option value="1">Semester 1</option>
-                        <option value="2">Semester 2</option>
-                    </select>
+                    <!-- Student Name Input -->
+                    <input type="text" name="search_name" placeholder="Search by Student Name" class="bg-gray-100 border border-gray-300 rounded-md py-2 px-4">
 
-                    <!-- Year Dropdown -->
-                    <select name="year" class="bg-gray-100 border border-gray-300 rounded-md py-2 px-4">
-                        <option value="" disabled selected>Select Year</option>
-                        <!-- Replace these options with your actual years -->
-                        <option value="2024">2024</option>
-                        <option value="2023">2023</option>
-                    </select>
+                    <!-- School ID Input -->
+                    <input type="text" name="search_school_id" placeholder="Search by School ID" class="bg-gray-100 border border-gray-300 rounded-md py-2 px-4">
 
                     <!-- Submit Button -->
                     <button type="submit" class="bg-blue-500 text-white py-2 px-4 rounded-md hover:bg-blue-600">
-                        Filter
+                        Search
                     </button>
                 </form>
+
+                <!-- Scan ID Button -->
+                <button onclick="scanID()" class="ml-4 bg-green-500 text-white py-2 px-4 rounded-md hover:bg-green-600">
+                    Scan ID
+                </button>
             </div>
         </div>
     </x-slot>
@@ -55,8 +50,8 @@
                     <!-- Container for Total Activities, Total Fees, and Total Students -->
                     <div class="border border-gray-300 rounded-md p-4 mb-6">
                         <div class="flex gap-6 mb-6">
-                              <!-- Total Students -->
-                              <div class="flex-1 border border-[#5C0E0F] rounded-md p-4">
+                            <!-- Total Students -->
+                            <div class="flex-1 border border-[#5C0E0F] rounded-md p-4">
                                 <h3 class="text-xl font-semibold mb-2">Total Students</h3>
                                 <p class="text-lg">{{ $totalStudents }}</p>
                             </div>
@@ -72,14 +67,14 @@
                                 <h3 class="text-xl font-semibold mb-2">Total Fees</h3>
                                 <p class="text-lg">{{ $totalFees }}</p>
                             </div>
-
-
                         </div>
                     </div>
+
                     <!-- Link to Fees -->
                     <a href="{{ route('students.index') }}" class="text-blue-500 hover:text-blue-700 text-lg font-semibold">
                         View All Students
                     </a>
+
                     <!-- Container for Charts -->
                     <div class="border border-gray-300 rounded-md p-4 mb-6">
                         <div class="flex flex-wrap justify-between gap-6">
@@ -104,7 +99,6 @@
                     </div>
 
                     <!-- Link to Sanctions -->
-
                     <div class="flex justify-between mb-6">
                         <a href="{{ route('sanctions.index') }}" class="text-blue-500 hover:text-blue-700 text-lg font-semibold">
                             View All Sanctions
@@ -115,27 +109,26 @@
                         </a>
                     </div>
 
-                 <!-- Container for Total Sanctions and Clearance Status -->
-                 <div class="border border-gray-300 rounded-md p-4 mb-6">
-                    <div class="flex gap-6">
-                        <!-- Total Sanctions -->
-                        <div class="flex-1 border border-[#5C0E0F] rounded-md p-4">
-                            <h3 class="text-xl font-semibold mb-2">Total Sanctions</h3>
-                            <p class="text-lg">{{ $totalSanctions }}</p>
-                        </div>
+                    <!-- Container for Total Sanctions and Clearance Status -->
+                    <div class="border border-gray-300 rounded-md p-4 mb-6">
+                        <div class="flex gap-6">
+                            <!-- Total Sanctions -->
+                            <div class="flex-1 border border-[#5C0E0F] rounded-md p-4">
+                                <h3 class="text-xl font-semibold mb-2">Total Sanctions</h3>
+                                <p class="text-lg">{{ $totalSanctions }}</p>
+                            </div>
 
-                        <!-- Total Clearance -->
-                        <div class="flex-1 border border-[#5C0E0F] rounded-md p-4">
-
-                            <h3 class="text-xl font-semibold mb-2">Clearance Status</h3>
-                            <ul class="list-disc pl-5">
-                                <li>Eligible: {{ $eligibleCount }}</li>
-                                <li>Not Eligible: {{ $notEligibleCount }}</li>
-                                <li>Cleared: {{ $clearedCount }}</li>
-                            </ul>
+                            <!-- Total Clearance -->
+                            <div class="flex-1 border border-[#5C0E0F] rounded-md p-4">
+                                <h3 class="text-xl font-semibold mb-2">Clearance Status</h3>
+                                <ul class="list-disc pl-5">
+                                    <li>Eligible: {{ $eligibleCount }}</li>
+                                    <li>Not Eligible: {{ $notEligibleCount }}</li>
+                                    <li>Cleared: {{ $clearedCount }}</li>
+                                </ul>
+                            </div>
                         </div>
                     </div>
-                </div>
 
                 </div>
             </div>
@@ -145,6 +138,11 @@
     <!-- Include Chart.js -->
     <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
     <script>
+        function scanID() {
+            // Implement scan ID functionality here
+            alert('Scan ID button clicked');
+        }
+
         document.addEventListener('DOMContentLoaded', function () {
             const ctxOrgBar = document.getElementById('organizationBarChart').getContext('2d');
             const ctxProgBar = document.getElementById('programBarChart').getContext('2d');

@@ -12,21 +12,17 @@ use App\Models\User;
 use App\Models\Sanction;
 use Illuminate\Http\Request;
 use Carbon\Carbon;
+use Illuminate\Support\Facades\Log;
 use Illuminate\Support\Facades\DB;
+
 class AttendanceController extends Controller
 {
-
     public function index(Request $request)
     {
-        // Get filter inputs
         $searchName = $request->input('search_name');
         $searchSchoolId = $request->input('search_school_id');
-        $filterOrganization = $request->input('filter_organization');
-        $filterCourse = $request->input('filter_course');
-        $filterYear = $request->input('filter_year');
         $filterActivity = $request->input('filter_activity');
 
-        // Query with filters
         $attendancesQuery = Attendance::with('user', 'activity')
             ->when($searchName, function ($query, $searchName) {
                 return $query->whereHas('user', function ($query) use ($searchName) {
@@ -38,29 +34,12 @@ class AttendanceController extends Controller
                     $query->where('school_id', 'like', '%' . $searchSchoolId . '%');
                 });
             })
-            ->when($filterOrganization, function ($query, $filterOrganization) {
-                return $query->whereHas('user.organization', function ($query) use ($filterOrganization) {
-                    $query->where('id', $filterOrganization);
-                });
-            })
-            ->when($filterCourse, function ($query, $filterCourse) {
-                return $query->whereHas('user.course', function ($query) use ($filterCourse) {
-                    $query->where('id', $filterCourse);
-                });
-            })
-            ->when($filterYear, function ($query, $filterYear) {
-                return $query->whereHas('user.year', function ($query) use ($filterYear) {
-                    $query->where('id', $filterYear);
-                });
-            })
             ->when($filterActivity, function ($query, $filterActivity) {
                 return $query->where('activity_id', $filterActivity);
             });
 
-        // Paginate the filtered attendances
         $attendances = $attendancesQuery->paginate(10);
 
-        // Fetch all organizations, courses, years, and activities for filtering options
         $organizations = Organization::all();
         $courses = Course::all();
         $years = Year::all();
@@ -69,130 +48,162 @@ class AttendanceController extends Controller
         return view('officer.attendance.index', compact('attendances', 'organizations', 'courses', 'years', 'activities', 'filterActivity'));
     }
 
+    public function edit($id)
+{
+    // Fetch the attendance record by ID
+    $attendance = Attendance::findOrFail($id);
 
-    public function create()
-    {
-        $students = User::all();
-        $activities = Activity::all();
-        return view('officer.attendance.create', compact('students', 'activities'));
-  }
+    // Fetch other necessary data for the form
+    $students = User::all(); // Adjust according to your needs
+    $activities = Activity::all();
 
-        public function store(Request $request)
-        {
-            $request->validate([
-                'student_id' => 'required|exists:users,id',
-                'activity_id' => 'required|exists:activities,id',
-                'time_in' => 'nullable|date_format:H:i',
-                'time_out' => 'nullable|date_format:H:i',
-            ]);
+    return view('officer.attendance.edit', compact('attendance', 'students', 'activities'));
+}
 
-            // Determine the status based on time_in and time_out
-            $status = $request->time_in && $request->time_out ? 'Present' : 'Absent';
+public function update(Request $request, $id)
+{
+    // Validate the request
+    $request->validate([
+        'student_id' => 'required|exists:users,id',
+        'activity_id' => 'required|exists:activities,id',
+        'edit_type' => 'required|in:time_in,time_out',
+        'time_value' => 'required|date_format:H:i',
+    ]);
 
-            // Create the attendance record
-            Attendance::create([
-                'student_id' => $request->student_id,
-                'activity_id' => $request->activity_id,
-                'time_in' => $request->time_in,
-                'time_out' => $request->time_out,
-                'status' => $status,
-            ]);
+    // Find the attendance record by ID
+    $attendance = Attendance::findOrFail($id);
 
-            // Redirect with a success message
-            return redirect()->route('attendance.index', ['filter_activity' => $request->activity_id])
-                ->with('success', 'Attendance record added successfully.');
+    // Update attendance record based on the type
+    if ($request->edit_type === 'time_in') {
+        $attendance->time_in = $request->time_value;
+    } elseif ($request->edit_type === 'time_out') {
+        $attendance->time_out = $request->time_value;
+    }
+
+    // Update status
+    $attendance->status = ($attendance->time_in && $attendance->time_out) ? 'Present' : 'Absent';
+    $attendance->save();
+
+    return redirect()->route('attendance.index', ['filter_activity' => $attendance->activity_id])
+                     ->with('success', 'Attendance updated successfully.');
+}
+    public function show(Request $request)
+{
+    $scannedId = $request->input('scanned_id');
+
+    $user = User::where('school_id', $scannedId)
+        ->with('course', 'year', 'organization') // Eager load related models
+        ->first();
+
+    if (!$user) {
+        return response()->json(['message' => 'User not found'], 404);
+    }
+
+    return response()->json([
+        'user' => [
+            'name' => $user->name,
+            'image' => $user->image,
+            'course' => $user->course->name,
+            'year' => $user->year->name,
+            'organization' => $user->organization->name,
+            'school_id' => $user->school_id,
+        ]
+    ]);
+}
+
+public function markAttendanceByBarcode(Request $request)
+{
+    $scannedId = $request->input('scanned_id');
+    $filterActivity = $request->input('filter_activity');
+    $timeType = $request->input('time_type');
+
+    try {
+        if (!in_array($timeType, ['time_in', 'time_out'])) {
+            return response()->json(['message' => 'Invalid time type'], 400);
         }
 
+        $user = User::where('school_id', $scannedId)->first();
 
+        if (!$user) {
+            return response()->json(['message' => 'User not found'], 404);
+        }
 
-    /**
-     * Display the specified resource.
-     */
-    public function show(string $id)
-    {
-        //
-    }
+        $currentTime = Carbon::now('Asia/Manila')->format('H:i'); // Set the timezone here
 
-    /**
-     * Show the form for editing the specified resource.
-     */
-    public function edit(Attendance $attendance)
-    {
-        $students = User::all();
-        $activities = Activity::all();
-        return view('officer.attendance.edit', compact('attendance', 'students', 'activities'));
-    }
-
-    /**
-     * Update the specified resource in storage.
-     */
-    public function update(Request $request, $id)
-    {
-        // Find the attendance record
-        $attendance = Attendance::findOrFail($id);
-
-        // Validate the request
-        $request->validate([
-            'edit_type' => 'required|in:time_in,time_out',
-            'time_value' => 'nullable|date_format:H:i',
+        return response()->json([
+            'user' => [
+                'name' => $user->name,
+                'image' => $user->image,
+                'course' => $user->course->name,
+                'year' => $user->year->name,
+                'organization' => $user->organization->name,
+                'school_id' => $user->school_id,
+                'current_time' => $currentTime
+            ]
         ]);
 
-        // Determine which field to update
-        $editType = $request->input('edit_type');
-        $timeValue = $request->input('time_value');
-
-        // Update only the selected field
-        if ($editType === 'time_in') {
-            $attendance->time_in = $timeValue;
-        } elseif ($editType === 'time_out') {
-            $attendance->time_out = $timeValue;
-        }
-
-        // Update the status based on the presence of both time_in and time_out
-        $attendance->status = ($attendance->time_in && $attendance->time_out) ? 'Present' : 'Absent';
-
-        // Save the changes
-        $attendance->save();
-
-        // Redirect with success message
-        return redirect()->route('attendance.index', ['filter_activity' => $attendance->activity_id])
-                         ->with('success', 'Attendance record updated successfully.');
-    }
-
-
-    public function markAttendance(Request $request)
-    {
-        // Mark attendance logic here...
-
-        // After marking attendance, check for absences and add sanctions
-        $this->checkAndSanctionAbsentees();
-    }
-
-    protected function checkAndSanctionAbsentees()
-    {
-        $absentStudents = User::whereDoesntHave('attendances', function ($query) {
-            // Assuming attendances have a date column and a present/absent flag
-            $query->whereDate('date', now()->toDateString())->where('status', 'absent');
-        })->get();
-
-        foreach ($absentStudents as $student) {
-            // Check if the student is already sanctioned for this absence
-            $existingSanction = Sanction::where('student_id', $student->id)
-                ->where('type', 'attendance')
-                ->where('resolved', false)
-                ->first();
-
-            if (!$existingSanction) {
-                Sanction::create([
-                    'student_id' => $student->id,
-                    'type' => 'attendance',
-                    'description' => 'Absent from class',
-                    'fine_amount' => 0, // Set fine amount if applicable
-                    'required_action' => 'Attend make-up classes', // Set required action
-                    'resolved' => false,
-                ]);
-            }
-        }
+    } catch (\Exception $e) {
+        return response()->json(['message' => 'An error occurred: ' . $e->getMessage()], 500);
     }
 }
 
+
+public function confirmAttendance(Request $request)
+{
+    $scannedId = $request->input('scanned_id');
+    $filterActivity = $request->input('filter_activity');
+    $timeType = $request->input('time_type');
+
+    $user = User::where('school_id', $scannedId)->first();
+
+    if (!$user) {
+        return redirect()->back()->with('error', 'User not found');
+    }
+
+    $currentTime = Carbon::now('Asia/Manila')->format('H:i');
+
+    DB::transaction(function () use ($user, $filterActivity, $timeType, $currentTime) {
+        $attendance = Attendance::where('student_id', $user->id)
+            ->where('activity_id', $filterActivity)
+            ->whereDate('created_at', Carbon::today())
+            ->first();
+
+        if ($attendance) {
+            // Update attendance logic
+            if ($timeType === 'time_in') {
+                $attendance->time_in = $currentTime;
+            } elseif ($timeType === 'time_out') {
+                $attendance->time_out = $currentTime;
+            }
+
+            $attendance->status = ($attendance->time_in && $attendance->time_out) ? 'Present' : 'Absent';
+            $attendance->save();
+
+            // Ensure method is called
+            Log::info("Calling removeSanctionsIfPresent for attendance ID: {$attendance->id}");
+            $attendance->removeSanctionsIfPresent();
+
+        } else {
+            // Create new attendance logic
+            $attendance = Attendance::create([
+                'student_id' => $user->id,
+                'activity_id' => $filterActivity,
+                'time_in' => $timeType === 'time_in' ? $currentTime : null,
+                'time_out' => $timeType === 'time_out' ? $currentTime : null,
+                'status' => $timeType === 'time_out' ? 'Present' : 'Absent',
+            ]);
+
+            // Ensure method is called
+            Log::info("Calling removeSanctionsIfPresent for new attendance ID: {$attendance->id}");
+            $attendance->removeSanctionsIfPresent();
+        }
+    });
+
+
+    return redirect()->route('attendance.index', ['filter_activity' => $filterActivity])
+        ->with('success', 'Attendance marked successfully.');
+}
+
+
+
+}

@@ -21,7 +21,7 @@ class ClearanceController extends Controller
         $filterYear = $request->input('filter_year');
         $status = $request->input('status');
 
-        $clearances = User::with(['clearance', 'organization', 'course', 'year'])
+        $clearances = User::with(['clearance', 'organization', 'course', 'year', 'sanctions'])
             ->when($searchName, function ($query, $searchName) {
                 return $query->where('name', 'like', "%{$searchName}%");
             })
@@ -39,10 +39,14 @@ class ClearanceController extends Controller
             })
             ->when($status, function ($query, $status) {
                 return $query->whereHas('clearance', function ($query) use ($status) {
-                    $query->where('status', $status);
+                    $query->whereRaw('LOWER(status) = ?', [strtolower($status)]);
                 });
             })
             ->paginate(10);
+
+        foreach ($clearances as $clearance) {
+            $clearance->updateClearanceStatus();
+        }
 
         $organizations = Organization::all();
         $courses = Course::all();

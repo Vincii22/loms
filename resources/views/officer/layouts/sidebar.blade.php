@@ -8,7 +8,7 @@
                 <img src="{{ asset('images/licoes.png') }}" alt="Logo" class="h-28">
             </div>
             <div class="text-center border-t border-gray-200 mt-4 p-2 w-full bg-[#5C0E0F] md:h-1/4">
-                <p class="text-xl font-semibold text-white">{{ Auth::user()->role->name }}</p>
+                <p class="text-xl font-semibold text-white">{{ Auth::user()->name }}</p>
             </div>
         </header>
 
@@ -44,12 +44,29 @@
                         <ul id="finance-dropdown" class="hidden space-y-2 ml-4">
                             <li><a href="{{ route('fees.index') }}" class="hover:text-gray-300">Manage Fees</a></li>
                             <li><a href="{{ route('finances.index') }}" class="hover:text-gray-300">Manage Finances</a></li>
-                            <li><a href="{{ route('audit.index') }}" class="hover:text-gray-300">Manage Audit</a></li>
+                            {{-- <li><a href="{{ route('audit.index') }}" class="hover:text-gray-300">Manage Audit</a></li> --}}
                         </ul>
                     </li>
 
                     <li><a href="{{ route('sanctions.index') }}" class="hover:text-gray-300">Sanction</a></li>
                     <li><a href="{{ route('clearances.index') }}" class="hover:text-gray-300">Clearance</a></li>
+
+                    <!-- Dropdown for Reports -->
+                    {{-- <li>
+                        <button class="w-full text-left flex justify-between items-center focus:outline-none" onclick="toggleDropdown('reports-dropdown')">
+                            Reports
+                            <svg class="h-5 w-5 transition-transform duration-200 transform" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 9l-7 7-7-7" />
+                            </svg>
+                        </button>
+                        <ul id="reports-dropdown" class="hidden space-y-2 ml-4">
+                            <li><a href="{{ route('reports.attendance') }}" class="hover:text-gray-300">Attendance Report</a></li>
+                            <li><a href="{{ route('reports.finance') }}" class="hover:text-gray-300">Finance Report</a></li>
+                            <li><a href="{{ route('reports.sanction') }}" class="hover:text-gray-300">Sanction Report</a></li>
+                            <li><a href="{{ route('reports.clearance') }}" class="hover:text-gray-300">Clearance Report</a></li>
+                            <li><a href="{{ route('reports.student') }}" class="hover:text-gray-300">Student Report</a></li>
+                        </ul>
+                    </li> --}}
                 </ul>
             </nav>
         </div>
@@ -85,12 +102,29 @@
 
         <nav>
             <ul class="space-y-4">
-                <li><a href="{{ route('dashboard') }}" class="hover:text-gray-300">Dashboard</a></li>
-                <!-- Repeat the dropdown structure for mobile if needed -->
+                <li><a href="{{ route('officer.dashboard') }}" class="hover:text-gray-300">Dashboard</a></li>
+                <li><a href="{{ route('students.index') }}" class="hover:text-gray-300">Students</a></li>
                 <li><a href="{{ route('attendance.index') }}" class="hover:text-gray-300">Attendance</a></li>
                 <li><a href="{{ route('finances.index') }}" class="hover:text-gray-300">Finance</a></li>
                 <li><a href="{{ route('sanctions.index') }}" class="hover:text-gray-300">Sanction</a></li>
                 <li><a href="{{ route('clearances.index') }}" class="hover:text-gray-300">Clearance</a></li>
+
+                <!-- Dropdown for Reports -->
+                 {{-- <li>
+                    <button class="w-full text-left flex justify-between items-center focus:outline-none" onclick="toggleDropdown('mobile-reports-dropdown')">
+                        Reports
+                        <svg class="h-5 w-5 transition-transform duration-200 transform" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 9l-7 7-7-7" />
+                        </svg>
+                    </button>
+                    <ul id="mobile-reports-dropdown" class="hidden space-y-2 ml-4">
+                        <li><a href="{{ route('reports.attendance') }}" class="hover:text-gray-300">Attendance Report</a></li>
+                        <li><a href="{{ route('reports.finance') }}" class="hover:text-gray-300">Finance Report</a></li>
+                        <li><a href="{{ route('reports.sanction') }}" class="hover:text-gray-300">Sanction Report</a></li>
+                        <li><a href="{{ route('reports.clearance') }}" class="hover:text-gray-300">Clearance Report</a></li>
+                        <li><a href="{{ route('reports.student') }}" class="hover:text-gray-300">Student Report</a></li>
+                    </ul>
+                </li> --}}
             </ul>
         </nav>
     </div>

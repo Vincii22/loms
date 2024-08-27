@@ -6,6 +6,7 @@ use App\Http\Controllers\Controller;
 use App\Models\Activity;
 use App\Models\Semester;
 use App\Models\User;
+use App\Models\Sanction;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Storage;
 class ActivityController extends Controller
@@ -124,6 +125,18 @@ class ActivityController extends Controller
      */
     public function destroy(Activity $activity)
     {
+         // Find all sanctions related to this activity
+    $sanctions = Sanction::where('type', 'LIKE', "Absence from %")
+    ->whereHas('student.attendances.activity', function ($query) use ($activity) {
+        $query->where('id', $activity->id);
+    })->get();
+
+    // Delete the sanctions
+    foreach ($sanctions as $sanction) {
+    $sanction->delete();
+    }
+
+
         $activity->delete();
         return redirect()->route('activities.index')->with('success', 'Activity deleted successfully.');
     }

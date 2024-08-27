@@ -67,7 +67,6 @@
                     <th class="py-2 px-4 border-b">ID</th>
                     <th class="py-2 px-4 border-b">Student</th>
                     <th class="py-2 px-4 border-b">Type</th>
-                    <th class="py-2 px-4 border-b">Description</th>
                     <th class="py-2 px-4 border-b">Fine Amount</th>
                     <th class="py-2 px-4 border-b">Required Action</th>
                     <th class="py-2 px-4 border-b">Resolved</th>
@@ -80,7 +79,6 @@
                     <td class="py-2 px-4 border-b">{{ $sanction->id }}</td>
                     <td class="py-2 px-4 border-b">{{ $sanction->student->name ?? 'N/A' }}</td>
                     <td class="py-2 px-4 border-b">{{ $sanction->type }}</td>
-                    <td class="py-2 px-4 border-b">{{ $sanction->description }}</td>
                     <td class="py-2 px-4 border-b">{{ $sanction->fine_amount ? number_format($sanction->fine_amount, 2) : 'N/A' }}</td>
                     <td class="py-2 px-4 border-b">{{ $sanction->required_action ?: 'N/A' }}</td>
                     <td class="py-2 px-4 border-b">{{ $sanction->resolved ? 'Yes' : 'No' }}</td>
