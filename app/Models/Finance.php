@@ -14,6 +14,7 @@ class Finance extends Model
         'fee_id',
         'default_amount',
         'status',
+        'officer_id',
     ];
 
     public function user()
@@ -25,6 +26,12 @@ class Finance extends Model
     {
         return $this->belongsTo(Fees::class, 'fee_id');
     }
+
+    public function officer()
+    {
+        return $this->belongsTo(Officer::class); // Add this line
+    }
+
     // Automatically remove sanctions when status is updated
     public static function boot()
     {

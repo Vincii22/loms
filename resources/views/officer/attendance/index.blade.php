@@ -58,6 +58,7 @@
                             <th class="px-4 py-2">Time In</th>
                             <th class="px-4 py-2">Time Out</th>
                             <th class="px-4 py-2">Status</th>
+                            <th class="px-4 py-2">Officer</th>
                         </tr>
                     </thead>
                     <tbody>
@@ -69,6 +70,7 @@
                                 <td class="px-4 py-2">{{ $attendance->time_in }}</td>
                                 <td class="px-4 py-2">{{ $attendance->time_out }}</td>
                                 <td class="px-4 py-2">{{ $attendance->status }}</td>
+                                <td>{{ $attendance->officer->name ?? 'N/A' }}</td>
                                 <td class="px-4 py-2">
                                     <a href="{{ route('attendance.edit', $attendance->id) }}" class="text-blue-500 hover:underline">Edit</a>
                                 </td>

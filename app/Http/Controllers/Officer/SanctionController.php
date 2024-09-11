@@ -8,7 +8,6 @@ use App\Models\Finance;
 use App\Models\Organization;
 use App\Models\Course;
 use App\Models\Year;
-use Barryvdh\Debugbar\Facade as Debugbar;
 use App\Http\Controllers\Controller;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Log;

@@ -3,6 +3,36 @@
     @section('content')
     <div class="container mx-auto px-4 py-6">
         <h1 class="text-2xl font-bold mb-4">Activities</h1>
+
+        <!-- Filter Form -->
+        <form method="GET" action="{{ route('activities.index') }}" class="mb-4">
+            <div class="flex space-x-4">
+                <!-- Semester Filter -->
+                <div class="flex-1">
+                    <label for="semester_id" class="block text-sm font-medium text-gray-700">Semester</label>
+                    <select id="semester_id" name="semester_id" class="form-select mt-1 block w-full">
+                        <option value="">All Semesters</option>
+                        @foreach($semesters as $semester)
+                            <option value="{{ $semester->id }}" {{ request('semester_id') == $semester->id ? 'selected' : '' }}>
+                                {{ $semester->name }}
+                            </option>
+                        @endforeach
+                    </select>
+                </div>
+
+                <!-- School Year Filter -->
+                <div class="flex-1">
+                    <label for="school_year" class="block text-sm font-medium text-gray-700">School Year</label>
+                    <input type="text" id="school_year" name="school_year" value="{{ request('school_year') }}" class="form-input mt-1 block w-full" placeholder="Enter school year">
+                </div>
+
+                <!-- Submit Button -->
+                <div class="flex items-end">
+                    <button type="submit" class="bg-blue-500 text-white px-4 py-2 rounded hover:bg-blue-600">Filter</button>
+                </div>
+            </div>
+        </form>
+
         <a href="{{ route('activities.create') }}" class="bg-blue-500 text-white px-4 py-2 rounded hover:bg-blue-600 mb-4 inline-block">Add New Activity</a>
 
         @if(session('success'))

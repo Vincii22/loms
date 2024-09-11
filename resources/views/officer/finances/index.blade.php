@@ -17,7 +17,7 @@
                 </select>
             </div>
 
-            <!-- Other Filters in a Flex Layout -->
+            <!-- Other Filters -->
             <div class="flex flex-wrap -mx-2 mb-4">
                 <!-- Search by Name -->
                 <div class="w-full md:w-1/2 lg:w-1/4 px-2 mb-4">
@@ -31,7 +31,6 @@
                     <input type="text" name="search_school_id" id="search_school_id" placeholder="Search by school ID" value="{{ request('search_school_id') }}" class="form-input mt-1 block w-full rounded-md border-gray-300 shadow-sm focus:border-indigo-500 focus:ring-indigo-500 sm:text-sm">
                 </div>
             </div>
-
         </form>
 
         @if($finances->count())
@@ -44,6 +43,7 @@
                             <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Fee</th>
                             <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Amount</th>
                             <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Status</th>
+                            <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Officer</th>
                             <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Actions</th>
                         </tr>
                     </thead>
@@ -55,6 +55,7 @@
                                 <td class="px-6 py-4 whitespace-nowrap">{{ $finance->fee->name }}</td>
                                 <td class="px-6 py-4 whitespace-nowrap">{{ $finance->default_amount }}</td>
                                 <td class="px-6 py-4 whitespace-nowrap">{{ $finance->status }}</td>
+                                <td>{{ $finance->officer->name ?? 'N/A' }}</td>
                                 <td class="px-6 py-4 whitespace-nowrap">
                                     <a href="{{ route('finances.edit', $finance->id) }}" class="bg-yellow-500 text-white px-3 py-1 rounded hover:bg-yellow-600">Edit</a>
                                     <form action="{{ route('finances.destroy', $finance->id) }}" method="POST" class="inline">

@@ -8,6 +8,8 @@ use Illuminate\Http\Request;
 use App\Models\Attendance;
 use App\Models\Finance;
 use App\Models\User;
+use App\Models\Semester;
+use App\Models\Activity;
 use App\Models\Clearance;
 use App\Models\Sanction;
 use Barryvdh\DomPDF\Facade as PDF;
@@ -29,7 +31,8 @@ class ReportsController extends Controller
     public function attendanceReport(Request $request)
     {
         $activityId = $request->input('activity_id');
-        $dateRange = $request->input('date_range');
+        $semesterId = $request->input('semester');
+        $schoolYear = $request->input('school_year');
 
         $query = Attendance::query();
 
@@ -37,14 +40,27 @@ class ReportsController extends Controller
             $query->where('activity_id', $activityId);
         }
 
-        if ($dateRange) {
-            [$startDate, $endDate] = explode(' to ', $dateRange);
-            $query->whereBetween('date', [$startDate, $endDate]);
+        if ($semesterId) {
+            $query->whereHas('activity', function ($q) use ($semesterId) {
+                $q->where('semester_id', $semesterId);
+            });
         }
 
-        $attendances = $query->get();
+        if ($schoolYear) {
+            $query->whereHas('activity', function ($q) use ($schoolYear) {
+                $q->where('school_year', $schoolYear);
+            });
+        }
 
-        return view('officer.reports.attendance', compact('attendances'));
+        $attendances = $query->paginate(10);
+
+        // Fetch distinct semesters from activities for the filter dropdown
+        $semesters = Activity::pluck('semester_id', 'semester_id')->unique();
+
+        // Fetch activities for the filter dropdown
+        $activities = Activity::pluck('name', 'id');
+
+        return view('officer.reports.attendance', compact('attendances', 'activities', 'semesters'));
     }
 
     /**
