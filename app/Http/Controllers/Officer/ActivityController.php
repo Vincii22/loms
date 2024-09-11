@@ -14,10 +14,22 @@ class ActivityController extends Controller
     /**
      * Display a listing of the resource.
      */
-    public function index()
+    public function index(Request $request)
     {
-        $activities = Activity::all();
-        return view('officer.activities.index', compact('activities'));
+        $query = Activity::query();
+
+        if ($request->has('semester_id') && $request->input('semester_id') != '') {
+            $query->where('semester_id', $request->input('semester_id'));
+        }
+
+        if ($request->has('school_year') && $request->input('school_year') != '') {
+            $query->where('school_year', $request->input('school_year'));
+        }
+
+        $activities = $query->get();
+        $semesters = Semester::all(); // Fetch all semesters for filter dropdown
+
+        return view('officer.activities.index', compact('activities', 'semesters'));
     }
 
     /**

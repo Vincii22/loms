@@ -102,7 +102,8 @@ class FinanceController extends Controller
     {
         $users = User::all();
         $fees = Fees::all();
-        return view('officer.finances.edit', compact('finance', 'users', 'fees'));
+        $officer = auth('officer')->user();
+        return view('officer.finances.edit', compact('finance', 'users', 'fees', 'officer'));
     }
 
     public function update(Request $request, Finance $finance)
@@ -115,6 +116,7 @@ class FinanceController extends Controller
 
         $oldStatus = $finance->status;
         $finance->status = $request->input('status');
+        $finance->officer_id = auth('officer')->user()->id; // Set the currently logged-in officer ID
         $finance->save();
 
         // Handle status change
