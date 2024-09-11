@@ -5,27 +5,34 @@
             <h2 class="font-semibold text-xl text-gray-800 leading-tight">
                 {{ __('Officer Dashboard') }}
             </h2>
+         <!-- Filter Form -->
+<div class="mt-4 flex items-center space-x-4">
+    <!-- Left Side: Semester and Year Filters -->
+    <form method="GET" action="{{ route('officer.dashboard') }}" class="flex items-center space-x-4">
+        <!-- Semester Filter -->
+        <select name="filter_semester" class="bg-gray-100 border border-gray-300 rounded-md py-2 px-4">
+            <option value="">Select Semester</option>
+            <option value="1">Semester 1</option>
+            <option value="2">Semester 2</option>
+            <!-- Add more options as needed -->
+        </select>
 
-            <!-- Filter Form -->
-            <div class="mt-4 flex space-x-4 items-center">
-                <form method="GET" action="{{ route('officer.dashboard') }}" class="flex items-center space-x-4">
-                    <!-- Student Name Input -->
-                    <input type="text" name="search_name" placeholder="Search by Student Name" class="bg-gray-100 border border-gray-300 rounded-md py-2 px-4">
+        <!-- Year Filter -->
+        <select name="filter_year" class="bg-gray-100 border border-gray-300 rounded-md py-2 px-4">
+            <option value="">Select Year</option>
+            @for ($year = date('Y'); $year >= 2000; $year--)
+                <option value="{{ $year }}">{{ $year }}</option>
+            @endfor
+        </select>
+    </form>
 
-                    <!-- School ID Input -->
-                    <input type="text" name="search_school_id" placeholder="Search by School ID" class="bg-gray-100 border border-gray-300 rounded-md py-2 px-4">
+    <!-- Right Side: Automatic Barcode Scanner Input -->
+    <div class="ml-auto">
+        <input type="text" name="barcode" placeholder="Scan Barcode" class="bg-gray-100 border border-gray-300 rounded-md py-2 px-4 w-56" oninput="handleBarcodeInput(this.value)">
+    </div>
+</div>
 
-                    <!-- Submit Button -->
-                    <button type="submit" class="bg-blue-500 text-white py-2 px-4 rounded-md hover:bg-blue-600">
-                        Search
-                    </button>
-                </form>
 
-                <!-- Scan ID Button -->
-                <button onclick="scanID()" class="ml-4 bg-green-500 text-white py-2 px-4 rounded-md hover:bg-green-600">
-                    Scan ID
-                </button>
-            </div>
         </div>
     </x-slot>
 

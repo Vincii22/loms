@@ -6,9 +6,6 @@ use App\Http\Controllers\Controller;
 use Illuminate\Http\Request;
 use App\Models\User;
 use App\Models\Clearance;
-use App\Models\Organization;
-use App\Models\Course;
-use App\Models\Year;
 
 class ClearanceController extends Controller
 {
@@ -16,26 +13,14 @@ class ClearanceController extends Controller
     {
         $searchName = $request->input('search_name');
         $searchSchoolId = $request->input('search_school_id');
-        $filterOrganization = $request->input('filter_organization');
-        $filterCourse = $request->input('filter_course');
-        $filterYear = $request->input('filter_year');
         $status = $request->input('status');
 
-        $clearances = User::with(['clearance', 'organization', 'course', 'year', 'sanctions'])
+        $clearances = User::with(['clearance'])
             ->when($searchName, function ($query, $searchName) {
                 return $query->where('name', 'like', "%{$searchName}%");
             })
             ->when($searchSchoolId, function ($query, $searchSchoolId) {
                 return $query->where('school_id', 'like', "%{$searchSchoolId}%");
-            })
-            ->when($filterOrganization, function ($query, $filterOrganization) {
-                return $query->where('organization_id', $filterOrganization);
-            })
-            ->when($filterCourse, function ($query, $filterCourse) {
-                return $query->where('course_id', $filterCourse);
-            })
-            ->when($filterYear, function ($query, $filterYear) {
-                return $query->where('year_id', $filterYear);
             })
             ->when($status, function ($query, $status) {
                 return $query->whereHas('clearance', function ($query) use ($status) {
@@ -44,26 +29,15 @@ class ClearanceController extends Controller
             })
             ->paginate(10);
 
-        foreach ($clearances as $clearance) {
-            $clearance->updateClearanceStatus();
-        }
-
-        $organizations = Organization::all();
-        $courses = Course::all();
-        $years = Year::all();
-
         return view('officer.clearance.index', [
             'clearances' => $clearances,
-            'organizations' => $organizations,
-            'courses' => $courses,
-            'years' => $years
         ]);
     }
 
     public function update(Request $request, $id)
     {
         $request->validate([
-            'status' => 'required|string|in:eligible,not eligible,cleared',
+            'status' => 'required|string|in:not eligible,cleared',
         ]);
 
         $user = User::findOrFail($id);

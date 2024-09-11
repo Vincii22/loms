@@ -2,64 +2,52 @@
     @section('content')
     <div class="container mx-auto mt-4 p-6 bg-white shadow-md rounded-lg">
         <h1 class="text-2xl font-bold mb-4">Manage Attendance</h1>
-        <form method="GET" action="{{ route('attendance.index') }}" class="mb-4">
-            <!-- Filter by Activity -->
-            <div class="mb-4">
-                <label for="filter_activity" class="block text-sm font-medium text-gray-700">Select Activity</label>
-                <select name="filter_activity" id="filter_activity" class="form-control mt-1 block w-full" onchange="this.form.submit()">
-                    <option value="">Select Activity</option>
-                    @foreach($activities as $activity)
-                        <option value="{{ $activity->id }}" {{ request('filter_activity') == $activity->id ? 'selected' : '' }}>
-                            {{ $activity->name }}
-                        </option>
-                    @endforeach
-                </select>
-            </div>
 
-            <!-- Flex Container for Name and School ID Filters -->
-            <div class="flex space-x-4 mb-4">
-                <!-- Filter by Name -->
-                <div class="flex-1">
-                    <label for="search_name" class="block text-sm font-medium text-gray-700">Search by Name</label>
-                    <input type="text" name="search_name" id="search_name" placeholder="Search by name" value="{{ request('search_name') }}" class="form-control mt-1 block w-full" />
-                </div>
-
-                <!-- Filter by School ID -->
-                <div class="flex-1">
-                    <label for="search_school_id" class="block text-sm font-medium text-gray-700">Search by School ID</label>
-                    <input type="text" name="search_school_id" id="search_school_id" placeholder="Search by school ID" value="{{ request('search_school_id') }}" class="form-control mt-1 block w-full" />
-                </div>
-            </div>
-
-            <!-- Submit Button -->
-            <button type="submit" class="btn btn-primary">Filter</button>
-        </form>
-
-
-
-        <!-- Grouping Scan ID and Time Type in a single div with flex layout -->
-        <div class="mb-4 p-4 bg-gray-100 border border-gray-300 rounded-lg">
-            <h2 class="text-xl font-semibold mb-4">Take Attendance</h2>
-
-            <div class="flex gap-4 items-center mb-4">
-                <div class="flex-1">
-                    <label for="time_type" class="block text-sm font-medium text-gray-700">Select Time Type</label>
-                    <select name="time_type" id="time_type" class="form-control mt-1 block w-48"> <!-- Shortened width -->
-                        <option value="time_in">Time In</option>
-                        <option value="time_out">Time Out</option>
+        <!-- Form to Filter by Activity, Name, and School ID -->
+        <form method="GET" action="{{ route('attendance.index') }}" id="filter-form" class="mb-4">
+            <div class="grid grid-cols-1 md:grid-cols-3 gap-4">
+                <div class="mb-4">
+                    <label for="filter_activity" class="block text-sm font-medium text-gray-700">Select Activity</label>
+                    <select name="filter_activity" id="filter_activity" class="form-control mt-1 block w-full" onchange="this.form.submit()">
+                        <option value="">Select Activity</option>
+                        @foreach($activities as $activity)
+                            <option value="{{ $activity->id }}" {{ request('filter_activity') == $activity->id ? 'selected' : '' }}>
+                                {{ $activity->name }}
+                            </option>
+                        @endforeach
                     </select>
                 </div>
 
-                <button id="scan-id-button" class="bg-blue-500 text-white px-4 py-2 rounded hover:bg-blue-600 w-32"> <!-- Shortened width -->
-                    Scan ID
-                </button>
+                <!-- Name Filter -->
+                <div class="mb-4">
+                    <label for="search_name" class="block text-sm font-medium text-gray-700">Student Name</label>
+                    <input type="text" name="search_name" id="search_name" value="{{ request('search_name') }}" placeholder="Enter name" class="form-control mt-1 block w-full" autocomplete="off">
+                </div>
+
+                <!-- School ID Filter -->
+                <div class="mb-4">
+                    <label for="search_school_id" class="block text-sm font-medium text-gray-700">School ID</label>
+                    <input type="text" name="search_school_id" id="search_school_id" value="{{ request('search_school_id') }}" placeholder="Enter School ID" class="form-control mt-1 block w-full" autocomplete="off">
+                </div>
+            </div>
+        </form>
+
+        <!-- Barcode Scanning Area -->
+        @if($filterActivity)
+            <div class="mb-4 p-4 bg-gray-100 border border-gray-300 rounded-lg">
+                <h2 class="text-xl font-semibold mb-4">Scan Barcode to Record Attendance</h2>
+                <form id="barcode-scan-form" method="POST" action="{{ route('attendance.mark') }}">
+                    @csrf
+                    <input type="hidden" name="filter_activity" value="{{ $filterActivity }}">
+
+                    <!-- Barcode Input -->
+                    <input type="text" id="barcode-input" name="scanned_id" placeholder="Scan ID here" class="form-control block w-full text-lg p-2" autocomplete="off" autofocus>
+                </form>
+                <!-- Error Alert -->
+                <div id="error-message" class="hidden mt-4 p-4 bg-red-100 border border-red-300 text-red-700 rounded-lg"></div>
             </div>
 
-            <!-- Include a hidden input to store the scanned ID -->
-            <input type="hidden" id="scanned-id" name="scanned_id">
-        </div>
-
-        @if($filterActivity)
+            <!-- Attendance Records Table -->
             <div class="overflow-x-auto mt-4">
                 <table class="min-w-full bg-white border border-gray-200 rounded-lg shadow-sm">
                     <thead>
@@ -70,7 +58,6 @@
                             <th class="px-4 py-2">Time In</th>
                             <th class="px-4 py-2">Time Out</th>
                             <th class="px-4 py-2">Status</th>
-                            <th class="px-4 py-2">Actions</th> <!-- Added Actions column -->
                         </tr>
                     </thead>
                     <tbody>
@@ -83,15 +70,7 @@
                                 <td class="px-4 py-2">{{ $attendance->time_out }}</td>
                                 <td class="px-4 py-2">{{ $attendance->status }}</td>
                                 <td class="px-4 py-2">
-                                    <!-- Edit Button -->
-                                    <a href="{{ route('attendance.edit', $attendance->id) }}" class="bg-yellow-500 text-white px-4 py-2 rounded hover:bg-yellow-600">Edit</a>
-
-                                    <!-- Delete Button -->
-                                    <form action="{{ route('attendance.destroy', $attendance->id) }}" method="POST" class="inline">
-                                        @csrf
-                                        @method('DELETE')
-                                        <button type="submit" class="bg-red-500 text-white px-4 py-2 rounded hover:bg-red-600" onclick="return confirm('Are you sure you want to delete this record?')">Delete</button>
-                                    </form>
+                                    <a href="{{ route('attendance.edit', $attendance->id) }}" class="text-blue-500 hover:underline">Edit</a>
                                 </td>
                             </tr>
                         @empty
@@ -101,8 +80,6 @@
                         @endforelse
                     </tbody>
                 </table>
-
-                <!-- Pagination Links -->
                 <div class="mt-4">
                     {{ $attendances->appends(request()->query())->links() }}
                 </div>
@@ -110,87 +87,71 @@
         @endif
     </div>
 
-    <!-- Modal -->
-    <div id="student-modal" class="fixed inset-0 flex items-center justify-center bg-black bg-opacity-50 hidden">
-        <div class="bg-white p-6 rounded-lg shadow-lg w-1/2">
-            <h2 class="text-xl font-bold mb-4" id="student-name"></h2>
-            <img id="student-image" src="" alt="Student Image" class="w-24 h-24 mb-4">
-            <p><strong>Course:</strong> <span id="student-course"></span></p>
-            <p><strong>Year:</strong> <span id="student-year"></span></p>
-            <p><strong>Organization:</strong> <span id="student-organization"></span></p>
-            <p><strong>School ID:</strong> <span id="student-school-id"></span></p>
-            <p><strong>Barcode:</strong> <span id="student-barcode"></span></p>
-            <form id="confirm-attendance-form" method="POST" action="{{ route('attendance.confirm') }}">
-                @csrf
-                <input type="hidden" id="modal-scanned-id" name="scanned_id">
-                <input type="hidden" id="modal-time-type" name="time_type">
-                <input type="hidden" id="modal-filter-activity" name="filter_activity" value="{{ request('filter_activity') }}">
-                <button type="submit" class="bg-green-500 text-white px-4 py-2 rounded hover:bg-green-600">Confirm Attendance</button>
-            </form>
-            <button id="modal-close" class="bg-gray-500 text-white px-4 py-2 rounded hover:bg-gray-600">Close</button>
-        </div>
-    </div>
-
     @section('scripts')
     <script>
-        document.getElementById('scan-id-button').addEventListener('click', function() {
-            let scannedId = prompt("Please scan your ID");
+        // Automatically focus on the barcode input
+        document.addEventListener('DOMContentLoaded', function () {
+            document.getElementById('barcode-input').focus();
+        });
+
+        // Automatically submit the form once a barcode is scanned
+        document.getElementById('barcode-input').addEventListener('input', function () {
+            let scannedId = this.value.trim();
+            console.log('Scanned ID:', scannedId); // Log the scanned ID here
             if (scannedId) {
-                let timeType = document.getElementById('time_type').value; // Get selected time type
-                document.getElementById('scanned-id').value = scannedId;
-
-                // Populate modal fields
-                document.getElementById('modal-scanned-id').value = scannedId;
-                document.getElementById('modal-time-type').value = timeType;
-
-                // Make an AJAX request to get user details
-                fetch(`{{ route('attendance.mark') }}?scanned_id=${scannedId}&filter_activity={{ request('filter_activity') }}&time_type=${timeType}`, {
-                    method: 'GET',
-                    headers: {
-                        'Accept': 'application/json',
-                        'X-Requested-With': 'XMLHttpRequest',
-                        'X-CSRF-Token': document.querySelector('meta[name="csrf-token"]').getAttribute('content')
-                    }
-                })
-                .then(response => {
-                    // Check if the response is JSON
-                    const contentType = response.headers.get('content-type');
-                    if (contentType && contentType.includes('application/json')) {
-                        return response.json();
-                    } else {
-                        return response.text().then(text => {
-                            throw new Error(`Expected JSON, but received: ${text}`);
-                        });
-                    }
-                })
-                .then(data => {
-                    console.log("Response Data:", data); // Log response data for debugging
-                    if (data.user) {
-                        // Display student details in the modal
-                        document.getElementById('student-name').textContent = data.user.name;
-
-                        const imageUrl = data.user.image ? `{{ asset('storage/${data.user.image}') }}` : 'default-image-url'; // Adjust if needed
-                        document.getElementById('student-image').src = imageUrl;
-                        document.getElementById('student-course').textContent = data.user.course;
-                        document.getElementById('student-year').textContent = data.user.year;
-                        document.getElementById('student-organization').textContent = data.user.organization;
-                        document.getElementById('student-school-id').textContent = data.user.school_id;
-                        document.getElementById('student-barcode').textContent = scannedId;
-
-                        // Show the modal
-                        document.getElementById('student-modal').classList.remove('hidden');
-                    } else {
-                        alert(data.message); // Notify if no user data found
-                    }
-                })
-                .catch(error => {
-                    console.error('Error:', error); // Log any errors
-                });
+                document.getElementById('barcode-scan-form').submit();
             }
         });
 
-        document.getElementById('modal-close').addEventListener('click', function() {
-            document.getElementById('student-modal').classList.add('hidden');
+        // Trigger form submission for filters automatically as the user types
+        const debounce = (callback, delay) => {
+            let timeout;
+            return (...args) => {
+                clearTimeout(timeout);
+                timeout = setTimeout(() => callback.apply(this, args), delay);
+            };
+        };
+
+        document.getElementById('search_name').addEventListener('input', debounce(function () {
+            document.getElementById('filter-form').submit();
+        }, 300));
+
+        document.getElementById('search_school_id').addEventListener('input', debounce(function () {
+            document.getElementById('filter-form').submit();
+        }, 300));
+
+        // Handle form submission response
+        document.getElementById('barcode-scan-form').addEventListener('submit', function (event) {
+            event.preventDefault();
+            const form = this;
+            const errorMessageElement = document.getElementById('error-message');
+
+            fetch(form.action, {
+                method: 'POST',
+                headers: {
+                    'Content-Type': 'application/json',
+                    'X-CSRF-TOKEN': document.querySelector('meta[name="csrf-token"]').getAttribute('content')
+                },
+                body: JSON.stringify(new FormData(form))
+            })
+            .then(response => {
+                if (!response.ok) {
+                    return response.json().then(data => {
+                        errorMessageElement.textContent = data.message;
+                        errorMessageElement.classList.remove('hidden');
+                    });
+                }
+                return response.json();
+            })
+            .then(data => {
+                if (data.message) {
+                    alert(data.message); // Show success alert
+                    window.location.reload(); // Reload to see updated records
+                }
+            })
+            .catch(error => {
+                console.error('Error:', error);
+            });
         });
     </script>
     @endsection

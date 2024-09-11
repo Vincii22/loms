@@ -49,8 +49,7 @@ Route::prefix('officer')->middleware('auth:officer')->group(function () {
     Route::post('/finances/update-payment-status', [FinanceController::class, 'updatePaymentStatus'])->name('finances.updatePaymentStatus');
     Route::resource('fees', FeesController::class);
     Route::resource('attendance', AttendanceController::class);
-    Route::get('/attendance/mark-by-barcode', [AttendanceController::class, 'markAttendanceByBarcode'])->name('attendance.mark');
-    Route::post('/attendance/confirm', [AttendanceController::class, 'confirmAttendance'])->name('attendance.confirm');
+    route::post('/attendance/mark-by-barcode', [AttendanceController::class, 'markAttendanceByBarcode'])->name('attendance.mark');
     Route::resource('activities', ActivityController::class);
     Route::resource('sanctions', SanctionController::class);
     Route::resource('clearances', ClearanceController::class);
