@@ -18,12 +18,12 @@ use Illuminate\Support\Facades\Log;
 class StudentsController extends Controller
 {
     public function index(Request $request)
-    {
-       // Retrieve all possible filter options from the request
+{
+    // Retrieve all possible filter options from the request
     $name = $request->input('name');
     $school_id = $request->input('school_id');
     $organization = $request->input('organization');
-    $course = $request->input('course'); // Add course filter
+    $course = $request->input('course');
     $sort_year = $request->input('sort_year');
 
     // Start building the query for users
@@ -60,7 +60,7 @@ class StudentsController extends Controller
 
     // Fetch necessary data for the filter options
     $organizations = Organization::all();
-    $courses = Course::all(); // Fetch courses
+    $courses = Course::all();
 
     // Check if the request is AJAX and return the partial view
     if ($request->ajax()) {
@@ -72,8 +72,8 @@ class StudentsController extends Controller
 
     // If not AJAX, return the main view
     return view('officer.students.index', compact('users', 'organizations', 'courses'));
+}
 
-        }
 
     /**
      * Show the form for creating a new resource.
