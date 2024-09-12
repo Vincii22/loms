@@ -24,6 +24,7 @@ return new class extends Migration
             $table->foreign('year_id')->references('id')->on('years');
             $table->string('image')->nullable();
             $table->string('barcode_image')->nullable();
+            $table->enum('status', ['active', 'inactive'])->default('active');
             $table->timestamp('email_verified_at')->nullable();
             $table->string('password');
             $table->rememberToken();

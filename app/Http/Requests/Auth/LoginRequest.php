@@ -49,6 +49,15 @@ class LoginRequest extends FormRequest
             ]);
         }
 
+          // Check if the user is active
+          $user = Auth::user();
+          if ($user->status !== 'active') {
+              Auth::logout();
+              throw ValidationException::withMessages([
+                  'email' => 'Your account is inactive. Please contact support.',
+              ]);
+          }
+
         RateLimiter::clear($this->throttleKey());
     }
 
@@ -74,6 +83,7 @@ class LoginRequest extends FormRequest
             ]),
         ]);
     }
+
 
     /**
      * Get the rate limiting throttle key for the request.

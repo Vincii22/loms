@@ -3,6 +3,12 @@
     <div class="container mx-auto px-4 py-8">
         <h1 class="text-2xl font-semibold mb-6">Attendance Report</h1>
 
+        <div class="mb-6">
+            <a href="{{ route('reports.attendance_statistics') }}" class="inline-flex items-center px-4 py-2 bg-green-600 border border-transparent rounded-md shadow-sm text-white text-sm font-medium hover:bg-green-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-green-500">
+                View Statistical Report
+            </a>
+        </div>
+
         <form method="GET" action="{{ route('reports.attendance') }}" class="mb-6">
             <div class="grid grid-cols-1 md:grid-cols-3 gap-4">
                 <div>

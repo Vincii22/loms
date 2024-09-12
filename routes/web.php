@@ -1,5 +1,6 @@
 <?php
 use App\Http\Controllers\Admin\StudentController;
+use App\Http\Controllers\Admin\AdminController;
 use App\Http\Controllers\Admin\OfficerController;
 use App\Http\Controllers\StudentAttendanceController;
 use App\Http\Controllers\Officer\ReportsController;
@@ -38,8 +39,9 @@ Route::middleware('auth')->group(function () {
 
 
 Route::prefix('admin')->middleware('auth:admin')->group(function () {
-    Route::resource('students', StudentController::class);
+    Route::resource('astudents', StudentController::class);
     Route::resource('officers', OfficerController::class);
+    Route::resource('admins', AdminController::class);
 });
 
 
@@ -59,6 +61,7 @@ Route::prefix('officer')->middleware('auth:officer')->group(function () {
 Route::prefix('officer')->middleware('auth:officer')->group(function () {
 
     Route::get('reports/attendance', [ReportsController::class, 'attendanceReport'])->name('reports.attendance');
+    Route::get('reports/attendance_statistics', [ReportsController::class, 'attendanceStats'])->name('reports.attendance_statistics');
     Route::get('reports/finance', [ReportsController::class, 'financeReport'])->name('reports.finance');
     Route::get('reports/sanction', [ReportsController::class, 'sanctionReport'])->name('reports.sanction');
     Route::get('reports/clearance', [ReportsController::class, 'clearanceReport'])->name('reports.clearance');

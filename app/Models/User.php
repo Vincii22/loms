@@ -26,6 +26,7 @@ class User extends Authenticatable
         'year_id',
         'image',
         'barcode_image',
+        'status',
         'password',
     ];
 

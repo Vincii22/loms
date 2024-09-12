@@ -55,6 +55,15 @@
                             <x-input-error :messages="$errors->get('year_id')" class="mt-2" />
                         </div>
 
+                        <div class="mt-4">
+                            <x-input-label for="status" :value="__('Status')" />
+                            <select name="status" id="status" class="block mt-1 w-full" required>
+                                <option value="active" {{ old('status', $user->status) == 'active' ? 'selected' : '' }}>Active</option>
+                                <option value="inactive" {{ old('status', $user->status) == 'inactive' ? 'selected' : '' }}>Inactive</option>
+                            </select>
+                            <x-input-error :messages="$errors->get('status')" class="mt-2" />
+                        </div>
+
                         <div class="mb-4">
                             <x-input-label for="password" :value="__('Password')" />
                             <x-text-input id="password" class="block mt-1 w-full" type="password" name="password" autocomplete="new-password" />

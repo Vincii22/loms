@@ -24,6 +24,7 @@ class Officer extends Authenticatable
         'email',
         'role_id',
         'image',
+        'status',
         'password',
     ];
 
