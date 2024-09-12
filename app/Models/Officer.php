@@ -52,4 +52,22 @@ class Officer extends Authenticatable implements MustVerifyEmailContract
         'email_verified_at' => 'datetime',
         'password' => 'hashed',
     ];
+
+    public static function boot()
+    {
+        parent::boot();
+
+        static::saving(function ($officer) {
+            // Check if the role is available only if the officer is being activated
+            if ($officer->status === 'active') {
+                $role = Role::find($officer->role_id);
+
+                if ($role && !$role->isAvailable()) {
+                    // You can handle the error differently here if needed
+                    // For example, you could set a custom attribute to show an error message
+                    throw new \Exception('The selected role is already taken.');
+                }
+            }
+        });
+    }
 }

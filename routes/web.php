@@ -15,6 +15,7 @@ use App\Http\Controllers\Officer\FeesController;
 use App\Http\Controllers\Officer\AuditController;
 use App\Http\Controllers\Officer\DashboardController;
 use App\Http\Controllers\ProfileController;
+use App\Http\Controllers\UserController;
 use App\Http\Controllers\StudentFinanceController;
 use App\Http\Controllers\StudentDashboardController;
 use Illuminate\Support\Facades\Route;
@@ -73,6 +74,10 @@ Route::prefix('officer')->middleware('auth:officer')->group(function () {
     Route::get('reports/clearance', [ReportsController::class, 'clearanceReport'])->name('reports.clearance');
     Route::get('reports/student', [ReportsController::class, 'studentReport'])->name('reports.student');
 });
+
+
+
+route::middleware('auth')->get('/check-status', [UserController::class, 'checkStatus'])->name('check.status');
 
 Route::get('/officer/dashboard', [DashboardController::class, 'index'])->name('officer.dashboard');
 Route::post('/finances/update-payment-status', [FinanceController::class, 'updatePaymentStatus'])->name('finances.updatePaymentStatus')->middleware('auth:officer');

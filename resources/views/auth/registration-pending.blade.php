@@ -22,4 +22,31 @@
             </button>
         </form>
     </div>
+
+    <!-- Add JavaScript to check for status change -->
+    <script>
+document.addEventListener('DOMContentLoaded', function () {
+    const checkStatusInterval = setInterval(() => {
+        fetch('{{ route('check.status') }}', {
+            method: 'GET',
+            headers: {
+                'Content-Type': 'application/json',
+                'X-CSRF-TOKEN': '{{ csrf_token() }}'
+            }
+        })
+        .then(response => response.json())
+        .then(data => {
+            if (data.status === 'active') {
+                clearInterval(checkStatusInterval); // Stop checking
+                window.location.href = '{{ route('dashboard') }}'; // Redirect to the dashboard
+            }
+        })
+        .catch(error => {
+            console.error('Error checking status:', error);
+        });
+    }, 5000); // Check every 5 seconds
+});
+
+
+    </script>
 </x-guest-layout>
