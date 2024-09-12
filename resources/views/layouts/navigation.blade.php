@@ -1,20 +1,22 @@
-<nav x-data="{ open: false }" class="bg-[#5C0E0F] border-b border-gray-200 dark:border-gray-700">
+<nav x-data="{ open: false }" class="bg-[#5C0E0F] dark:border-gray-700">
     <!-- Primary Navigation Menu -->
     <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
         <div class="flex justify-between h-16">
-            <div class="flex">
+        <div class="flex">
                 <!-- Logo -->
                 <div class="shrink-0 flex items-center">
-                    <a href="{{ route('dashboard') }}">
-                        <x-application-logo class="block h-9 w-auto fill-current text-white dark:text-gray-200" />
+                    <a href="{{ route('officer.dashboard') }}">
+                        <img src="{{ asset('images/licoes.png') }}" alt="Logo" class="block h-10 w-auto fill-current">
+                        <!-- <x-application-logo class=" text-white dark:text-gray-200" /> -->
                     </a>
                 </div>
 
                 <!-- Navigation Links -->
                 <div class="hidden space-x-8 sm:-my-px sm:ms-10 sm:flex">
-                    <x-nav-link :href="route('dashboard')" :active="request()->routeIs('dashboard')"
-                                class="text-white hover:text-gray-300">
-                        {{ __('Dashboard') }}
+                    <x-nav-link :href="route('officer.dashboard')" :active="request()->routeIs('dashboard')" 
+                                class="text-white hover:text-gray-300 !border-none">
+                                <!-- palitan ng capstone title -->
+                                League of Integrated Computer and Engineering Students
                     </x-nav-link>
                 </div>
             </div>

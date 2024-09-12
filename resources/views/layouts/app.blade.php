@@ -22,7 +22,8 @@
             position: fixed;
             top: 64px; /* Same as before */
             left: 0;
-            width: 240px; /* Ensure this is consistent */
+            /* width: 240px;  */
+            width: 6rem; 
             height: calc(100vh - 64px); /* Same as before */
             background-color: white;
             border-right: 1px solid #ddd;
@@ -33,7 +34,7 @@
         /* Ensure the content wrapper is correctly positioned */
         .content-wrapper {
             margin-top: 64px; /* Same as before */
-            margin-left: 240px; /* Ensure this matches the sidebar width */
+            margin-left: 100px; /* Ensure this matches the sidebar width */
             display: flex;
             flex-direction: column;
             height: calc(100vh - 64px); /* Same as before */
@@ -71,11 +72,11 @@
         <!-- Main Content -->
         <main class="main-content p-6">
             @isset($header)
-                <header class="bg-white shadow mb-4">
-                    <div class="max-w-7xl mx-auto py-6 px-4 sm:px-6 lg:px-8">
+                <!-- <header class="bg-white shadow mb-4"> -->
+                    <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
                         {{ $header }}
                     </div>
-                </header>
+                <!-- </header> -->
             @endisset
 
             <!-- Page Content -->
