@@ -25,6 +25,7 @@ class User extends Authenticatable implements MustVerifyEmailContract
         'image',
         'barcode_image',
         'status',
+        'email_verified_at',
         'password',
     ];
 

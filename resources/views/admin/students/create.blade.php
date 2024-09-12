@@ -6,7 +6,7 @@
             <h2 class="text-2xl font-semibold mb-4">Add New Student</h2>
 
             <!-- Make sure to include enctype="multipart/form-data" to handle file uploads -->
-            <form action="{{ route('students.store') }}" method="POST" enctype="multipart/form-data">
+            <form action="{{ route('astudents.store') }}" method="POST" enctype="multipart/form-data">
                 @csrf
 
                 <!-- Name -->
@@ -77,12 +77,7 @@
                     <x-input-error :messages="$errors->get('image')" class="mt-2" />
                 </div>
 
-                <!-- Barcode Image -->
-                <div class="mt-4">
-                    <x-input-label for="barcode_image" :value="__('Barcode Image')" />
-                    <input id="barcode_image" class="block mt-1 w-full" type="file" name="barcode_image" />
-                    <x-input-error :messages="$errors->get('barcode_image')" class="mt-2" />
-                </div>
+
 
                 <div class="flex items-center justify-between mt-6">
                     <button
@@ -92,7 +87,7 @@
                         Save
                     </button>
                     <a
-                        href="{{ route('students.index') }}"
+                        href="{{ route('astudents.index') }}"
                         class="text-indigo-600 hover:text-indigo-900"
                     >
                         Back to list

@@ -26,9 +26,21 @@ class AuthenticatedSessionController extends Controller
     {
         $request->authenticate();
 
-        $request->session()->regenerate();
+    // Check if the authenticated user's status is active
+    $user = Auth::guard('web')->user();
 
+    // If the user's status is active, bypass email verification
+    if ($user->status === 'active' || !is_null($user->email_verified_at)) {
+        $request->session()->regenerate();
         return redirect()->intended(route('dashboard', absolute: false));
+    }
+
+    // If the user's email is not verified and the status is not active
+    Auth::guard('web')->logout();
+
+    return redirect()->route('login')->withErrors([
+        'email' => 'You need to verify your email before logging in.',
+    ]);
     }
 
     /**
