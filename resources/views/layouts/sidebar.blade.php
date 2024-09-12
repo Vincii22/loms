@@ -1,34 +1,61 @@
-<aside class="fixed top-16 left-0 w-64 bg-white border-r border-gray-200 md:w-64 md:h-[calc(100vh-64px)]">
-    <!-- Sidebar Header -->
-    <div class="flex flex-col h-full md:relative">
-        <!-- Logo and User Info -->
-        <header class="flex flex-col items-center justify-center border-b border-gray-200 md:h-1/4">
-            <div class="flex items-center justify-center w-full h-20">
-                <!-- Replace with your logo -->
-                <img src="{{ asset('images/licoes.png') }}" alt="Logo" class="h-28">
-            </div>
-            <div class="text-center border-t border-gray-200 mt-4 p-2 w-full bg-[#5C0E0F] md:h-1/4">
-                <p class="text-xl font-semibold text-white">{{ Auth::user()->name }}</p>
-            </div>
-        </header>
 
+<aside class="fixed top-16 left-0 w-24 bg-[#5C0E0F] border-r border-gray-200 md:w-24 md:h-[calc(100vh-64px)] ">
+    <!-- Sidebar Header -->
+    <div class="flex flex-col h-full md:relative pl-2">
         <!-- Sidebar Content -->
-        <div class="flex-1 overflow-auto p-4 bg-[#5C0E0F] text-white md:h-3/4">
+        <div class="flex-1 overflow-x-visible overflow-y-scroll p-4 text-white md:h-3/4 scrollbar-hidden w-[200px]">
             <nav>
-                <ul class="space-y-4">
-                    <li><a href="{{ route('dashboard') }}" class="hover:text-gray-300">Dashboard</a></li>
-                    <li><a href="{{ route('sAttendance.index') }}" class="hover:text-gray-300">Attendance</a></li>
-                    <li><a href="{{ route('finance.index') }}" class="hover:text-gray-300">Finance</a></li>
-                    <li><a href="{{ route('finance.index') }}" class="hover:text-gray-300">Sanction</a></li>
-                    <li><a href="{{ route('finance.index') }}" class="hover:text-gray-300">Clearance</a></li>
+                <ul class="space-y-9">
+                    <!-- <li><a href="{{ route('dashboard') }}" class="hover:text-gray-300">Dashboard</a></li> -->
+                    <li class="flex items-center justify-center relative hover-container">
+                        <a href="{{ route('dashboard') }}" class="hover:text-gray-300 relative ">
+                            <img src="{{ asset('images/dashboard.png') }}" alt="PICE Logo" class="h-[50px]">
+                            <span>
+                                Dashboard
+                            </span>
+                        </a>
+                    </li>
+                    <!-- <li><a href="{{ route('sAttendance.index') }}" class="hover:text-gray-300">Attendance</a></li> -->
+                    <li class="flex items-center justify-center relative hover-container">
+                        <a href="{{ route('sAttendance.index') }}" class="hover:text-gray-300 relative ">
+                            <img src="{{ asset('images/dashboard.png') }}" alt="PICE Logo" class="h-[50px]">
+                            <span>
+                            Attendance
+                            </span>
+                        </a>
+                    </li>
+                    <!-- <li><a  class="hover:text-gray-300">Finance</a></li> -->
+                    <li class="flex items-center justify-center relative hover-container">
+                        <a href="{{ route('finance.index') }}" class="hover:text-gray-300 relative ">
+                            <img src="{{ asset('images/dashboard.png') }}" alt="PICE Logo" class="h-[50px]">
+                            <span>
+                            Finance
+                            </span>
+                        </a>
+                    </li>
+                    <!-- <li><a href="{{ route('finance.index') }}" class="hover:text-gray-300">Sanction</a></li> -->
+                    <li class="flex items-center justify-center relative hover-container">
+                        <a href="{{ route('finance.index') }}" class="hover:text-gray-300 relative ">
+                            <img src="{{ asset('images/dashboard.png') }}" alt="PICE Logo" class="h-[50px]">
+                            <span>
+                            Sanction
+                            </span>
+                        </a>
+                    </li>
+                    <!-- <li><a href="{{ route('finance.index') }}" class="hover:text-gray-300">Clearance</a></li> -->
+                    <li class="flex items-center justify-center relative hover-container">
+                        <a href="{{ route('finance.index') }}" class="hover:text-gray-300 relative ">
+                            <img src="{{ asset('images/dashboard.png') }}" alt="PICE Logo" class="h-[50px]">
+                            <span>
+                            Clearance
+                            </span>
+                        </a>
+                    </li>
                 </ul>
             </nav>
         </div>
 
-        <!-- Sidebar Footer -->
-        <footer class="flex items-center justify-center p-4 border-t border-gray-200 md:absolute md:bottom-0 w-full">
-            <p class="text-sm text-gray-500">© {{ date('Y') }} Your Company</p>
-        </footer>
+
     </div>
 </aside>
 
@@ -78,3 +105,100 @@
         }
     });
 </script>
+
+
+
+
+
+
+
+
+
+
+<style>
+
+    /* Hide scrollbar for Chrome */
+    .scrollbar-hidden::-webkit-scrollbar {
+    display: none;
+    }
+
+    .scrollbar-hidden{
+        display: flex;
+        flex-direction: start;
+    }
+
+    .hover-container img{
+        /* -webkit-filter: invert(100%) */
+    /* filter: invert(100%); */
+    padding: 3px;
+    background-color: white;
+    border-radius: 10px;
+    }
+
+    .hover-container-button img{
+        /* -webkit-filter: invert(100%) */
+    /* filter: invert(100%); */
+    padding: 3px;
+    background-color: white;
+    border-radius: 10px;
+    }
+
+    .hover-container span, 
+    .hover-container-button span{
+        position: absolute;
+        width: 100%;
+        height: 100%;
+        left: 0;
+        z-index: 999999;
+        transition: .4s linear;
+        color: white;
+        margin-bottom: 10px;
+        top: 0;
+        opacity: 0;
+        font-size: 1.2rem;
+        display: flex;
+        align-items: center;
+    }
+    .hover-container-button span{
+        left: 5px ;
+    }
+
+    .hover-container:hover span, 
+    .hover-container-button:hover span{
+        transform: translateX(50%);
+        transition-delay: .3s;
+        opacity: 1;
+        background-color: #5C0E0F;
+        padding: 0 10px 0 10px ;
+        border-radius: 0px 10px 10px 0;
+        width: 120px;
+    }
+
+    .hover-container-dropdown span{
+        position: absolute;
+        width: 100%;
+        height: 50px;
+        left: 0;
+        z-index: 999999;
+        transition: .4s linear;
+        color: white;
+        margin-bottom: 10px;
+        opacity: 0;
+        font-size: 1.2rem;
+        display: flex;
+        align-items: center;
+    }
+    .hover-container-dropdown:nth-child(1) span {
+        top: 65px;
+        left: -5px;
+    }
+    .hover-container-dropdown:nth-child(2) span {
+        top: 125px;
+        left: -5px;
+    }
+
+    .hover-container-dropdown:hover span{
+        width: 150px;
+    }
+
+</style>
