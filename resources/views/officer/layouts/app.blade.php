@@ -32,7 +32,6 @@
         /* Fixed sidebar below the navigation bar */
         .fixed-sidebar {
             position: fixed;
-            top: 64px; /* Adjust to the height of the fixed header */
             left: 0;
             width: 6rem; 
             height: calc(100vh - 64px); /* Full height minus header height */
@@ -43,8 +42,7 @@
 
         /* Content wrapper adjusts for header and sidebar */
         .content-wrapper {
-            margin-top: 64px; /* Adjust to the height of the fixed header */
-            margin-left: 97px; /* Adjust to the width of the fixed sidebar */
+            margin-left: 240px; /* Adjust to the width of the fixed sidebar */
             display: flex;
             flex-direction: column;
             height: calc(100vh - 64px); /* Full height minus header height */
@@ -71,11 +69,6 @@
     </style>
 </head>
 <body class="font-sans antialiased">
-    <!-- Fixed Navigation -->
-    <header class="fixed-header">
-        @include('officer.layouts.navigation')
-    </header>
-
     <!-- Sidebar -->
     <aside class="fixed-sidebar">
         @include('officer.layouts.sidebar')
@@ -85,17 +78,13 @@
     <div class="content-wrapper">
         <!-- Page Heading -->
         @isset($header)
-            <header class="bg-white shadow mb-4" style="
-            width: 98%;
-            left: 20px;
-            position: relative;
-            top: 10px;
-            border-radius: 10px;
-            ">
+        <div class="flex justify-center">
+            <header class="bg-white shadow mb-4 w-[90%] mt-6">
                 <div class="max-w-7xl mx-auto py-6 px-4 sm:px-6 lg:px-8">
                     {{ $header }}
                 </div>
             </header>
+        </div>
         @endisset
 
         <!-- Main Content -->

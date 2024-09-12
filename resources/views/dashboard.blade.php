@@ -30,6 +30,7 @@
                 </div>
                 <div class="">
                     <h2 class="w-[50rem] mt-8">
+                        
                         Lorem ipsum dolor sit amet consectetur adipisicing elit. Nulla, repellendus? Ut sed commodi modi quidem est perferendis amet. Eligendi eaque laboriosam esse?
                     </h2>
                 </div>

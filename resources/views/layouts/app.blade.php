@@ -20,9 +20,8 @@
         /* Ensure the sidebar is properly sized */
         .fixed-sidebar {
             position: fixed;
-            top: 64px; /* Same as before */
+            top: 0; /* Same as before */
             left: 0;
-            /* width: 240px;  */
             width: 6rem; 
             height: calc(100vh - 64px); /* Same as before */
             background-color: white;
@@ -33,8 +32,7 @@
 
         /* Ensure the content wrapper is correctly positioned */
         .content-wrapper {
-            margin-top: 64px; /* Same as before */
-            margin-left: 100px; /* Ensure this matches the sidebar width */
+            margin-left: 240px; /* Ensure this matches the sidebar width */
             display: flex;
             flex-direction: column;
             height: calc(100vh - 64px); /* Same as before */
@@ -57,11 +55,6 @@
     </style>
 </head>
 <body class="font-sans antialiased">
-    <!-- Fixed Navigation -->
-    <header class="fixed-header">
-        @include('layouts.navigation')
-    </header>
-
     <!-- Sidebar -->
     <aside class="fixed-sidebar">
         @include('layouts.sidebar')
