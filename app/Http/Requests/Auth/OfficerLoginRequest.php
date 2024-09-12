@@ -48,15 +48,25 @@ class OfficerLoginRequest extends FormRequest
                 'email' => trans('auth.failed'),
             ]);
         }
+            $user = Auth::guard('officer')->user();
+
+          // Check if the officer's email is verified
+          if (is_null($user->email_verified_at)) {
+            Auth::guard('officer')->logout();
+            throw ValidationException::withMessages([
+                'email' => 'Please verify your email address before logging in.',
+            ]);
+        }
 
           // Check if the user is active
-          $user = Auth::guard('officer')->user();
           if ($user->status !== 'active') {
               Auth::guard('officer')->logout();
               throw ValidationException::withMessages([
                   'email' => 'Your account is inactive. Please contact support.',
               ]);
           }
+
+
 
         RateLimiter::clear($this->throttleKey());
     }

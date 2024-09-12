@@ -10,10 +10,10 @@ use App\Models\Year;
 use Illuminate\Auth\Events\Registered;
 use Illuminate\Http\RedirectResponse;
 use Illuminate\Http\Request;
-use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\Hash;
 use Illuminate\Validation\Rules;
 use Illuminate\View\View;
+use App\Notifications\UserRegistrationPending; // Add this line
 
 class RegisteredUserController extends Controller
 {
@@ -26,7 +26,6 @@ class RegisteredUserController extends Controller
         $courses = Course::all();
         $years = Year::all();
         return view('auth.register', compact('organizations', 'courses', 'years'));
-
     }
 
     /**
@@ -54,12 +53,17 @@ class RegisteredUserController extends Controller
             'course_id' => $request->course_id,
             'year_id' => $request->year_id,
             'password' => Hash::make($request->password),
+            'status' => 'pending', // Set status to pending
         ]);
 
         event(new Registered($user));
 
-        Auth::login($user);
+        // Send notification to admin
+        $user->notify(new UserRegistrationPending($user));
 
-        return redirect(route('dashboard', absolute: false));
+        // Optionally, send an email to the admin for approval
+
+        // You might want to redirect to a page that informs the user their registration is pending approval
+        return redirect()->route('registration.pending'); // Adjust this route as needed
     }
 }

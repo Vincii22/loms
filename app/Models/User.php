@@ -2,21 +2,19 @@
 
 namespace App\Models;
 
-// use Illuminate\Contracts\Auth\MustVerifyEmail;
+use Illuminate\Contracts\Auth\MustVerifyEmail as MustVerifyEmailContract;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
+use Illuminate\Database\Eloquent\Relations\HasMany;
 use Illuminate\Database\Eloquent\Relations\HasOne;
+use Illuminate\Database\Eloquent\Relations\BelongsTo;
 use Illuminate\Foundation\Auth\User as Authenticatable;
 use Illuminate\Notifications\Notifiable;
 
-class User extends Authenticatable
+class User extends Authenticatable implements MustVerifyEmailContract
 {
     use HasFactory, Notifiable;
 
-    /**
-     * The attributes that are mass assignable.
-     *
-     * @var array<int, string>
-     */
+    // Existing fillable attributes
     protected $fillable = [
         'name',
         'email',
@@ -30,95 +28,73 @@ class User extends Authenticatable
         'password',
     ];
 
-    public function organization()
+    // Relationships
+    public function organization(): BelongsTo
     {
         return $this->belongsTo(Organization::class, 'organization_id');
     }
 
-    public function course()
+    public function course(): BelongsTo
     {
         return $this->belongsTo(Course::class, 'course_id');
     }
 
-    public function year()
+    public function year(): BelongsTo
     {
         return $this->belongsTo(Year::class, 'year_id');
     }
 
-    public function attendances()
+    public function attendances(): HasMany
     {
         return $this->hasMany(Attendance::class, 'student_id');
     }
 
-    public function finances()
+    public function finances(): HasMany
     {
-        return $this->hasMany(Finance::class, 'user_id' );
+        return $this->hasMany(Finance::class, 'user_id');
     }
-    public function sanctions()
-{
-    return $this->hasMany(Sanction::class, 'student_id');
-}
 
-public function clearance()
-{
-    return $this->hasOne(Clearance::class);
-}
+    public function sanctions(): HasMany
+    {
+        return $this->hasMany(Sanction::class, 'student_id');
+    }
 
-public static function boot()
-{
-    parent::boot();
+    public function clearance(): HasOne
+    {
+        return $this->hasOne(Clearance::class);
+    }
 
     // Automatically create a clearance record when a user is created
-    static::created(function ($user) {
-        $user->clearance()->create(['status' => 'eligible']);
-    });
-}
+    protected static function boot()
+    {
+        parent::boot();
 
+        static::created(function ($user) {
+            $user->clearance()->create(['status' => 'eligible']);
+        });
+    }
 
-public function updateClearanceStatus()
-{
-    // Check if the user has any unresolved sanctions
-    $hasUnresolvedSanctions = $this->sanctions()->where('resolved', false)->exists();
+    // Update clearance status based on unresolved sanctions
+    public function updateClearanceStatus()
+    {
+        $hasUnresolvedSanctions = $this->sanctions()->where('resolved', false)->exists();
 
-    if ($hasUnresolvedSanctions) {
-        // If there are unresolved sanctions, set the status to 'not eligible'
-        if ($this->clearance) {
-            $this->clearance->update(['status' => 'not eligible']);
+        if ($hasUnresolvedSanctions) {
+            $this->clearance()->updateOrCreate([], ['status' => 'not eligible']);
         } else {
-            $this->clearance()->create(['status' => 'not eligible']);
-        }
-    } else {
-        // If there are no unresolved sanctions, set the status to 'eligible'
-        if ($this->clearance) {
-            $this->clearance->update(['status' => 'eligible']);
-        } else {
-            $this->clearance()->create(['status' => 'eligible']);
+            $this->clearance()->updateOrCreate([], ['status' => 'eligible']);
         }
     }
-}
 
-
-
-    /**
-     * The attributes that should be hidden for serialization.
-     *
-     * @var array<int, string>
-     */
+    // Hidden attributes
     protected $hidden = [
         'password',
         'remember_token',
     ];
 
-    /**
-     * Get the attributes that should be cast.
-     *
-     * @return array<string, string>
-     */
-    protected function casts(): array
-    {
-        return [
-            'email_verified_at' => 'datetime',
-            'password' => 'hashed',
-        ];
-    }
+    // Cast attributes
+    protected $casts = [
+        'email_verified_at' => 'datetime',
+        'password' => 'hashed',
+    ];
 }
