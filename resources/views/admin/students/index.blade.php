@@ -5,7 +5,7 @@
 <div class="container mx-auto p-4">
 
     <div class="flex justify-end mb-4">
-        <a href="{{ route('students.create') }}" class="bg-blue-500 text-white px-4 py-2 rounded hover:bg-blue-600">Create New Student</a>
+        <a href="{{ route('astudents.create') }}" class="bg-blue-500 text-white px-4 py-2 rounded hover:bg-blue-600">Create New Student</a>
     </div>
     <div class="overflow-x-auto">
         <table class="min-w-full bg-white border border-gray-200">

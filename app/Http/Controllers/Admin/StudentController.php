@@ -65,7 +65,6 @@ class StudentController extends Controller
         ]);
 
         $imagePath = $request->file('image') ? $request->file('image')->store('images', 'public') : null;
-        $barcodeImagePath = $request->file('barcode_image') ? $request->file('barcode_image')->store('barcode_images', 'public') : null;
 
         $user = User::create([
             'name' => $request->name,
@@ -74,7 +73,6 @@ class StudentController extends Controller
             'course_id' => $request->course_id,
             'year_id' => $request->year_id,
             'image' => $imagePath,
-            'barcode_image' => $barcodeImagePath,
             'status' => $request->status, // Store the status
             'password' => Hash::make($request->password),
         ]);

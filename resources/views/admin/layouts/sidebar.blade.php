@@ -1,30 +1,38 @@
 <!-- resources/views/layouts/sidebar.blade.php -->
-<aside class="w-64 bg-white fixed top-16 left-0 h-[calc(100vh-64px)] border-r border-gray-200">
+<aside class="w-64 bg-white fixed left-0 pt-5 h-[100vh] border-r border-gray-200">
     <!-- Sidebar Header -->
     <div class="flex flex-col h-full">
         <!-- Logo and User Info -->
-        <header class="flex flex-col items-center justify-center border-b border-gray-200" style="height: 25%;">
+        <header class="flex flex-col items-center justify-center" style="height: 25%;">
             <div class="flex items-center justify-center w-full h-20">
                 <!-- Replace with your logo -->
-                <img src="{{ asset('images/licoes.png') }}" alt="Logo" class="h-28">
+                <img src="{{ asset('images/licoes.png') }}" alt="Logo" class="h-32">
             </div>
-            <div class="text-center border-t border-gray-200 mt-4 p-2 w-full" style="background-color: #5C0E0F; height: 30%;">
-                <p class="text-xl font-semibold text-white">{{ Auth::user()->name }}</p>
-            </div>
+            <div class=" !px-5 mt-10 p-2 w-full" style=" height: 30%;">
+                <div class="flex items-center justify-between">
+                    <div class="">
+                        <p class="text-sm font-semibold text-black">Welcome, </p>
+                        <span class="text-sm uppercase"> {{ Auth::user()->name }}</span>
+                    </div>
+                    <div class="">
+                        @include('admin.layouts.navigation')
+                    </div>
+                </div>
+            <hr class="border border-black mt-2">
+
+        </div>
         </header>
 
         <!-- Sidebar Content -->
-        <div class="flex-1 overflow-auto p-4" style="background-color: #5C0E0F; color: white; height: 65%;">
+        <div class="flex-1 overflow-auto py-4 w-64" style=" color: black; height: 65%;">
             <nav>
-                <ul class="space-y-4">
-                    <li><a href="{{ route('admin.dashboard') }}" class="hover:text-gray-300">Dashboard</a></li>
-                    <li><a href="{{ route('admins.index') }}" class="hover:text-gray-300">Admins</a></li>
-                    <li><a href="{{ route('officers.index') }}" class="hover:text-gray-300">Officers</a></li>
-                    <li><a href="{{ route('astudents.index') }}" class="hover:text-gray-300">Students</a></li>
-                    <li><a href="{{ route('admin.pending_users') }}" class="hover:text-gray-300">Account Approval</a></li>
-
-                    <li><a href="{{ route('dashboard') }}" class="hover:text-gray-300">Logout</a></li>
-                </ul>
+            <ul class="space-y-4">
+                <li class="nav-links w-[220px] relative py-3 rounded-r-[10px] {{ request()->routeIs('admin.dashboard') ? 'bg-[maroon] text-white' : '' }}"><a href="{{ route('admin.dashboard') }}" class="relative  hover:text-gray-300  px-10 ">Dashboard</a></li>
+                <li class="nav-links w-[220px] relative py-3 rounded-r-[10px] {{ request()->routeIs('admins.index') ? 'bg-[maroon] text-white' : '' }}"><a href="{{ route('admins.index') }}" class="relative  hover:text-gray-300  px-10 ">Admins</a></li>
+                <li class="nav-links w-[220px] relative py-3 rounded-r-[10px] {{ request()->routeIs('officers.index') ? 'bg-[maroon] text-white' : '' }}"><a href="{{ route('officers.index') }}" class="relative  hover:text-gray-300  px-10">Officers</a></li>
+                <li class="nav-links w-[220px] relative py-3 rounded-r-[10px] {{ request()->routeIs('astudents.index') ? 'bg-[maroon] text-white' : '' }}"><a href="{{ route('astudents.index') }}" class="relative  hover:text-gray-300  px-10 ">Students</a></li>
+                <li class="nav-links w-[220px] relative py-3 rounded-r-[10px] {{ request()->routeIs('admin.pending_users') ? 'bg-[maroon] text-white' : '' }}"><a href="{{ route('admin.pending_users') }}" class="relative  hover:text-gray-300  px-10 ">Account Approval</a></li>
+            </ul>
             </nav>
         </div>
 
@@ -34,3 +42,13 @@
         </footer>
     </div>
 </aside>
+
+
+<style>
+     .nav-links:hover{
+        background-color: maroon;
+        color: white;
+        transition: .4s ease-in-out;
+     }
+    
+</style>
