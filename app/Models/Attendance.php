@@ -17,6 +17,7 @@ class Attendance extends Model
         'time_in',
         'time_out',
         'status',
+        'officer_id',
     ];
     public function user()
     {
@@ -27,6 +28,11 @@ class Attendance extends Model
     public function activity()
     {
         return $this->belongsTo(Activity::class, 'activity_id');
+    }
+
+    public function officer()
+    {
+        return $this->belongsTo(Officer::class, 'officer_id');
     }
 
     public static function boot()

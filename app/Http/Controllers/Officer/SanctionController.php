@@ -8,7 +8,6 @@ use App\Models\Finance;
 use App\Models\Organization;
 use App\Models\Course;
 use App\Models\Year;
-use Barryvdh\Debugbar\Facade as Debugbar;
 use App\Http\Controllers\Controller;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Log;
@@ -20,14 +19,11 @@ class SanctionController extends Controller
     {
         $searchName = $request->input('search_name');
         $searchSchoolId = $request->input('search_school_id');
-        $filterOrganization = $request->input('filter_organization');
-        $filterCourse = $request->input('filter_course');
-        $filterYear = $request->input('filter_year');
-        $filterType = $request->input('filter_type'); // New filter
+        $filterType = $request->input('filter_type'); // Sanction type filter
 
         // Log request inputs
 
-        $sanctions = Sanction::with('student.organization', 'student.course', 'student.year')
+        $sanctions = Sanction::with('student')
             ->when($searchName, function ($query, $searchName) {
                 return $query->whereHas('student', function ($query) use ($searchName) {
                     $query->where('name', 'like', '%' . $searchName . '%');
@@ -38,21 +34,6 @@ class SanctionController extends Controller
                     $query->where('school_id', 'like', '%' . $searchSchoolId . '%');
                 });
             })
-            ->when($filterOrganization, function ($query, $filterOrganization) {
-                return $query->whereHas('student.organization', function ($query) use ($filterOrganization) {
-                    $query->where('id', $filterOrganization);
-                });
-            })
-            ->when($filterCourse, function ($query, $filterCourse) {
-                return $query->whereHas('student.course', function ($query) use ($filterCourse) {
-                    $query->where('id', $filterCourse);
-                });
-            })
-            ->when($filterYear, function ($query, $filterYear) {
-                return $query->whereHas('student.year', function ($query) use ($filterYear) {
-                    $query->where('id', $filterYear);
-                });
-            })
             ->when($filterType, function ($query, $filterType) {
                 return $query->where('type', $filterType);
             })
@@ -60,18 +41,14 @@ class SanctionController extends Controller
 
         // Log the query and results
 
-        // Fetch all organizations, courses, and years for filtering options
-        $organizations = Organization::all();
-        $courses = Course::all();
-        $years = Year::all();
+        // Fetch all sanction types for filtering options
+        $sanctionTypes = Sanction::distinct()->pluck('type');
 
         // Log fetched data
 
-
         $this->checkSanctions();
-        return view('officer.sanctions.index', compact('sanctions', 'organizations', 'courses', 'years'));
+        return view('officer.sanctions.index', compact('sanctions', 'sanctionTypes'));
     }
-
     public function edit($id)
     {
         $sanction = Sanction::with('student')->findOrFail($id); // Fetch a single sanction with its related student
@@ -139,10 +116,10 @@ class SanctionController extends Controller
                         // Ensure the clearance record exists
                         $clearance = $student->clearance()->first();
                         if ($clearance) {
-                            $clearance->status = 'not eligible';
+                            $clearance->status = 'not cleared';
                             $clearance->save();
                         } else {
-                            $student->clearance()->create(['status' => 'not eligible']);
+                            $student->clearance()->create(['status' => 'not cleared']);
                         }
                     }
                 }
@@ -176,10 +153,10 @@ class SanctionController extends Controller
                         // Ensure the clearance record exists
                         $clearance = $student->clearance()->first();
                         if ($clearance) {
-                            $clearance->status = 'not eligible';
+                            $clearance->status = 'not cleared';
                             $clearance->save();
                         } else {
-                            $student->clearance()->create(['status' => 'not eligible']);
+                            $student->clearance()->create(['status' => 'not cleared']);
                         }
                     }
                 }

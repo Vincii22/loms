@@ -99,7 +99,7 @@
                     </li>
 
                     <!-- Dropdown for Reports -->
-                    {{-- <li>
+                    <li>
                         <button class="w-full text-left flex justify-between items-center focus:outline-none" onclick="toggleDropdown('reports-dropdown')">
                             Reports
                             <svg class="h-5 w-5 transition-transform duration-200 transform" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke="currentColor">
@@ -113,7 +113,7 @@
                             <li><a href="{{ route('reports.clearance') }}" class="hover:text-gray-300">Clearance Report</a></li>
                             <li><a href="{{ route('reports.student') }}" class="hover:text-gray-300">Student Report</a></li>
                         </ul>
-                    </li> --}}
+                    </li>
                 </ul>
             </nav>
         </div>
@@ -152,7 +152,7 @@
                 <li><a href="{{ route('clearances.index') }}" class="hover:text-gray-300">Clearance</a></li>
 
                 <!-- Dropdown for Reports -->
-                 {{-- <li>
+                  <li>
                     <button class="w-full text-left flex justify-between items-center focus:outline-none" onclick="toggleDropdown('mobile-reports-dropdown')">
                         Reports
                         <svg class="h-5 w-5 transition-transform duration-200 transform" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke="currentColor">
@@ -166,7 +166,7 @@
                         <li><a href="{{ route('reports.clearance') }}" class="hover:text-gray-300">Clearance Report</a></li>
                         <li><a href="{{ route('reports.student') }}" class="hover:text-gray-300">Student Report</a></li>
                     </ul>
-                </li> --}}
+                </li>
             </ul>
         </nav>
     </div>

@@ -49,6 +49,13 @@ class AdminLoginRequest extends FormRequest
             ]);
         }
 
+        $user = Auth::guard('admin')->user();
+        if ($user->status !== 'active') {
+            Auth::guard('admin')->logout();
+            throw ValidationException::withMessages([
+                'email' => 'Your account is inactive. Please contact support.',
+            ]);
+        }
         RateLimiter::clear($this->throttleKey());
     }
 

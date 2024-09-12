@@ -33,6 +33,7 @@
                                 N/A
                             @endif
                         </td>
+                        <td class="px-4 py-2 border-b text-center">{{ $officer->status }}</td>
                         <td class="px-4 py-2 border-b text-center">
                             <a href="{{ route('officers.edit', $officer->id) }}" class="text-blue-600 hover:text-blue-900">Edit</a> |
                             <form action="{{ route('officers.destroy', $officer->id) }}" method="POST" class="inline">
@@ -48,4 +49,5 @@
     </div>
 </div>
 
+@endsection
 </x-admin-app-layout>

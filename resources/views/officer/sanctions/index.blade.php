@@ -2,7 +2,19 @@
     @section('content')
     <div class="overflow-x-auto">
         <form method="GET" action="{{ route('sanctions.index') }}" class="mb-4">
-            <div class="grid grid-cols-1 md:grid-cols-4 gap-4 mb-4">
+            <div class="grid grid-cols-1 md:grid-cols-2 gap-4 mb-4">
+                <!-- Sanction Type Filter -->
+                <div>
+                    <label for="filter_type" class="block text-sm font-medium text-gray-700">Sanction Type</label>
+                    <select id="filter_type" name="filter_type" class="form-select mt-1 block w-full rounded-md border-gray-300 shadow-sm focus:border-indigo-500 focus:ring-indigo-500 sm:text-sm">
+                        <option value="">All Types</option>
+                        @foreach ($sanctionTypes as $type)
+                            <option value="{{ $type }}" {{ request('filter_type') == $type ? 'selected' : '' }}>
+                                {{ $type }}
+                            </option>
+                        @endforeach
+                    </select>
+                </div>
                 <!-- Student Name Search -->
                 <div>
                     <label for="search_name" class="block text-sm font-medium text-gray-700">Student Name</label>
@@ -15,56 +27,15 @@
                     <input type="text" id="search_school_id" name="search_school_id" value="{{ request('search_school_id') }}" class="mt-1 block w-full rounded-md border-gray-300 shadow-sm focus:border-indigo-500 focus:ring-indigo-500 sm:text-sm" placeholder="Search by school ID">
                 </div>
 
-                <!-- Organization Filter -->
-                <div>
-                    <label for="filter_organization" class="block text-sm font-medium text-gray-700">Organization</label>
-                    <select id="filter_organization" name="filter_organization" class="form-select mt-1 block w-full rounded-md border-gray-300 shadow-sm focus:border-indigo-500 focus:ring-indigo-500 sm:text-sm">
-                        <option value="">All Organizations</option>
-                        @foreach ($organizations as $organization)
-                            <option value="{{ $organization->id }}" {{ request('filter_organization') == $organization->id ? 'selected' : '' }}>
-                                {{ $organization->name }}
-                            </option>
-                        @endforeach
-                    </select>
-                </div>
 
-                <!-- Course Filter -->
-                <div>
-                    <label for="filter_course" class="block text-sm font-medium text-gray-700">Course</label>
-                    <select id="filter_course" name="filter_course" class="form-select mt-1 block w-full rounded-md border-gray-300 shadow-sm focus:border-indigo-500 focus:ring-indigo-500 sm:text-sm">
-                        <option value="">All Courses</option>
-                        @foreach ($courses as $course)
-                            <option value="{{ $course->id }}" {{ request('filter_course') == $course->id ? 'selected' : '' }}>
-                                {{ $course->name }}
-                            </option>
-                        @endforeach
-                    </select>
-                </div>
 
-                <!-- Year Filter -->
-                <div>
-                    <label for="filter_year" class="block text-sm font-medium text-gray-700">Year</label>
-                    <select id="filter_year" name="filter_year" class="form-select mt-1 block w-full rounded-md border-gray-300 shadow-sm focus:border-indigo-500 focus:ring-indigo-500 sm:text-sm">
-                        <option value="">All Years</option>
-                        @foreach ($years as $year)
-                            <option value="{{ $year->id }}" {{ request('filter_year') == $year->id ? 'selected' : '' }}>
-                                {{ $year->name }}
-                            </option>
-                        @endforeach
-                    </select>
-                </div>
-            </div>
-
-            <!-- Filter Button -->
-            <div class="flex justify-end">
-                <button type="submit" class="bg-blue-500 text-white px-4 py-2 rounded-md shadow hover:bg-blue-600 transition">Apply Filters</button>
             </div>
         </form>
 
         <table class="min-w-full bg-white border border-gray-200 rounded-lg shadow-md">
             <thead class="bg-gray-800 text-white">
                 <tr>
-                    <th class="py-2 px-4 border-b">ID</th>
+                    <th class="py-2 px-4 border-b">School ID</th>
                     <th class="py-2 px-4 border-b">Student</th>
                     <th class="py-2 px-4 border-b">Type</th>
                     <th class="py-2 px-4 border-b">Fine Amount</th>
@@ -76,7 +47,7 @@
             <tbody>
                 @forelse($sanctions as $sanction)
                 <tr>
-                    <td class="py-2 px-4 border-b">{{ $sanction->id }}</td>
+                    <td class="py-2 px-4 border-b">{{ $sanction->student->school_id ?? 'N/A' }}</td>
                     <td class="py-2 px-4 border-b">{{ $sanction->student->name ?? 'N/A' }}</td>
                     <td class="py-2 px-4 border-b">{{ $sanction->type }}</td>
                     <td class="py-2 px-4 border-b">{{ $sanction->fine_amount ? number_format($sanction->fine_amount, 2) : 'N/A' }}</td>
@@ -93,7 +64,7 @@
                 </tr>
                 @empty
                 <tr>
-                    <td colspan="8" class="py-2 px-4 border-b text-center text-gray-500">No sanctions found.</td>
+                    <td colspan="7" class="py-2 px-4 border-b text-center text-gray-500">No sanctions found.</td>
                 </tr>
                 @endforelse
             </tbody>
@@ -103,5 +74,25 @@
     <div class="mt-4">
         {{ $sanctions->links('pagination::tailwind') }}
     </div>
+
+    <script>
+        // Add event listener for text inputs
+        document.querySelectorAll('input[type="text"]').forEach(input => {
+            input.addEventListener('input', function() {
+                var searchParams = new URLSearchParams(window.location.search);
+                searchParams.set(this.name, this.value);
+                window.location.href = "{{ route('sanctions.index') }}?" + searchParams.toString();
+            });
+        });
+
+        // Add event listener for select inputs
+        document.querySelectorAll('select').forEach(select => {
+            select.addEventListener('change', function() {
+                var searchParams = new URLSearchParams(window.location.search);
+                searchParams.set(this.name, this.value);
+                window.location.href = "{{ route('sanctions.index') }}?" + searchParams.toString();
+            });
+        });
+    </script>
     @endsection
 </x-officer-app-layout>

@@ -8,7 +8,7 @@ use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\RateLimiter;
 use Illuminate\Support\Str;
 use Illuminate\Validation\ValidationException;
-
+use Illuminate\Support\Facades\Log;
 class LoginRequest extends FormRequest
 {
     /**
@@ -44,10 +44,31 @@ class LoginRequest extends FormRequest
         if (! Auth::attempt($this->only('email', 'password'), $this->boolean('remember'))) {
             RateLimiter::hit($this->throttleKey());
 
+
+        Log::info('Login failed', ['email' => $this->only('email')]);
+
             throw ValidationException::withMessages([
                 'email' => trans('auth.failed'),
             ]);
         }
+        $user = Auth::user();
+
+        // Check if the user's email is verified
+        if (is_null($user->email_verified_at)) {
+        Auth::logout();
+        throw ValidationException::withMessages([
+            'email' => 'Please verify your email address before logging in.',
+        ]);
+    }
+          // Check if the user is active
+          if ($user->status !== 'active') {
+              Auth::logout();
+              throw ValidationException::withMessages([
+                  'email' => 'Your account is inactive. Please contact support.',
+              ]);
+          }
+
+
 
         RateLimiter::clear($this->throttleKey());
     }
@@ -74,6 +95,7 @@ class LoginRequest extends FormRequest
             ]),
         ]);
     }
+
 
     /**
      * Get the rate limiting throttle key for the request.

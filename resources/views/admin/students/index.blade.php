@@ -17,7 +17,8 @@
                     <th class="px-4 py-2 border-b">Organization</th>
                     <th class="px-4 py-2 border-b">Course</th>
                     <th class="px-4 py-2 border-b">Year</th>
-                    <th class="px-4 py-2 border-b">Image</th> <!-- New column header for image -->
+                    <th class="px-4 py-2 border-b">Image</th>
+                    <th class="px-4 py-2 border-b">Status</th> <!-- New column for status -->
                     <th class="px-4 py-2 border-b">Actions</th>
                 </tr>
             </thead>
@@ -31,12 +32,13 @@
                         <td class="px-4 py-2 border-b">{{ $user->course ? $user->course->name : 'N/A' }}</td>
                         <td class="px-4 py-2 border-b text-center">{{ $user->year ? $user->year->name : 'N/A' }}</td>
                         <td class="px-4 py-2 border-b text-center">
-                            @if($user->image) <!-- Check if image exists -->
+                            @if($user->image)
                                 <img src="{{ asset('storage/' . $user->image) }}" alt="Student Image" class="w-16 h-16 object-cover">
                             @else
                                 N/A
                             @endif
                         </td>
+                        <td class="px-4 py-2 border-b text-center">{{ ucfirst($user->status) }}</td> <!-- Show status -->
                         <td class="px-4 py-2 border-b text-center">
                             <a href="{{ route('students.edit', $user->id) }}" class="text-blue-600 hover:text-blue-900">Edit</a> |
                             <form action="{{ route('students.destroy', $user->id) }}" method="POST" class="inline">
@@ -48,6 +50,7 @@
                     </tr>
                 @endforeach
             </tbody>
+
         </table>
     </div>
 </div>

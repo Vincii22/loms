@@ -15,11 +15,11 @@
                 <textarea id="description" name="description" class="form-textarea mt-1 block w-full"></textarea>
             </div>
             <div class="mb-4">
-                <label for="start_time" class="block text-gray-700">Start Time</label>
+                <label for="start_time" class="block text-gray-700">Start of Time In</label>
                 <input type="datetime-local" id="start_time" name="start_time" class="form-input mt-1 block w-full" required>
             </div>
             <div class="mb-4">
-                <label for="end_time" class="block text-gray-700">End Time</label>
+                <label for="end_time" class="block text-gray-700">Start of Time Out</label>
                 <input type="datetime-local" id="end_time" name="end_time" class="form-input mt-1 block w-full">
             </div>
             <div class="mb-4">

@@ -4,7 +4,7 @@
         <h1 class="text-2xl font-bold mb-4">Finance Management</h1>
 
         <form method="GET" action="{{ route('finances.index') }}" class="mb-4">
-            <!-- Select Fee Dropdown in a Separate Div -->
+            <!-- Select Fee Dropdown -->
             <div class="mb-4">
                 <label for="fee_id" class="block text-sm font-medium text-gray-700">Select Fee</label>
                 <select name="fee_id" id="fee_id" class="form-select mt-1 block w-full rounded-md border-gray-300 shadow-sm focus:border-indigo-500 focus:ring-indigo-500 sm:text-sm">
@@ -17,7 +17,7 @@
                 </select>
             </div>
 
-            <!-- Other Filters in a Flex Layout -->
+            <!-- Other Filters -->
             <div class="flex flex-wrap -mx-2 mb-4">
                 <!-- Search by Name -->
                 <div class="w-full md:w-1/2 lg:w-1/4 px-2 mb-4">
@@ -31,8 +31,6 @@
                     <input type="text" name="search_school_id" id="search_school_id" placeholder="Search by school ID" value="{{ request('search_school_id') }}" class="form-input mt-1 block w-full rounded-md border-gray-300 shadow-sm focus:border-indigo-500 focus:ring-indigo-500 sm:text-sm">
                 </div>
             </div>
-
-            <button type="submit" class="bg-[#5C0E0F] text-white px-4 py-2 rounded-md hover:bg-[#470A0B] mt-4">Filter</button>
         </form>
 
         @if($finances->count())
@@ -40,22 +38,24 @@
                 <table class="min-w-full bg-white border border-gray-200 rounded-lg shadow-sm">
                     <thead class="bg-gray-100 border-b">
                         <tr>
-                            <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">ID</th>
+                            <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">School ID</th>
                             <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">User</th>
                             <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Fee</th>
                             <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Amount</th>
                             <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Status</th>
+                            <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Officer</th>
                             <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Actions</th>
                         </tr>
                     </thead>
                     <tbody>
                         @foreach ($finances as $finance)
                             <tr class="border-b">
-                                <td class="px-6 py-4 whitespace-nowrap">{{ $finance->id }}</td>
+                                <td class="px-6 py-4 whitespace-nowrap">{{ $finance->user->school_id }}</td>
                                 <td class="px-6 py-4 whitespace-nowrap">{{ $finance->user->name }}</td>
                                 <td class="px-6 py-4 whitespace-nowrap">{{ $finance->fee->name }}</td>
                                 <td class="px-6 py-4 whitespace-nowrap">{{ $finance->default_amount }}</td>
                                 <td class="px-6 py-4 whitespace-nowrap">{{ $finance->status }}</td>
+                                <td>{{ $finance->officer->name ?? 'N/A' }}</td>
                                 <td class="px-6 py-4 whitespace-nowrap">
                                     <a href="{{ route('finances.edit', $finance->id) }}" class="bg-yellow-500 text-white px-3 py-1 rounded hover:bg-yellow-600">Edit</a>
                                     <form action="{{ route('finances.destroy', $finance->id) }}" method="POST" class="inline">
@@ -86,6 +86,14 @@
             var searchParams = new URLSearchParams(window.location.search);
             searchParams.set('fee_id', feeId);
             window.location.href = "{{ route('finances.index') }}?" + searchParams.toString();
+        });
+
+        document.querySelectorAll('input[type="text"]').forEach(input => {
+            input.addEventListener('input', function() {
+                var searchParams = new URLSearchParams(window.location.search);
+                searchParams.set(this.name, this.value);
+                window.location.href = "{{ route('finances.index') }}?" + searchParams.toString();
+            });
         });
     </script>
 </x-officer-app-layout>

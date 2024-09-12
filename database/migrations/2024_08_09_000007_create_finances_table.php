@@ -15,6 +15,7 @@ return new class extends Migration
             $table->id();
             $table->foreignId('user_id')->constrained('users')->onDelete('cascade');
             $table->foreignId('fee_id')->constrained('fees')->onDelete('cascade');
+            $table->foreignId('officer_id')->nullable()->constrained('officers')->onDelete('set null');
             $table->decimal('default_amount', 8, 2); // Add this line
             $table->enum('status', ['Paid', 'Not Paid'])->default('Not Paid');
             $table->timestamps();

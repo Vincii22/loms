@@ -1,4 +1,4 @@
-@extends('layouts.app')
+<x-officer-app-layout>
 
 @section('content')
 <div class="container">
@@ -25,3 +25,4 @@
     </table>
 </div>
 @endsection
+</x-officer-app-layout>
