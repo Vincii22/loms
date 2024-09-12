@@ -45,6 +45,7 @@ class OfficerController extends Controller
             'role_id' => ['required', 'exists:roles,id'],
             'image' => ['nullable', 'image', 'max:2048'],
             'password' => ['required', 'confirmed', Rules\Password::defaults()],
+            'status' => ['required', 'in:active,inactive'], // Validate the status input
         ]);
 
         $imagePath = $request->file('image') ? $request->file('image')->store('officer_images', 'public') : null;
@@ -55,6 +56,7 @@ class OfficerController extends Controller
             'role_id' => $request->role_id,
             'image' => $imagePath,
             'password' => Hash::make($request->password),
+            'status' => $request->status, // Store the status
         ]);
 
         return redirect()->route('officers.index')
@@ -92,6 +94,7 @@ class OfficerController extends Controller
             'role_id' => ['required', 'exists:roles,id'],
             'image' => ['nullable', 'image', 'max:2048'],
             'password' => ['nullable', 'confirmed', Rules\Password::defaults()],
+            'status' => ['required', 'in:active,inactive'], // Validate the status input
         ]);
 
         $officer = Officer::findOrFail($id);
@@ -108,6 +111,8 @@ class OfficerController extends Controller
         if ($request->filled('password')) {
             $officer->password = Hash::make($request->password);
         }
+
+        $officer->status = $request->status; // Update the status
 
         $officer->save();
 

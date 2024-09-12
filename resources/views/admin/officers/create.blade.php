@@ -40,6 +40,14 @@
                 <x-input-error :messages="$errors->get('image')" class="mt-2" />
             </div>
 
+            <div class="mt-4">
+                <x-input-label for="status" :value="__('Status')" />
+                <select name="status" id="status" class="block mt-1 w-full border-gray-300 shadow-sm rounded-md focus:ring-indigo-500 focus:border-indigo-500" required>
+                    <option value="active">Active</option>
+                    <option value="inactive">Inactive</option>
+                </select>
+            </div>
+
             <!-- Password -->
             <div class="mt-4">
                 <x-input-label for="password" :value="__('Password')" />
@@ -71,4 +79,6 @@
         </form>
     </div>
 </div>
+
+@endsection
 </x-admin-app-layout>

@@ -49,6 +49,15 @@ class OfficerLoginRequest extends FormRequest
             ]);
         }
 
+          // Check if the user is active
+          $user = Auth::guard('officer')->user();
+          if ($user->status !== 'active') {
+              Auth::guard('officer')->logout();
+              throw ValidationException::withMessages([
+                  'email' => 'Your account is inactive. Please contact support.',
+              ]);
+          }
+
         RateLimiter::clear($this->throttleKey());
     }
 

@@ -18,9 +18,9 @@
             <nav>
                 <ul class="space-y-4">
                     <li><a href="{{ route('admin.dashboard') }}" class="hover:text-gray-300">Dashboard</a></li>
-                    <li><a href="{{ route('students.index') }}" class="hover:text-gray-300">Students</a></li>
+                    <li><a href="{{ route('admins.index') }}" class="hover:text-gray-300">Admins</a></li>
                     <li><a href="{{ route('officers.index') }}" class="hover:text-gray-300">Officers</a></li>
-                    <li><a href="{{ route('finance.index') }}" class="hover:text-gray-300">Attendance</a></li>
+                    <li><a href="{{ route('astudents.index') }}" class="hover:text-gray-300">Students</a></li>
                     <li><a href="{{ route('finance.index') }}" class="hover:text-gray-300">Finance</a></li>
                     <li><a href="{{ route('finance.index') }}" class="hover:text-gray-300">Sanction</a></li>
                     <li><a href="{{ route('finance.index') }}" class="hover:text-gray-300">Clearance</a></li>

@@ -1,4 +1,5 @@
 <x-admin-app-layout>
+    @section('content')
     <x-slot name="header">
         <h2 class="font-semibold text-xl text-gray-800 leading-tight">
             {{ __('Edit Officer') }}
@@ -45,6 +46,14 @@
                         </div>
 
                         <div class="mb-4">
+                            <x-input-label for="status" :value="__('Status')" />
+                            <select name="status" id="status" class="block mt-1 w-full" required>
+                                <option value="active" {{ $officer->status == 'active' ? 'selected' : '' }}>Active</option>
+                                <option value="inactive" {{ $officer->status == 'inactive' ? 'selected' : '' }}>Inactive</option>
+                            </select>
+                        </div>
+
+                        <div class="mb-4">
                             <x-input-label for="password" :value="__('Password')" />
                             <x-text-input id="password" class="block mt-1 w-full" type="password" name="password" autocomplete="new-password" />
                             <x-input-error :messages="$errors->get('password')" class="mt-2" />
@@ -66,4 +75,6 @@
             </div>
         </div>
     </div>
+
+@endsection
 </x-admin-app-layout>
