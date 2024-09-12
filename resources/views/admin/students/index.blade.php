@@ -40,8 +40,8 @@
                         </td>
                         <td class="px-4 py-2 border-b text-center">{{ ucfirst($user->status) }}</td> <!-- Show status -->
                         <td class="px-4 py-2 border-b text-center">
-                            <a href="{{ route('students.edit', $user->id) }}" class="text-blue-600 hover:text-blue-900">Edit</a> |
-                            <form action="{{ route('students.destroy', $user->id) }}" method="POST" class="inline">
+                            <a href="{{ route('astudents.edit', $user->id) }}" class="text-blue-600 hover:text-blue-900">Edit</a> |
+                            <form action="{{ route('astudents.destroy', $user->id) }}" method="POST" class="inline">
                                 @csrf
                                 @method('DELETE')
                                 <button type="submit" class="text-red-600 hover:text-red-900">Delete</button>

@@ -21,6 +21,7 @@ class OfficerController extends Controller
     {
         $officers = Officer::with(['role'])->get();
         $roles = Role::all();
+
         return view('admin.officers.index', compact('officers', 'roles'));
     }
 
@@ -30,7 +31,9 @@ class OfficerController extends Controller
     public function create()
     {
         $officers = Officer::with(['role'])->get();
-        $roles = Role::all();
+        $roles = Role::whereDoesntHave('officers', function ($query) {
+            $query->where('status', 'active');
+        })->get();
         return view('admin.officers.create', compact('officers', 'roles'));
     }
 
@@ -38,30 +41,30 @@ class OfficerController extends Controller
      * Store a newly created resource in storage.
      */
     public function store(Request $request)
-    {
-        $request->validate([
-            'name' => ['required', 'string', 'max:255'],
-            'email' => ['required', 'string', 'lowercase', 'email', 'max:255', 'unique:'.Officer::class],
-            'role_id' => ['required', 'exists:roles,id'],
-            'image' => ['nullable', 'image', 'max:2048'],
-            'password' => ['required', 'confirmed', Rules\Password::defaults()],
-            'status' => ['required', 'in:active,inactive'], // Validate the status input
-        ]);
+{
+    $validated = $request->validate([
+        'name' => 'required|string|max:255',
+        'email' => 'required|email|unique:officers,email',
+        'role' => 'required|string|in:president,vice-president,secretary', // Add all roles
+    ]);
 
-        $imagePath = $request->file('image') ? $request->file('image')->store('officer_images', 'public') : null;
+    // Check if the role is already taken
+    $existingOfficer = Officer::where('role', $validated['role'])->first();
 
-        $officer = Officer::create([
-            'name' => $request->name,
-            'email' => $request->email,
-            'role_id' => $request->role_id,
-            'image' => $imagePath,
-            'password' => Hash::make($request->password),
-            'status' => $request->status, // Store the status
-        ]);
-
-        return redirect()->route('officers.index')
-                         ->with('success', 'Officer created successfully');
+    if ($existingOfficer) {
+        return redirect()->back()->withErrors(['role' => 'The selected role is already taken.']);
     }
+
+    // Create the new officer if the role is available
+    Officer::create([
+        'name' => $validated['name'],
+        'email' => $validated['email'],
+        'role' => $validated['role'],
+        // other fields
+    ]);
+
+    return redirect()->route('admin.officers.index')->with('success', 'Officer created successfully.');
+}
 
     /**
      * Display the specified resource.
@@ -94,10 +97,16 @@ class OfficerController extends Controller
             'role_id' => ['required', 'exists:roles,id'],
             'image' => ['nullable', 'image', 'max:2048'],
             'password' => ['nullable', 'confirmed', Rules\Password::defaults()],
-            'status' => ['required', 'in:active,inactive'], // Validate the status input
+            'status' => ['required', 'in:active,inactive'],
         ]);
 
         $officer = Officer::findOrFail($id);
+
+        $role = Role::find($request->role_id);
+
+        if ($role && !$role->isAvailable()) {
+            return back()->withErrors(['role_id' => 'The selected role is already taken.']);
+        }
 
         if ($request->hasFile('image')) {
             $imagePath = $request->file('image')->store('officer_images', 'public');
@@ -112,14 +121,13 @@ class OfficerController extends Controller
             $officer->password = Hash::make($request->password);
         }
 
-        $officer->status = $request->status; // Update the status
+        $officer->status = $request->status;
 
         $officer->save();
 
         return redirect()->route('officers.index')
                          ->with('success', 'Officer updated successfully');
     }
-
     /**
      * Remove the specified resource from storage.
      */

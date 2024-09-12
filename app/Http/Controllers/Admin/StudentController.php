@@ -54,13 +54,11 @@ class StudentController extends Controller
     {
         $request->validate([
             'name' => ['required', 'string', 'max:255'],
-            'email' => ['required', 'string', 'lowercase', 'email', 'max:255', 'unique:'.User::class],
+            'email' => ['required', 'string', 'lowercase', 'email', 'max:255', 'unique:' . User::class],
             'organization_id' => ['required', 'exists:organizations,id'],
             'course_id' => ['required', 'exists:courses,id'],
             'year_id' => ['required', 'exists:years,id'],
             'image' => ['nullable', 'image', 'mimes:jpeg,png,jpg', 'max:2048'],
-            'barcode_image' => ['nullable', 'image', 'mimes:jpeg,png,jpg', 'max:2048'],
-            'status' => ['required', 'in:active,inactive'], // Validate the status
             'password' => ['required', 'confirmed', Rules\Password::defaults()],
         ]);
 
@@ -73,13 +71,14 @@ class StudentController extends Controller
             'course_id' => $request->course_id,
             'year_id' => $request->year_id,
             'image' => $imagePath,
+            'status' => 'active', // Default status set to active
+            'email_verified_at' => now(), // Bypass email verification
             'status' => $request->status, // Store the status
             'password' => Hash::make($request->password),
         ]);
 
-        return redirect()->route('admin.astudents.index')->with('success', 'Student created successfully');
+        return redirect()->route('astudents.index')->with('success', 'Student created successfully with active status and no email verification.');
     }
-
     /**
      * Display the specified resource.
      */
@@ -100,7 +99,7 @@ class StudentController extends Controller
         $courses = Course::all();
         $years = Year::all();
 
-        return view('admin.students.edit', compact('user', 'organizations', 'courses', 'years'));
+        return view('admin.astudents.edit', compact('user', 'organizations', 'courses', 'years'));
     }
 
     /**
@@ -108,39 +107,37 @@ class StudentController extends Controller
      */
     public function update(Request $request, string $id)
     {
-        //
-
         $user = User::findOrFail($id);
 
-    $request->validate([
-        'name' => ['required', 'string', 'max:255'],
-        'email' => ['required', 'string', 'email', 'max:255', 'unique:users,email,' . $user->id],
-        'organization_id' => ['required', 'exists:organizations,id'],
-        'course_id' => ['required', 'exists:courses,id'],
-        'year_id' => ['required', 'exists:years,id'],
-        'status' => ['required', 'in:active,inactive'], // Validate the status
-        'password' => ['nullable', 'confirmed', Rules\Password::defaults()],
-        'image' => ['nullable', 'image', 'mimes:jpeg,png,jpg', 'max:2048'],
-    ]);
+        $request->validate([
+            'name' => ['required', 'string', 'max:255'],
+            'email' => ['required', 'string', 'email', 'max:255', 'unique:users,email,' . $user->id],
+            'organization_id' => ['required', 'exists:organizations,id'],
+            'course_id' => ['required', 'exists:courses,id'],
+            'year_id' => ['required', 'exists:years,id'],
+            'status' => ['required', 'in:active,inactive'], // Validate the status
+            'password' => ['nullable', 'confirmed', Rules\Password::defaults()],
+            'image' => ['nullable', 'image', 'mimes:jpeg,png,jpg', 'max:2048'],
+        ]);
 
-    $imagePath = $request->hasFile('image') ? $request->file('image')->store('public/images') : $user->image;
+        $imagePath = $request->hasFile('image') ? $request->file('image')->store('public/images') : $user->image;
 
-    // Update user information
-    $user->name = $request->name;
-    $user->email = $request->email;
-    $user->organization_id = $request->organization_id;
-    $user->course_id = $request->course_id;
-    $user->year_id = $request->year_id;
-    $user->image = $imagePath;
-    $user->status = $request->status; // Update the status
+        // Update user information
+        $user->name = $request->name;
+        $user->email = $request->email;
+        $user->organization_id = $request->organization_id;
+        $user->course_id = $request->course_id;
+        $user->year_id = $request->year_id;
+        $user->image = $imagePath;
+        $user->status = $request->status; // Update the status
 
-    if ($request->filled('password')) {
-        $user->password = Hash::make($request->password);
-    }
+        if ($request->filled('password')) {
+            $user->password = Hash::make($request->password);
+        }
 
-    $user->save();
+        $user->save();
 
-    return redirect()->route('astudents.index')->with('success', 'Student updated successfully.');
+        return redirect()->route('astudents.index')->with('success', 'Student updated successfully.');
     }
 
     /**
