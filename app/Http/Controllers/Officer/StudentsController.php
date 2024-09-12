@@ -95,12 +95,13 @@ class StudentsController extends Controller
     {
         $request->validate([
             'name' => ['required', 'string', 'max:255'],
-            'email' => ['required', 'string', 'lowercase', 'email', 'max:255', 'unique:'.User::class],
+            'email' => ['required', 'string', 'lowercase', 'email', 'max:255', 'unique:' . User::class],
             'organization_id' => ['required', 'exists:organizations,id'],
             'course_id' => ['required', 'exists:courses,id'],
             'year_id' => ['required', 'exists:years,id'],
             'password' => ['required', 'confirmed', Rules\Password::defaults()],
         ]);
+
         $user = User::create([
             'name' => $request->name,
             'email' => $request->email,
@@ -108,11 +109,14 @@ class StudentsController extends Controller
             'course_id' => $request->course_id,
             'year_id' => $request->year_id,
             'password' => Hash::make($request->password),
+            'status' => 'active', // Automatically set status to active
+            'email_verified_at' => now(), // Bypass email verification
         ]);
 
         return redirect()->route('students.index')
-                         ->with('success', 'Student created successfully');
+                         ->with('success', 'Student created successfully with active status and no email verification.');
     }
+
 
     /**
      * Display the specified resource.

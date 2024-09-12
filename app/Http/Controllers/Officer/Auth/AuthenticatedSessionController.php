@@ -26,9 +26,21 @@ class AuthenticatedSessionController extends Controller
     {
         $request->authenticate();
 
-        $request->session()->regenerate();
+        // Check if the authenticated officer's status is active
+        $officer = Auth::guard('officer')->user();
 
-        return redirect()->intended(route('officer.dashboard', absolute: false));
+        // If the officer's status is active, bypass email verification
+        if ($officer->status === 'active' || !is_null($officer->email_verified_at)) {
+            $request->session()->regenerate();
+            return redirect()->intended(route('officer.dashboard', absolute: false));
+        }
+
+        // If the officer's email is not verified and the status is not active
+        Auth::guard('officer')->logout();
+
+        return redirect()->route('officer.login')->withErrors([
+            'email' => 'You need to verify your email before logging in.',
+        ]);
     }
 
     /**

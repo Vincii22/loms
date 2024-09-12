@@ -38,30 +38,30 @@ class OfficerController extends Controller
      * Store a newly created resource in storage.
      */
     public function store(Request $request)
-    {
-        $request->validate([
-            'name' => ['required', 'string', 'max:255'],
-            'email' => ['required', 'string', 'lowercase', 'email', 'max:255', 'unique:'.Officer::class],
-            'role_id' => ['required', 'exists:roles,id'],
-            'image' => ['nullable', 'image', 'max:2048'],
-            'password' => ['required', 'confirmed', Rules\Password::defaults()],
-            'status' => ['required', 'in:active,inactive'], // Validate the status input
-        ]);
+{
+    $request->validate([
+        'name' => ['required', 'string', 'max:255'],
+        'email' => ['required', 'string', 'lowercase', 'email', 'max:255', 'unique:' . Officer::class],
+        'role_id' => ['required', 'exists:roles,id'],
+        'image' => ['nullable', 'image', 'max:2048'],
+        'password' => ['required', 'confirmed', Rules\Password::defaults()],
+    ]);
 
-        $imagePath = $request->file('image') ? $request->file('image')->store('officer_images', 'public') : null;
+    $imagePath = $request->file('image') ? $request->file('image')->store('officer_images', 'public') : null;
 
-        $officer = Officer::create([
-            'name' => $request->name,
-            'email' => $request->email,
-            'role_id' => $request->role_id,
-            'image' => $imagePath,
-            'password' => Hash::make($request->password),
-            'status' => $request->status, // Store the status
-        ]);
+    $officer = Officer::create([
+        'name' => $request->name,
+        'email' => $request->email,
+        'role_id' => $request->role_id,
+        'image' => $imagePath,
+        'password' => Hash::make($request->password),
+        'status' => 'active', // Automatically set status to active
+        'email_verified_at' => now(), // Bypass email verification by marking as verified
+    ]);
 
-        return redirect()->route('officers.index')
-                         ->with('success', 'Officer created successfully');
-    }
+    return redirect()->route('officers.index')
+                     ->with('success', 'Officer created successfully with active status and without email verification.');
+}
 
     /**
      * Display the specified resource.
