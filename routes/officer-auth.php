@@ -35,19 +35,25 @@ Route::middleware('guest:officer')->prefix('officer')->name('officer.')->group(f
 
     Route::post('reset-password', [NewPasswordController::class, 'store'])
                 ->name('password.store');
+
+    Route::get('/registration-pending', function () {
+                    return view('officer.auth.registration-pending');
+                })->name('registration.pending');
 });
 
 Route::middleware('auth:officer')->prefix('officer')->name('officer.')->group(function () {
+    Route::get('/dashboard', [DashboardController::class, 'index'])
+                ->middleware(['verified'])
+                ->name('dashboard');
 
-    Route::get('/dashboard', function () {
-        return view('officer.dashboard');
-    })->middleware(['verified'])->name('dashboard');
+    Route::get('/profile', [ProfileController::class, 'edit'])
+                ->name('profile.edit');
 
-    Route::get('/dashboard', [DashboardController::class, 'index'])->middleware(['verified'])->name('dashboard');
-        Route::get('/profile', [ProfileController::class, 'edit'])->name('profile.edit');
-        Route::patch('/profile', [ProfileController::class, 'update'])->name('profile.update');
-        Route::delete('/profile', [ProfileController::class, 'destroy'])->name('profile.destroy');
+    Route::patch('/profile', [ProfileController::class, 'update'])
+                ->name('profile.update');
 
+    Route::delete('/profile', [ProfileController::class, 'destroy'])
+                ->name('profile.destroy');
 
     Route::get('verify-email', EmailVerificationPromptController::class)
                 ->name('verification.notice');
@@ -65,7 +71,8 @@ Route::middleware('auth:officer')->prefix('officer')->name('officer.')->group(fu
 
     Route::post('confirm-password', [ConfirmablePasswordController::class, 'store']);
 
-    Route::put('password', [PasswordController::class, 'update'])->name('password.update');
+    Route::put('password', [PasswordController::class, 'update'])
+                ->name('password.update');
 
     Route::post('logout', [AuthenticatedSessionController::class, 'destroy'])
                 ->name('logout');

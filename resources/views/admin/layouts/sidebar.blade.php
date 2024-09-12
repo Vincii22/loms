@@ -21,11 +21,8 @@
                     <li><a href="{{ route('admins.index') }}" class="hover:text-gray-300">Admins</a></li>
                     <li><a href="{{ route('officers.index') }}" class="hover:text-gray-300">Officers</a></li>
                     <li><a href="{{ route('astudents.index') }}" class="hover:text-gray-300">Students</a></li>
-                    <li><a href="{{ route('finance.index') }}" class="hover:text-gray-300">Finance</a></li>
-                    <li><a href="{{ route('finance.index') }}" class="hover:text-gray-300">Sanction</a></li>
-                    <li><a href="{{ route('finance.index') }}" class="hover:text-gray-300">Clearance</a></li>
-                    <li><a href="{{ route('finance.index') }}" class="hover:text-gray-300">Profile</a></li>
-                    <li><a href="{{ route('dashboard') }}" class="hover:text-gray-300">Settings</a></li>
+                    <li><a href="{{ route('admin.pending_users') }}" class="hover:text-gray-300">Account Approval</a></li>
+
                     <li><a href="{{ route('dashboard') }}" class="hover:text-gray-300">Logout</a></li>
                 </ul>
             </nav>
