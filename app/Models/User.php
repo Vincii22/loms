@@ -70,7 +70,7 @@ class User extends Authenticatable implements MustVerifyEmailContract
         parent::boot();
 
         static::created(function ($user) {
-            $user->clearance()->create(['status' => 'eligible']);
+            $user->clearance()->create(['status' => 'not cleared']);
         });
     }
 
@@ -84,16 +84,15 @@ class User extends Authenticatable implements MustVerifyEmailContract
                 ->where('resolved', false)
                 ->exists();
 
-            $newStatus = $hasUnresolvedSanctions ? 'not cleared' : 'cleared';
+            // Optionally skip automatic updates if status is manually set
+            if ($clearance->status === 'manual') {
+                return;
+            }
 
-            // Log status changes
-            Log::info("Updating clearance status for user ID {$this->id}: {$clearance->status} -> {$newStatus}");
-
-            $clearance->status = $newStatus;
+            $clearance->status = $hasUnresolvedSanctions ? 'not cleared' : 'cleared';
             $clearance->save();
-        } else {
-            Log::info("No clearance record found for user ID {$this->id}");
         }
+
     }
 
     // Hidden attributes
