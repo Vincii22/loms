@@ -34,7 +34,7 @@
             position: fixed;
             top: 64px; /* Adjust to the height of the fixed header */
             left: 0;
-            width: 240px; /* Adjust as needed */
+            width: 6rem; 
             height: calc(100vh - 64px); /* Full height minus header height */
             background-color: white;
             border-right: 1px solid #ddd;
@@ -44,7 +44,7 @@
         /* Content wrapper adjusts for header and sidebar */
         .content-wrapper {
             margin-top: 64px; /* Adjust to the height of the fixed header */
-            margin-left: 240px; /* Adjust to the width of the fixed sidebar */
+            margin-left: 97px; /* Adjust to the width of the fixed sidebar */
             display: flex;
             flex-direction: column;
             height: calc(100vh - 64px); /* Full height minus header height */
@@ -85,7 +85,13 @@
     <div class="content-wrapper">
         <!-- Page Heading -->
         @isset($header)
-            <header class="bg-white shadow mb-4">
+            <header class="bg-white shadow mb-4" style="
+            width: 98%;
+            left: 20px;
+            position: relative;
+            top: 10px;
+            border-radius: 10px;
+            ">
                 <div class="max-w-7xl mx-auto py-6 px-4 sm:px-6 lg:px-8">
                     {{ $header }}
                 </div>

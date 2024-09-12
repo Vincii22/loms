@@ -6,7 +6,8 @@
                 <!-- Logo -->
                 <div class="shrink-0 flex items-center">
                     <a href="{{ route('officer.dashboard') }}">
-                        <x-application-logo class="block h-9 w-auto fill-current text-white dark:text-gray-200" />
+                        <img src="{{ asset('images/licoes.png') }}" alt="Logo" class="block h-10 w-auto fill-current">
+                        <!-- <x-application-logo class=" text-white dark:text-gray-200" /> -->
                     </a>
                 </div>
 
@@ -14,7 +15,8 @@
                 <div class="hidden space-x-8 sm:-my-px sm:ms-10 sm:flex">
                     <x-nav-link :href="route('officer.dashboard')" :active="request()->routeIs('dashboard')"
                                 class="text-white hover:text-gray-300">
-                        {{ __('Dashboard') }}
+                                <!-- palitan ng capstone title -->
+                                League of Integrated Computer and Engineering Students
                     </x-nav-link>
                 </div>
             </div>
