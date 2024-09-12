@@ -21,6 +21,7 @@ class Officer extends Authenticatable implements MustVerifyEmailContract
         'role_id',
         'image',
         'status',
+        'email_verified_at',
         'password',
     ];
 
