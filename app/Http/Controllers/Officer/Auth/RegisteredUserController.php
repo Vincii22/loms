@@ -5,6 +5,8 @@ namespace App\Http\Controllers\Officer\Auth;
 use App\Http\Controllers\Controller;
 use App\Models\Officer;
 use App\Models\Role;
+use App\Models\Organization;
+use App\Models\Course;
 use Illuminate\Auth\Events\Registered;
 use Illuminate\Http\RedirectResponse;
 use Illuminate\Http\Request;
@@ -20,8 +22,12 @@ class RegisteredUserController extends Controller
      */
     public function create(): View
     {
-        $roles = Role::all(); // Fetch all roles from the database
-        return view('officer.auth.register', compact('roles'));
+        $officers = Officer::with(['role'])->get();
+         // Fetch available roles
+         $roles = Role::whereDoesntHave('officers', function ($query) {
+            $query->where('status', 'active');
+        })->get();
+        return view('officer.auth.register', compact('roles', 'officers'));
     }
 
     /**
@@ -33,12 +39,19 @@ class RegisteredUserController extends Controller
     {
         $request->validate([
             'name' => ['required', 'string', 'max:255'],
-            'email' => ['required', 'string', 'lowercase', 'email', 'max:255', 'unique:'.Officer::class],
+            'email' => ['required', 'string', 'lowercase', 'email', 'max:255', 'unique:officers,email'],
             'role_id' => ['required', 'exists:roles,id'],
             'password' => ['required', 'confirmed', Rules\Password::defaults()],
         ]);
 
-        $officer = Officer::create([
+        $role = Role::find($request->role_id);
+
+        // Check if the role is available
+        if ($role && !$role->isAvailable()) {
+            return back()->withErrors(['role_id' => 'The selected role is already taken.']);
+        }
+
+        Officer::create([
             'name' => $request->name,
             'email' => $request->email,
             'role_id' => $request->role_id,
@@ -46,14 +59,8 @@ class RegisteredUserController extends Controller
             'status' => 'pending', // Set status to pending
         ]);
 
-        event(new Registered($officer));
-
-        // Send notification to admin
-        $officer->notify(new OfficerRegistrationPending($officer));
-
-        // Optionally, send an email to the admin for approval
-
-        // You might want to redirect to a page that informs the user their registration is pending approval
-        return redirect()->route('registration.pending'); // Adjust this route as needed
+        return redirect()->route('registration.pending');
     }
+
 }
+

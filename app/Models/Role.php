@@ -18,7 +18,10 @@ class Role extends Model
     {
         return $this->hasMany(Officer::class, 'role_id', 'id');
     }
-
+    public function isAvailable(): bool
+    {
+        return $this->officers()->where('status', 'active')->count() === 0;
+    }
 
     use HasFactory;
 }
