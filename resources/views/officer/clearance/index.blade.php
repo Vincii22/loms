@@ -31,7 +31,7 @@
                     <label for="status" class="block text-sm font-medium text-gray-700">Filter by Status</label>
                     <select id="status" name="status" class="form-select mt-1 block w-full rounded-md border-gray-300 shadow-sm focus:border-indigo-500 focus:ring-indigo-500 sm:text-sm">
                         <option value="">All Statuses</option>
-                        <option value="not eligible" {{ request('status') === 'not eligible' ? 'selected' : '' }}>Not Eligible</option>
+                        <option value="not cleared" {{ request('status') === 'not cleared' ? 'selected' : '' }}>Not Cleared</option>
                         <option value="cleared" {{ request('status') === 'cleared' ? 'selected' : '' }}>Cleared</option>
                     </select>
                 </div>
@@ -61,7 +61,7 @@
                                     @csrf
                                     @method('PUT')
                                     <select name="status" onchange="this.form.submit()" class="form-select border-gray-300 rounded-md shadow-sm focus:ring-blue-500 focus:border-blue-500">
-                                        <option value="not eligible" {{ $user->clearance && $user->clearance->status === 'not eligible' ? 'selected' : '' }}>Not Eligible</option>
+                                        <option value="not cleared" {{ $user->clearance && $user->clearance->status === 'not cleared' ? 'selected' : '' }}>Not Cleared</option>
                                         <option value="cleared" {{ $user->clearance && $user->clearance->status === 'cleared' ? 'selected' : '' }}>Cleared</option>
                                     </select>
                                 </form>

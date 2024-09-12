@@ -88,7 +88,7 @@ class AttendanceController extends Controller
 
         $activityStartTime = Carbon::parse($activity->start_time)->format('H:i:s');
         $activityEndTime = Carbon::parse($activity->end_time)->format('H:i:s');
-        $thirtyMinutesAfterStart = Carbon::parse($activity->start_time)->addMinutes(30)->format('H:i:s');
+        $thirtyMinutesAfterStart = Carbon::parse($activity->start_time)->addMinutes(1)->format('H:i:s');
 
         $user = User::where('school_id', $scannedId)->first();
 

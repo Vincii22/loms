@@ -22,7 +22,7 @@ class DatabaseSeeder extends Seeder
             SemestersTableSeeder::class,
             UsersTableSeeder::class,
             OfficersTableSeeder::class,
-
+            AdminTableSeeder::class,
             // Add other seeders here
         ]);
     }

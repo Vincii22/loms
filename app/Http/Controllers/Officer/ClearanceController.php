@@ -37,7 +37,7 @@ class ClearanceController extends Controller
     public function update(Request $request, $id)
     {
         $request->validate([
-            'status' => 'required|string|in:not eligible,cleared',
+            'status' => 'required|string|in:not cleared,cleared',
         ]);
 
         $user = User::findOrFail($id);

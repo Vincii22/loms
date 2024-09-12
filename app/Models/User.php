@@ -9,7 +9,7 @@ use Illuminate\Database\Eloquent\Relations\HasOne;
 use Illuminate\Database\Eloquent\Relations\BelongsTo;
 use Illuminate\Foundation\Auth\User as Authenticatable;
 use Illuminate\Notifications\Notifiable;
-
+use Illuminate\Support\Facades\Log;
 class User extends Authenticatable implements MustVerifyEmailContract
 {
     use HasFactory, Notifiable;
@@ -77,12 +77,22 @@ class User extends Authenticatable implements MustVerifyEmailContract
     // Update clearance status based on unresolved sanctions
     public function updateClearanceStatus()
     {
-        $hasUnresolvedSanctions = $this->sanctions()->where('resolved', false)->exists();
+        $clearance = $this->clearance()->first();
 
-        if ($hasUnresolvedSanctions) {
-            $this->clearance()->updateOrCreate([], ['status' => 'not eligible']);
+        if ($clearance) {
+            $hasUnresolvedSanctions = Sanction::where('student_id', $this->id)
+                ->where('resolved', false)
+                ->exists();
+
+            $newStatus = $hasUnresolvedSanctions ? 'not cleared' : 'cleared';
+
+            // Log status changes
+            Log::info("Updating clearance status for user ID {$this->id}: {$clearance->status} -> {$newStatus}");
+
+            $clearance->status = $newStatus;
+            $clearance->save();
         } else {
-            $this->clearance()->updateOrCreate([], ['status' => 'eligible']);
+            Log::info("No clearance record found for user ID {$this->id}");
         }
     }
 

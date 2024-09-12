@@ -116,10 +116,10 @@ class SanctionController extends Controller
                         // Ensure the clearance record exists
                         $clearance = $student->clearance()->first();
                         if ($clearance) {
-                            $clearance->status = 'not eligible';
+                            $clearance->status = 'not cleared';
                             $clearance->save();
                         } else {
-                            $student->clearance()->create(['status' => 'not eligible']);
+                            $student->clearance()->create(['status' => 'not cleared']);
                         }
                     }
                 }
@@ -153,10 +153,10 @@ class SanctionController extends Controller
                         // Ensure the clearance record exists
                         $clearance = $student->clearance()->first();
                         if ($clearance) {
-                            $clearance->status = 'not eligible';
+                            $clearance->status = 'not cleared';
                             $clearance->save();
                         } else {
-                            $student->clearance()->create(['status' => 'not eligible']);
+                            $student->clearance()->create(['status' => 'not cleared']);
                         }
                     }
                 }
