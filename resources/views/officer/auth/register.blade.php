@@ -19,37 +19,36 @@
             <x-input-error :messages="$errors->get('email')" class="mt-2" />
         </div>
 
-        <div>
-            <label for="role_id" class="text-white">Role</label><br>
-            <select name="role_id" id="role_id" required>
+        <!-- Role -->
+        <div class="mb-4">
+            <x-input-label for="role_id" :value="__('Role')" />
+            <select name="role_id" id="role_id" class="mt-1 block w-full border-gray-300 rounded-md shadow-sm focus:ring-indigo-500 focus:border-indigo-500 sm:text-sm" required>
                 <option value="">Select a role</option>
                 @foreach($roles as $role)
-                    <option value="{{ $role->id }}">{{ $role->name }}</option>
+                    @if($role->isAvailable()) <!-- Ensure only available roles are shown -->
+                        <option value="{{ $role->id }}">{{ $role->name }}</option>
+                    @endif
                 @endforeach
             </select>
+            <x-input-error :messages="$errors->get('role_id')" class="mt-2" />
         </div>
-
 
         <!-- Password -->
         <div class="mt-4">
             <x-input-label for="password" :value="__('Password')" />
-
             <x-text-input id="password" class="block mt-1 w-full"
                             type="password"
                             name="password"
                             required autocomplete="new-password" />
-
             <x-input-error :messages="$errors->get('password')" class="mt-2" />
         </div>
 
         <!-- Confirm Password -->
         <div class="mt-4">
             <x-input-label for="password_confirmation" :value="__('Confirm Password')" />
-
             <x-text-input id="password_confirmation" class="block mt-1 w-full"
                             type="password"
                             name="password_confirmation" required autocomplete="new-password" />
-
             <x-input-error :messages="$errors->get('password_confirmation')" class="mt-2" />
         </div>
 

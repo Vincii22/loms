@@ -14,22 +14,9 @@
     <!-- Scripts -->
     @vite(['resources/css/app.css', 'resources/js/app.js'])
     <style>
-        /* Fixed navigation bar */
-        .fixed-header {
-            position: fixed;
-            top: 0;
-            left: 0;
-            right: 0;
-            height: 64px; /* Adjust as needed */
-            z-index: 1000;
-            background-color: #5C0E0F; /* Adjust background color */
-            color: white; /* Text color */
-        }
-
         /* Fixed sidebar below the navigation bar */
         .fixed-sidebar {
             position: fixed;
-            top: 64px; /* Adjust to the height of the fixed header */
             left: 0;
             width: 240px; /* Adjust as needed */
             height: calc(100vh - 64px); /* Full height minus header height */
@@ -40,7 +27,6 @@
 
         /* Content wrapper adjusts for header and sidebar */
         .content-wrapper {
-            margin-top: 64px; /* Adjust to the height of the fixed header */
             margin-left: 240px; /* Adjust to the width of the fixed sidebar */
             display: flex;
             flex-direction: column;
@@ -59,7 +45,6 @@
             .fixed-sidebar {
                 width: 100%;
                 height: auto;
-                top: 64px; /* Adjust to the height of the fixed header */
             }
 
             .content-wrapper {
@@ -69,10 +54,6 @@
     </style>
 </head>
 <body class="font-sans antialiased">
-    <!-- Fixed Navigation -->
-    <header class="fixed-header">
-        @include('admin.layouts.navigation')
-    </header>
 
     <!-- Sidebar -->
     <aside class="fixed-sidebar">
@@ -83,11 +64,14 @@
     <div class="content-wrapper">
         <!-- Page Heading -->
         @isset($header)
-            <header class="bg-white shadow mb-4 p-4">
-                <div class="max-w-7xl mx-auto">
-                    {{ $header }}
-                </div>
-            </header>
+            <div class="flex justify-center">
+                <header class="bg-white shadow mb-4 p-4 !mt-5 !ml-5 w-[95%] flex justify-between">
+                    <div class="max-w-7xl mx-10">
+                        {{ $header }}
+                    </div>
+                    <div class="mr-10 text-sm" id="currentTime"></div>
+                </header>
+            </div>
         @endisset
 
         <!-- Main Content -->
@@ -97,5 +81,26 @@
     </div>
 
     @yield('scripts')
+
+    <script>
+        document.addEventListener('DOMContentLoaded', function() {
+    const currentTimeElement = document.getElementById('currentTime');
+    
+    function updateTime() {
+        const now = new Date();
+        const hours = String(now.getHours()).padStart(2, '0');
+        const minutes = String(now.getMinutes()).padStart(2, '0');
+        const seconds = String(now.getSeconds()).padStart(2, '0');
+        
+        currentTimeElement.textContent = `${hours}:${minutes}:${seconds}`;
+    }
+
+    // Update time every second
+    setInterval(updateTime, 1000);
+
+    // Initial update
+    updateTime();
+});
+    </script>
 </body>
 </html>
