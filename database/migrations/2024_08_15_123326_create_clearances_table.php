@@ -14,7 +14,7 @@ return new class extends Migration
         Schema::create('clearances', function (Blueprint $table) {
             $table->id();
             $table->foreignId('user_id')->constrained()->onDelete('cascade');
-            $table->enum('status', ['not cleared', 'cleared'])->default('not cleared');
+            $table->enum('status', ['not cleared', 'cleared'])->default('cleared');
             $table->timestamps();
         });
     }
