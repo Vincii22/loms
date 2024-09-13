@@ -50,5 +50,5 @@
         color: white;
         transition: .4s ease-in-out;
      }
-    
+
 </style>

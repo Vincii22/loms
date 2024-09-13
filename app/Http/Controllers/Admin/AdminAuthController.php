@@ -32,7 +32,18 @@ class AdminAuthController extends Controller
     {
         Log::info("Approving user/officer with ID: $id");
 
-        // Try to find the officer first, if an officer approval is requested
+        // First, try to find a user
+        $user = User::find($id);
+        if ($user) {
+            Log::info("Updating User: " . $user->email);
+            $user->status = 'active';
+            $user->email_verified_at = now();
+            $user->save();
+            $user->notify(new UserRegistrationApproved($user));
+            return redirect()->route('admin.pending_users')->with('success', 'User approved.');
+        }
+
+        // If no user is found, then check for an officer
         $officer = Officer::find($id);
         if ($officer) {
             Log::info("Updating Officer: " . $officer->email);
@@ -40,22 +51,11 @@ class AdminAuthController extends Controller
             $officer->email_verified_at = now();
             $officer->save();
             $officer->notify(new OfficerRegistrationApproved($officer));
-        } else {
-            // If not an officer, try to find a user
-            $user = User::find($id);
-            if ($user) {
-                Log::info("Updating User: " . $user->email);
-                $user->status = 'active';
-                $user->email_verified_at = now();
-                $user->save();
-                $user->notify(new UserRegistrationApproved($user));
-            } else {
-                Log::error("User/Officer with ID $id not found.");
-                return redirect()->route('admin.pending_users')->with('error', 'User/Officer not found.');
-            }
+            return redirect()->route('admin.pending_users')->with('success', 'Officer approved.');
         }
 
-        return redirect()->route('admin.pending_users')->with('success', 'User/Officer approved.');
+        Log::error("User/Officer with ID $id not found.");
+        return redirect()->route('admin.pending_users')->with('error', 'User/Officer not found.');
     }
 
     /**
@@ -68,6 +68,7 @@ class AdminAuthController extends Controller
     {
         $user = User::find($id);
         if ($user) {
+            $user = User::findOrFail($id);
             $user->status = 'inactive'; // or delete the user if preferred
             $user->save();
         } else {
