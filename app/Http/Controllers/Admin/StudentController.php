@@ -73,7 +73,6 @@ class StudentController extends Controller
             'image' => $imagePath,
             'status' => 'active', // Default status set to active
             'email_verified_at' => now(), // Bypass email verification
-            'status' => $request->status, // Store the status
             'password' => Hash::make($request->password),
         ]);
 
