@@ -46,22 +46,24 @@
             </thead>
             <tbody>
                 @forelse($sanctions as $sanction)
-                <tr>
-                    <td class="py-2 px-4 border-b">{{ $sanction->student->school_id ?? 'N/A' }}</td>
-                    <td class="py-2 px-4 border-b">{{ $sanction->student->name ?? 'N/A' }}</td>
-                    <td class="py-2 px-4 border-b">{{ $sanction->type }}</td>
-                    <td class="py-2 px-4 border-b">{{ $sanction->fine_amount ? number_format($sanction->fine_amount, 2) : 'N/A' }}</td>
-                    <td class="py-2 px-4 border-b">{{ $sanction->required_action ?: 'N/A' }}</td>
-                    <td class="py-2 px-4 border-b">{{ $sanction->resolved ? 'Yes' : 'No' }}</td>
-                    <td class="py-2 px-4 border-b flex space-x-2">
-                        <a href="{{ route('sanctions.edit', $sanction->id) }}" class="bg-yellow-500 text-white px-3 py-1 rounded-lg shadow hover:bg-yellow-600 transition text-xs">Edit</a>
-                        <form action="{{ route('sanctions.destroy', $sanction->id) }}" method="POST" class="inline">
-                            @csrf
-                            @method('DELETE')
-                            <button type="submit" class="bg-red-500 text-white px-3 py-1 rounded-lg shadow hover:bg-red-600 transition text-xs" onclick="return confirm('Are you sure?')">Delete</button>
-                        </form>
-                    </td>
-                </tr>
+                @if (!$sanction->resolved)
+                    <tr>
+                        <td class="py-2 px-4 border-b">{{ $sanction->student->school_id ?? 'N/A' }}</td>
+                        <td class="py-2 px-4 border-b">{{ $sanction->student->name ?? 'N/A' }}</td>
+                        <td class="py-2 px-4 border-b">{{ $sanction->type }}</td>
+                        <td class="py-2 px-4 border-b">{{ $sanction->fine_amount ? number_format($sanction->fine_amount, 2) : 'N/A' }}</td>
+                        <td class="py-2 px-4 border-b">{{ $sanction->required_action ?: 'N/A' }}</td>
+                        <td class="py-2 px-4 border-b">{{ $sanction->resolved ? 'Yes' : 'No' }}</td>
+                        <td class="py-2 px-4 border-b flex space-x-2">
+                            <a href="{{ route('sanctions.edit', $sanction->id) }}" class="bg-yellow-500 text-white px-3 py-1 rounded-lg shadow hover:bg-yellow-600 transition text-xs">Edit</a>
+                            <form action="{{ route('sanctions.destroy', $sanction->id) }}" method="POST" class="inline">
+                                @csrf
+                                @method('DELETE')
+                                <button type="submit" class="bg-red-500 text-white px-3 py-1 rounded-lg shadow hover:bg-red-600 transition text-xs" onclick="return confirm('Are you sure?')">Delete</button>
+                            </form>
+                        </td>
+                    </tr>
+                @endif
                 @empty
                 <tr>
                     <td colspan="7" class="py-2 px-4 border-b text-center text-gray-500">No sanctions found.</td>

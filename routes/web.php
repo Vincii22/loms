@@ -3,6 +3,7 @@ use App\Http\Controllers\Admin\StudentController;
 use App\Http\Controllers\Admin\AdminController;
 use App\Http\Controllers\Admin\AdminAuthController;
 use App\Http\Controllers\Admin\OfficerController;
+use App\Http\Controllers\Admin\AdminDashboardController;
 use App\Http\Controllers\StudentAttendanceController;
 use App\Http\Controllers\Officer\ReportsController;
 use App\Http\Controllers\Officer\ActivityController;
@@ -44,6 +45,7 @@ Route::prefix('admin')->middleware('auth:admin')->group(function () {
     Route::resource('astudents', StudentController::class);
     Route::resource('officers', OfficerController::class);
     Route::resource('admins', AdminController::class);
+    Route::resource('adminDashboard', AdminDashboardController::class);
 
 
     Route::get('pending-users', [AdminAuthController::class, 'index'])->name('admin.pending_users');

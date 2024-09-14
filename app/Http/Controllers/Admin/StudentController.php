@@ -55,6 +55,7 @@ class StudentController extends Controller
         $request->validate([
             'name' => ['required', 'string', 'max:255'],
             'email' => ['required', 'string', 'lowercase', 'email', 'max:255', 'unique:' . User::class],
+            'school_id' => ['required', 'string', 'max:8'],
             'organization_id' => ['required', 'exists:organizations,id'],
             'course_id' => ['required', 'exists:courses,id'],
             'year_id' => ['required', 'exists:years,id'],
@@ -67,6 +68,7 @@ class StudentController extends Controller
         $user = User::create([
             'name' => $request->name,
             'email' => $request->email,
+            'school_id' => $request->school_id,
             'organization_id' => $request->organization_id,
             'course_id' => $request->course_id,
             'year_id' => $request->year_id,
@@ -111,6 +113,7 @@ class StudentController extends Controller
         $request->validate([
             'name' => ['required', 'string', 'max:255'],
             'email' => ['required', 'string', 'email', 'max:255', 'unique:users,email,' . $user->id],
+            'school_id' => ['required', 'string', 'max:8'],
             'organization_id' => ['required', 'exists:organizations,id'],
             'course_id' => ['required', 'exists:courses,id'],
             'year_id' => ['required', 'exists:years,id'],
@@ -124,6 +127,7 @@ class StudentController extends Controller
         // Update user information
         $user->name = $request->name;
         $user->email = $request->email;
+        $user->school_id = $request->school_id;
         $user->organization_id = $request->organization_id;
         $user->course_id = $request->course_id;
         $user->year_id = $request->year_id;

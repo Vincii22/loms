@@ -25,6 +25,14 @@
                             <x-input-error :messages="$errors->get('email')" class="mt-2" />
                         </div>
 
+                         <!-- School ID -->
+                        <div class="mt-4">
+                            <x-input-label for="school_id" :value="__('School ID')" />
+                            <x-text-input id="school_id" class="block mt-1 w-full" type="text" name="school_id" :value="old('school_id', $user->school_id)" required autocomplete="school_id" />
+                            <x-input-error :messages="$errors->get('school_id')" class="mt-2" />
+                        </div>
+
+
                         <div class="mb-4">
                             <x-input-label for="organization" :value="__('Organization')" />
                             <select id="organization" name="organization_id" class="block mt-1 w-full" required>

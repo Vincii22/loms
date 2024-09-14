@@ -45,25 +45,30 @@ class OfficerController extends Controller
     $validated = $request->validate([
         'name' => 'required|string|max:255',
         'email' => 'required|email|unique:officers,email',
-        'role' => 'required|string|in:president,vice-president,secretary', // Add all roles
+        'role_id' => 'required|exists:roles,id', // Changed to match form field
+        'password' => ['required', 'confirmed', Rules\Password::defaults()],
+        'image' => ['nullable', 'image', 'max:2048'],
     ]);
 
     // Check if the role is already taken
-    $existingOfficer = Officer::where('role', $validated['role'])->first();
+    $existingOfficer = Officer::where('role_id', $validated['role_id'])->first();
 
     if ($existingOfficer) {
-        return redirect()->back()->withErrors(['role' => 'The selected role is already taken.']);
+        return redirect()->back()->withErrors(['role_id' => 'The selected role is already taken.']);
     }
 
-    // Create the new officer if the role is available
-    Officer::create([
+    // Create the new officer
+    $officer = Officer::create([
         'name' => $validated['name'],
         'email' => $validated['email'],
-        'role' => $validated['role'],
-        // other fields
+        'role_id' => $validated['role_id'],
+        'status' => 'active',
+        'email_verified_at' => now(), // Bypass email verification
+        'password' => Hash::make($validated['password']),
+        'image' => $request->hasFile('image') ? $request->file('image')->store('officer_images', 'public') : null,
     ]);
 
-    return redirect()->route('admin.officers.index')->with('success', 'Officer created successfully.');
+    return redirect()->route('officers.index')->with('success', 'Officer created successfully.');
 }
 
     /**
@@ -91,42 +96,42 @@ class OfficerController extends Controller
      */
     public function update(Request $request, string $id)
     {
-        $request->validate([
-            'name' => ['required', 'string', 'max:255'],
-            'email' => ['required', 'string', 'lowercase', 'email', 'max:255', 'unique:officers,email,' . $id],
-            'role_id' => ['required', 'exists:roles,id'],
-            'image' => ['nullable', 'image', 'max:2048'],
-            'password' => ['nullable', 'confirmed', Rules\Password::defaults()],
-            'status' => ['required', 'in:active,inactive'],
-        ]);
-
         $officer = Officer::findOrFail($id);
 
-        $role = Role::find($request->role_id);
+    $request->validate([
+        'name' => ['required', 'string', 'max:255'],
+        'email' => ['required', 'string', 'email', 'max:255', 'unique:officers,email,' . $id],
+        'role_id' => ['required', 'exists:roles,id'],
+        'status' => ['required', 'in:active,inactive'],
+        'password' => ['nullable', 'confirmed', Rules\Password::defaults()],
+        'image' => ['nullable', 'image', 'mimes:jpeg,png,jpg', 'max:2048'],
+    ]);
 
-        if ($role && !$role->isAvailable()) {
+    // Check if the role is being changed and if it is already taken
+    if ($request->role_id != $officer->role_id) {
+        $existingOfficer = Officer::where('role_id', $request->role_id)->first();
+        if ($existingOfficer) {
             return back()->withErrors(['role_id' => 'The selected role is already taken.']);
         }
+    }
 
-        if ($request->hasFile('image')) {
-            $imagePath = $request->file('image')->store('officer_images', 'public');
-            $officer->image = $imagePath;
-        }
+    if ($request->hasFile('image')) {
+        $imagePath = $request->file('image')->store('officer_images', 'public');
+        $officer->image = $imagePath;
+    }
 
-        $officer->name = $request->name;
-        $officer->email = $request->email;
-        $officer->role_id = $request->role_id;
+    $officer->name = $request->name;
+    $officer->email = $request->email;
+    $officer->role_id = $request->role_id;
 
-        if ($request->filled('password')) {
-            $officer->password = Hash::make($request->password);
-        }
+    if ($request->filled('password')) {
+        $officer->password = Hash::make($request->password);
+    }
 
-        $officer->status = $request->status;
+    $officer->status = $request->status;
+    $officer->save();
 
-        $officer->save();
-
-        return redirect()->route('officers.index')
-                         ->with('success', 'Officer updated successfully');
+    return redirect()->route('officers.index')->with('success', 'Officer updated successfully.');
     }
     /**
      * Remove the specified resource from storage.
