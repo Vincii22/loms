@@ -62,38 +62,37 @@ class User extends Authenticatable implements MustVerifyEmailContract
 
     public function clearance(): HasOne
     {
-        return $this->hasOne(Clearance::class);
-    }
-
-    // Automatically create a clearance record when a user is created
-    protected static function boot()
-    {
-        parent::boot();
-
-        static::created(function ($user) {
-            $user->clearance()->create(['status' => 'not cleared']);
-        });
+        return $this->hasOne(Clearance::class, 'user_id');
     }
 
     // Update clearance status based on unresolved sanctions
     public function updateClearanceStatus()
     {
-        $clearance = $this->clearance()->first();
+   // Get all the sanctions for the student
+   $sanctions = Sanction::where('student_id', $this->id)->get();
 
-        if ($clearance) {
-            $hasUnresolvedSanctions = Sanction::where('student_id', $this->id)
-                ->where('resolved', false)
-                ->exists();
+   // Check if the student has any unresolved sanctions
+   $hasSanctions = $sanctions->isNotEmpty();
 
-            // Optionally skip automatic updates if status is manually set
-            if ($clearance->status === 'manual') {
-                return;
-            }
+   // Fetch the student's clearance record
+   $clearance = $this->clearance()->where('semester_id', $sanctions->pluck('semester_id')->first())
+                                  ->where('school_year', $sanctions->pluck('school_year')->first())
+                                  ->first();
 
-            $clearance->status = $hasUnresolvedSanctions ? 'not cleared' : 'cleared';
-            $clearance->save();
-        }
-
+   if ($clearance) {
+       // Update the status based on whether there are unresolved sanctions
+       $clearance->status = $hasSanctions ? 'not cleared' : 'cleared';
+       $clearance->save();
+   } else {
+       // If no clearance record exists, create one with the appropriate status
+       if ($sanctions->isNotEmpty()) {
+           $this->clearance()->create([
+               'status' => $hasSanctions ? 'not cleared' : 'cleared',
+               'semester_id' => $sanctions->pluck('semester_id')->first(),
+               'school_year' => $sanctions->pluck('school_year')->first(),
+           ]);
+       }
+    }
     }
 
     // Hidden attributes

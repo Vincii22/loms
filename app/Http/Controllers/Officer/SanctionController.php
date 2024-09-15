@@ -5,6 +5,7 @@ use App\Models\Sanction;
 use App\Models\User;
 use App\Models\Attendance;
 use App\Models\Finance;
+use App\Models\Semester;
 use App\Models\Organization;
 use App\Models\Course;
 use App\Models\Year;
@@ -19,9 +20,13 @@ class SanctionController extends Controller
     {
         $searchName = $request->input('search_name');
         $searchSchoolId = $request->input('search_school_id');
-        $filterType = $request->input('filter_type'); // Sanction type filter
+        $filterType = $request->input('filter_type');
+        $filterSemester = $request->input('filter_semester');
+        $filterSchoolYear = $request->input('filter_school_year');
 
-        // Log request inputs
+        // Fetch available semesters and school years
+        $semesters = Semester::all(); // Adjust if necessary
+        $schoolYears = Sanction::distinct()->pluck('school_year'); // Adjust as needed
 
         $sanctions = Sanction::with('student')
             ->when($searchName, function ($query, $searchName) {
@@ -37,18 +42,20 @@ class SanctionController extends Controller
             ->when($filterType, function ($query, $filterType) {
                 return $query->where('type', $filterType);
             })
+            ->when($filterSemester, function ($query, $filterSemester) {
+                return $query->where('semester_id', $filterSemester);
+            })
+            ->when($filterSchoolYear, function ($query, $filterSchoolYear) {
+                return $query->where('school_year', $filterSchoolYear);
+            })
             ->paginate();
 
-        // Log the query and results
-
-        // Fetch all sanction types for filtering options
+        $this->checkSanctions();
         $sanctionTypes = Sanction::distinct()->pluck('type');
 
-        // Log fetched data
-
-        $this->checkSanctions();
-        return view('officer.sanctions.index', compact('sanctions', 'sanctionTypes'));
+        return view('officer.sanctions.index', compact('sanctions', 'sanctionTypes', 'semesters', 'schoolYears'));
     }
+
     public function edit($id)
     {
         $sanction = Sanction::with('student')->findOrFail($id); // Fetch a single sanction with its related student
@@ -106,10 +113,16 @@ class SanctionController extends Controller
                     ])->first();
 
                     if (!$existingSanction) {
+                        // Fetch semester_id and school_year from the related fee
+                        $semesterId = optional($fee->fee)->semester_id;
+                        $schoolYear = optional($fee->fee)->school_year;
+
                         Sanction::create([
                             'student_id' => $student->id,
                             'type' => "Unpaid Fees - $feeName",
                             'fine_amount' => 100,
+                            'semester_id' => $semesterId,  // Add semester_id
+                            'school_year' => $schoolYear,  // Add school_year
                             'resolved' => false,
                         ]);
 
@@ -136,17 +149,24 @@ class SanctionController extends Controller
                 if ($attendance) {
                     $activityName = optional($attendance->activity)->name ?? 'Unknown Activity';
 
+                    // Check if a sanction for this attendance already exists
                     $existingSanction = Sanction::where([
                         ['student_id', $student->id],
                         ['type', "Absence from $activityName"]
                     ])->first();
 
                     if (!$existingSanction) {
+                        // Fetch semester_id and school_year from the related activity
+                        $semesterId = optional($attendance->activity)->semester_id;
+                        $schoolYear = optional($attendance->activity)->school_year;
+
                         Sanction::create([
                             'student_id' => $student->id,
                             'type' => "Absence from $activityName",
                             'description' => 'Absent from mandatory activity',
                             'fine_amount' => 50,
+                            'semester_id' => $semesterId,  // Add semester_id
+                            'school_year' => $schoolYear,  // Add school_year
                             'resolved' => false,
                         ]);
 
@@ -162,6 +182,20 @@ class SanctionController extends Controller
                 }
             }
         });
+    }
+
+    public function deleteSanction($sanctionId)
+    {
+    $sanction = Sanction::findOrFail($sanctionId);
+    $user = $sanction->student; // Use student relation or user if that's how it's defined
+
+    // Delete the sanction
+    $sanction->delete();
+
+    // Update clearance status after deleting the sanction
+    $user->updateClearanceStatus();
+
+    return redirect()->back()->with('success', 'Sanction deleted and clearance status updated successfully!');
     }
 
 

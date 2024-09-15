@@ -13,8 +13,10 @@ return new class extends Migration
     {
         Schema::create('clearances', function (Blueprint $table) {
             $table->id();
-            $table->foreignId('user_id')->constrained()->onDelete('cascade');
+            $table->foreignId('user_id')->constrained('users')->onDelete('cascade');
             $table->enum('status', ['not cleared', 'cleared'])->default('cleared');
+            $table->foreignId('semester_id')->nullable()->constrained('semesters'); // Semester reference
+            $table->string('school_year')->nullable(); // School year reference
             $table->timestamps();
         });
     }

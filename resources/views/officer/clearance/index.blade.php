@@ -12,6 +12,32 @@
         <!-- Filter Form -->
         <form action="{{ route('clearances.index') }}" method="GET" class="mb-4">
             <div class="grid grid-cols-1 md:grid-cols-2 gap-4 mb-4">
+                    <!-- Semester Filter -->
+                    <div>
+                        <label for="semester_id" class="block text-sm font-medium text-gray-700">Semester</label>
+                        <select id="semester_id" name="semester_id" class="form-select mt-1 block w-full">
+                            <option value="">All Semesters</option>
+                            @foreach($semesters as $semester)
+                                <option value="{{ $semester->id }}" {{ request('semester_id') == $semester->id ? 'selected' : '' }}>
+                                    {{ $semester->name }}
+                                </option>
+                            @endforeach
+                        </select>
+                    </div>
+
+                    <!-- School Year Filter -->
+                <div>
+                    <label for="filter_school_year" class="block text-sm font-medium text-gray-700">School Year</label>
+                    <select id="filter_school_year" name="filter_school_year" class="form-select mt-1 block w-full rounded-md border-gray-300 shadow-sm focus:border-indigo-500 focus:ring-indigo-500 sm:text-sm">
+                        <option value="">All School Years</option>
+                        @foreach($schoolYears as $year)
+                            <option value="{{ $year }}" {{ request('filter_school_year') == $year ? 'selected' : '' }}>
+                                {{ $year }}
+                            </option>
+                        @endforeach
+                    </select>
+                </div>
+            </div>
                 <!-- Student Name Search -->
                 <div>
                     <label for="search_name" class="block text-sm font-medium text-gray-700">Student Name</label>
@@ -70,6 +96,7 @@
                     @endforeach
                 </tbody>
             </table>
+
         </div>
 
         <div class="mt-6">
