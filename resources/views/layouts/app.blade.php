@@ -54,7 +54,7 @@
 
     </style>
 </head>
-<body class="font-sans antialiased">
+<body class="font-sans antialiased ">
     <!-- Sidebar -->
     <aside class="fixed-sidebar">
         @include('layouts.sidebar')
@@ -63,7 +63,7 @@
     <!-- Content Wrapper -->
     <div class="content-wrapper">
         <!-- Main Content -->
-        <main class="main-content p-6">
+        <main class="main-content p-6 !bg-[#f5f5f5] min-h-[100vh]">
             @isset($header)
                 <!-- <header class="bg-white shadow mb-4"> -->
                     <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
