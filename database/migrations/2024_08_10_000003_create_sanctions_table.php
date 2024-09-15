@@ -21,6 +21,8 @@ return new class extends Migration
             $table->decimal('fine_amount', 8, 2)->nullable(); // Fine amount, nullable if there's no fine
             $table->text('required_action')->nullable(); // Required action to resolve the sanction
             $table->boolean('resolved')->default(false);
+            $table->foreignId('semester_id')->nullable()->constrained('semesters'); // Semester reference
+            $table->string('school_year')->nullable(); // School year reference
             $table->timestamps();
 
             $table->foreign('fee_id')->references('id')->on('fees')->onDelete('set null');

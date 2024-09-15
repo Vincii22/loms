@@ -8,7 +8,12 @@ use Illuminate\Database\Eloquent\Model;
 class Clearance extends Model
 {
     use HasFactory;
-    protected $fillable = ['user_id', 'status'];
+    protected $fillable = [
+        'user_id',
+        'status',
+        'semester_id',
+        'school_year',
+    ];
 
     public function user()
     {
@@ -19,4 +24,10 @@ class Clearance extends Model
     {
         return $this->hasMany(Sanction::class);
     }
+
+    public function semester()
+    {
+        return $this->belongsTo(Semester::class);
+    }
+
 }
