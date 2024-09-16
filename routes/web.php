@@ -63,6 +63,7 @@ Route::prefix('officer')->middleware('auth:officer')->group(function () {
     route::post('/attendance/mark-by-barcode', [AttendanceController::class, 'markAttendanceByBarcode'])->name('attendance.mark');
     Route::resource('activities', ActivityController::class);
     Route::resource('sanctions', SanctionController::class);
+
     Route::resource('clearances', ClearanceController::class);
     Route::resource('audit', AuditController::class);
 });

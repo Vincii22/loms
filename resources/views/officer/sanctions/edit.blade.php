@@ -44,13 +44,39 @@
                 <textarea name="required_action" id="required_action" class="form-textarea mt-1 block w-full border-gray-300 rounded-md shadow-sm" rows="4">{{ old('required_action', $sanction->required_action) }}</textarea>
             </div>
 
-            <div class="mb-4 flex items-center">
-                <input type="checkbox" name="resolved" id="resolved" class="form-checkbox text-blue-600" {{ old('resolved', $sanction->resolved) ? 'checked' : '' }}>
-                <label for="resolved" class="ml-2 text-gray-700 font-semibold">Resolved</label>
+            <div class="mb-4">
+                <label for="resolved" class="block text-gray-700 font-semibold mb-2">Resolved Status</label>
+                <select name="resolved" id="resolved" class="form-select mt-1 block w-full border-gray-300 rounded-md shadow-sm">
+                    <option value="not resolved" {{ $sanction->resolved == 'not resolved' ? 'selected' : '' }}>Not Resolved</option>
+                    <option value="resolved" {{ $sanction->resolved == 'resolved' ? 'selected' : '' }}>Resolved</option>
+                </select>
             </div>
 
             <button type="submit" class="bg-blue-500 text-white px-4 py-2 rounded-lg shadow-md hover:bg-blue-600 transition">Update Sanction</button>
         </form>
+
+        <script>
+            // JavaScript for resolving sanction and calling updateClearanceStatus
+            document.querySelector('form').addEventListener('submit', function(event) {
+                event.preventDefault();
+
+                const resolved = document.querySelector('#resolved').checked;
+
+                // Proceed with form submission after updating clearance status
+                if (resolved) {
+                    // Call the updateClearanceStatus method via an AJAX request or trigger it server-side
+                        .then(response => {
+                            this.submit(); // Submit the form once clearance status is updated
+                        })
+                        .catch(error => {
+                            console.error('Error updating clearance status:', error);
+                            alert('There was an issue updating the clearance status.');
+                        });
+                } else {
+                    this.submit(); // Directly submit if the sanction is not marked as resolved
+                }
+            });
+        </script>
     </div>
     @endsection
 </x-officer-app-layout>

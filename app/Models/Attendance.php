@@ -45,19 +45,28 @@ class Attendance extends Model
             } else {
                 $attendance->status = 'Absent';
             }
+
+              // Update sanctions if the status is changing from 'Absent' to 'Present'
+              if ($attendance->isDirty('status') && $attendance->status === 'Present') {
+                $attendance->updateSanctionsToResolved();
+            }
         });
     }
 
-    public function removeSanctionsIfPresent()
+    public function updateSanctionsToResolved()
     {
-        Log::info("Removing sanctions for student ID: {$this->student_id} with status: {$this->status}");
+        Log::info("Updating sanctions for student ID: {$this->student_id} with status: {$this->status}");
 
-        if ($this->status === 'Present') {
-            $deleted = Sanction::where('student_id', $this->student_id)
-                ->where('type', 'LIKE', 'Absence from%')
-                ->delete();
+        // Fetch and update sanctions for the student related to 'Absence from%'
+        $sanctions = Sanction::where('student_id', $this->student_id)
+            ->where('type', 'LIKE', 'Absence from%')
+            ->where('resolved', 'not resolved')
+            ->get();
 
-            Log::info("Sanctions removed for student ID: {$this->student_id}. Records deleted: {$deleted}");
+        foreach ($sanctions as $sanction) {
+            $sanction->resolved = 'resolved';
+            $sanction->save();
+            Log::info("Sanction updated to resolved for student ID: {$this->student_id}, Sanction ID: {$sanction->id}");
         }
     }
 }

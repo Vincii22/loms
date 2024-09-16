@@ -12,56 +12,60 @@ use App\Models\Clearance;
 class ClearanceController extends Controller
 {
     public function index(Request $request)
-{
-    $searchName = $request->input('search_name');
-    $searchSchoolId = $request->input('search_school_id');
-    $status = $request->input('status');
-    $semesterId = $request->input('semester_id');
-    $schoolYear = $request->input('school_year');
+    {
+        $searchName = $request->input('search_name');
+        $searchSchoolId = $request->input('search_school_id');
+        $status = $request->input('status');
+        $semesterId = $request->input('semester_id');
+        $schoolYear = $request->input('filter_school_year');
 
-    // Fetch available semesters
-    $semesters = Semester::all();
+        // Fetch available semesters
+        $semesters = Semester::all();
 
-    // Fetch distinct school years from sanctions
-    $schoolYears = Sanction::distinct()->pluck('school_year');
+        // Fetch distinct school years from sanctions
+        $schoolYears = Sanction::distinct()->pluck('school_year');
 
-    // Find all clearance records where the associated user does not exist
-    $orphanClearances = Clearance::whereNotIn('user_id', User::pluck('id'))->get();
+        // Find all clearance records where the associated user does not exist
+        $orphanClearances = Clearance::whereNotIn('user_id', User::pluck('id'))->get();
+        foreach ($orphanClearances as $clearance) {
+            $clearance->delete();
+        }
 
-    // Delete these orphan clearance records
-    foreach ($orphanClearances as $clearance) {
-        $clearance->delete();
+        // Query to fetch users with their clearances and apply filters
+        $query = User::with('clearance')
+            ->when($searchName, function ($query, $searchName) {
+                return $query->where('name', 'like', "%{$searchName}%");
+            })
+            ->when($searchSchoolId, function ($query, $searchSchoolId) {
+                return $query->where('school_id', 'like', "%{$searchSchoolId}%");
+            })
+            ->when($status, function ($query, $status) {
+                $query->whereHas('clearance', function ($query) use ($status) {
+                    $query->whereRaw('LOWER(status) = ?', [strtolower($status)]);
+                });
+            })
+            ->when($semesterId, function ($query, $semesterId) {
+                $query->whereHas('clearance', function ($query) use ($semesterId) {
+                    $query->where('semester_id', $semesterId);
+                });
+            })
+            ->when($schoolYear, function ($query, $schoolYear) {
+                $query->whereHas('clearance', function ($query) use ($schoolYear) {
+                    $query->where('school_year', $schoolYear);
+                });
+            });
+
+        $clearances = $query->paginate(10);
+
+        // Debugging to inspect the query results
+        // dd($clearances->toArray());
+
+        return view('officer.clearance.index', [
+            'clearances' => $clearances,
+            'semesters' => $semesters,
+            'schoolYears' => $schoolYears,
+        ]);
     }
-    $clearances = User::whereHas('clearance')
-        ->when($searchName, function ($query, $searchName) {
-            return $query->where('name', 'like', "%{$searchName}%");
-        })
-        ->when($searchSchoolId, function ($query, $searchSchoolId) {
-            return $query->where('school_id', 'like', "%{$searchSchoolId}%");
-        })
-        ->when($status, function ($query, $status) {
-            return $query->whereHas('clearance', function ($query) use ($status) {
-                $query->whereRaw('LOWER(status) = ?', [strtolower($status)]);
-            });
-        })
-        ->when($semesterId, function ($query, $semesterId) {
-            return $query->whereHas('clearance', function ($query) use ($semesterId) {
-                $query->where('semester_id', $semesterId);
-            });
-        })
-        ->when($schoolYear, function ($query, $schoolYear) {
-            return $query->whereHas('clearance', function ($query) use ($schoolYear) {
-                $query->where('school_year', $schoolYear);
-            });
-        })
-        ->paginate(10);
-
-    return view('officer.clearance.index', [
-        'clearances' => $clearances,
-        'semesters' => $semesters,
-        'schoolYears' => $schoolYears, // Pass school years to the view
-    ]);
-}
 
     public function update(Request $request, $id)
     {

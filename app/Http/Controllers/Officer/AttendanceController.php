@@ -5,6 +5,7 @@ namespace App\Http\Controllers\Officer;
 use App\Http\Controllers\Controller;
 use App\Models\Attendance;
 use App\Models\Activity;
+use App\Models\Sanction;
 use App\Models\User;
 use Carbon\Carbon;
 use Illuminate\Http\Request;
@@ -61,6 +62,8 @@ class AttendanceController extends Controller
 
         $attendance = Attendance::findOrFail($id);
 
+        $originalStatus = $attendance->status;
+
         if ($request->edit_type === 'time_in') {
             $attendance->time_in = $request->time_value;
         } elseif ($request->edit_type === 'time_out') {
@@ -69,6 +72,11 @@ class AttendanceController extends Controller
 
         $attendance->status = ($attendance->time_in && $attendance->time_out) ? 'Completed' : 'In Progress';
         $attendance->save();
+
+        // Update sanctions if status has changed from 'Absent' to 'Present'
+        if ($originalStatus === 'Absent' && $attendance->status === 'Completed') {
+            $this->updateSanctionsToResolved($attendance->student_id);
+        }
 
         return redirect()->route('attendance.index', ['filter_activity' => $attendance->activity_id])
                          ->with('success', 'Attendance updated successfully.');
@@ -103,6 +111,8 @@ class AttendanceController extends Controller
 
         if ($attendance) {
             DB::transaction(function () use ($attendance, $currentTime, $thirtyMinutesAfterStart, $activityEndTime) {
+                $originalStatus = $attendance->status;
+
                 if ($currentTime < $thirtyMinutesAfterStart && is_null($attendance->time_in)) {
                     $attendance->time_in = $currentTime;
                     $attendance->status = 'In Progress';
@@ -114,6 +124,11 @@ class AttendanceController extends Controller
                 }
                 $attendance->officer_id = Auth::id();  // Store the officer ID
                 $attendance->save();
+
+                // Update sanctions if status has changed from 'Absent' to 'Present'
+                if ($originalStatus === 'Absent' && $attendance->status === 'Completed') {
+                    $this->updateSanctionsToResolved($attendance->student_id);
+                }
             });
 
             return redirect()->route('attendance.index', ['filter_activity' => $filterActivity])
@@ -137,6 +152,23 @@ class AttendanceController extends Controller
 
             return redirect()->route('attendance.index', ['filter_activity' => $filterActivity])
                              ->with('success', 'Attendance marked successfully.');
+        }
+    }
+
+    protected function updateSanctionsToResolved($studentId)
+    {
+        Log::info("Updating sanctions for student ID: {$studentId}");
+
+        // Fetch and update sanctions for the student related to 'Absence from%'
+        $sanctions = Sanction::where('student_id', $studentId)
+            ->where('type', 'LIKE', 'Absence from%')
+            ->where('resolved', 'not resolved')
+            ->get();
+
+        foreach ($sanctions as $sanction) {
+            $sanction->resolved = 'resolved';
+            $sanction->save();
+            Log::info("Sanction updated to resolved for student ID: {$studentId}, Sanction ID: {$sanction->id}");
         }
     }
 }

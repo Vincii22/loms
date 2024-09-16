@@ -121,7 +121,8 @@ class FinanceController extends Controller
 
         // Handle status change
         if ($oldStatus === 'Not Paid' && $finance->status === 'Paid') {
-            $this->removeSanctionsForPaidStatus($finance->user_id);
+            // Remove sanctions and update clearance status
+            $this->updateSanctionsAndClearanceForPaidStatus($finance->user_id);
         } elseif ($oldStatus === 'Paid' && $finance->status === 'Not Paid') {
             $this->createSanctionForUnpaidStatus($finance->user_id);
         } elseif ($finance->status === 'Not Paid') {
@@ -130,6 +131,39 @@ class FinanceController extends Controller
 
         return redirect()->route('finances.index')->with('success', 'Finance entry updated successfully.');
     }
+
+    protected function updateSanctionsAndClearanceForPaidStatus($studentId)
+    {
+        // Update all related sanctions to 'resolved'
+        Sanction::where('student_id', $studentId)
+            ->where('resolved', 'not resolved')
+            ->update(['resolved' => 'resolved']);
+
+        // Update the student's clearance status
+        $student = User::findOrFail($studentId);
+        $student->updateClearanceStatus();
+    }
+
+
+protected function resolveSanctionsForPaidStatus($studentId)
+{
+    // Log resolution attempt
+    Log::info("Resolving sanctions for student ID: $studentId");
+
+    // Update all sanctions related to unpaid fees for the student to 'resolved'
+    Sanction::where('student_id', $studentId)
+        ->where('type', 'finance')
+        ->where('resolved', false)
+        ->update(['resolved' => true]);
+
+    // Log the resolution
+    Log::info('Sanctions resolved:', Sanction::where('student_id', $studentId)
+                                            ->where('type', 'finance')
+                                            ->where('resolved', true)
+                                            ->get()
+                                            ->toArray());
+}
+
 
     protected function createSanctionForUnpaidStatus($studentId)
 {

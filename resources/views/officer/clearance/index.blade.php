@@ -12,20 +12,20 @@
         <!-- Filter Form -->
         <form action="{{ route('clearances.index') }}" method="GET" class="mb-4">
             <div class="grid grid-cols-1 md:grid-cols-2 gap-4 mb-4">
-                    <!-- Semester Filter -->
-                    <div>
-                        <label for="semester_id" class="block text-sm font-medium text-gray-700">Semester</label>
-                        <select id="semester_id" name="semester_id" class="form-select mt-1 block w-full">
-                            <option value="">All Semesters</option>
-                            @foreach($semesters as $semester)
-                                <option value="{{ $semester->id }}" {{ request('semester_id') == $semester->id ? 'selected' : '' }}>
-                                    {{ $semester->name }}
-                                </option>
-                            @endforeach
-                        </select>
-                    </div>
+                <!-- Semester Filter -->
+                <div>
+                    <label for="semester_id" class="block text-sm font-medium text-gray-700">Semester</label>
+                    <select id="semester_id" name="semester_id" class="form-select mt-1 block w-full">
+                        <option value="">All Semesters</option>
+                        @foreach($semesters as $semester)
+                            <option value="{{ $semester->id }}" {{ request('semester_id') == $semester->id ? 'selected' : '' }}>
+                                {{ $semester->name }}
+                            </option>
+                        @endforeach
+                    </select>
+                </div>
 
-                    <!-- School Year Filter -->
+                <!-- School Year Filter -->
                 <div>
                     <label for="filter_school_year" class="block text-sm font-medium text-gray-700">School Year</label>
                     <select id="filter_school_year" name="filter_school_year" class="form-select mt-1 block w-full rounded-md border-gray-300 shadow-sm focus:border-indigo-500 focus:ring-indigo-500 sm:text-sm">
@@ -38,29 +38,27 @@
                     </select>
                 </div>
             </div>
-                <!-- Student Name Search -->
-                <div>
-                    <label for="search_name" class="block text-sm font-medium text-gray-700">Student Name</label>
-                    <input type="text" id="search_name" name="search_name" value="{{ request('search_name') }}" class="mt-1 block w-full rounded-md border-gray-300 shadow-sm focus:border-indigo-500 focus:ring-indigo-500 sm:text-sm" placeholder="Search by student name">
-                </div>
 
-                <!-- School ID Search -->
-                <div>
-                    <label for="search_school_id" class="block text-sm font-medium text-gray-700">School ID</label>
-                    <input type="text" id="search_school_id" name="search_school_id" value="{{ request('search_school_id') }}" class="mt-1 block w-full rounded-md border-gray-300 shadow-sm focus:border-indigo-500 focus:ring-indigo-500 sm:text-sm" placeholder="Search by school ID">
-                </div>
+            <!-- Student Name Search -->
+            <div>
+                <label for="search_name" class="block text-sm font-medium text-gray-700">Student Name</label>
+                <input type="text" id="search_name" name="search_name" value="{{ request('search_name') }}" class="mt-1 block w-full rounded-md border-gray-300 shadow-sm focus:border-indigo-500 focus:ring-indigo-500 sm:text-sm" placeholder="Search by student name">
             </div>
 
-            <div class="grid grid-cols-1 md:grid-cols-1 gap-4">
-                <!-- Status Filter -->
-                <div>
-                    <label for="status" class="block text-sm font-medium text-gray-700">Filter by Status</label>
-                    <select id="status" name="status" class="form-select mt-1 block w-full rounded-md border-gray-300 shadow-sm focus:border-indigo-500 focus:ring-indigo-500 sm:text-sm">
-                        <option value="">All Statuses</option>
-                        <option value="not cleared" {{ request('status') === 'not cleared' ? 'selected' : '' }}>Not Cleared</option>
-                        <option value="cleared" {{ request('status') === 'cleared' ? 'selected' : '' }}>Cleared</option>
-                    </select>
-                </div>
+            <!-- School ID Search -->
+            <div>
+                <label for="search_school_id" class="block text-sm font-medium text-gray-700">School ID</label>
+                <input type="text" id="search_school_id" name="search_school_id" value="{{ request('search_school_id') }}" class="mt-1 block w-full rounded-md border-gray-300 shadow-sm focus:border-indigo-500 focus:ring-indigo-500 sm:text-sm" placeholder="Search by school ID">
+            </div>
+
+            <!-- Status Filter -->
+            <div class="mt-4">
+                <label for="status" class="block text-sm font-medium text-gray-700">Filter by Status</label>
+                <select id="status" name="status" class="form-select mt-1 block w-full rounded-md border-gray-300 shadow-sm focus:border-indigo-500 focus:ring-indigo-500 sm:text-sm">
+                    <option value="">All Statuses</option>
+                    <option value="not cleared" {{ request('status') === 'not cleared' ? 'selected' : '' }}>Not Cleared</option>
+                    <option value="cleared" {{ request('status') === 'cleared' ? 'selected' : '' }}>Cleared</option>
+                </select>
             </div>
         </form>
 
@@ -71,7 +69,6 @@
                         <th class="py-2 px-4 text-left text-gray-600">Name</th>
                         <th class="py-2 px-4 text-left text-gray-600">School ID</th>
                         <th class="py-2 px-4 text-left text-gray-600">Status</th>
-                        <th class="py-2 px-4 text-left text-gray-600">Update Status</th>
                     </tr>
                 </thead>
                 <tbody>
@@ -82,21 +79,15 @@
                             <td class="py-2 px-4 border-b border-gray-200">
                                 {{ $user->clearance ? $user->clearance->status : 'Not Set' }}
                             </td>
-                            <td class="py-2 px-4 border-b border-gray-200">
-                                <form action="{{ route('clearances.update', $user->id) }}" method="POST">
-                                    @csrf
-                                    @method('PUT')
-                                    <select name="status" onchange="this.form.submit()" class="form-select border-gray-300 rounded-md shadow-sm focus:ring-blue-500 focus:border-blue-500">
-                                        <option value="not cleared" {{ $user->clearance && $user->clearance->status === 'not cleared' ? 'selected' : '' }}>Not Cleared</option>
-                                        <option value="cleared" {{ $user->clearance && $user->clearance->status === 'cleared' ? 'selected' : '' }}>Cleared</option>
-                                    </select>
-                                </form>
-                            </td>
                         </tr>
                     @endforeach
                 </tbody>
             </table>
 
+            {{-- @php
+            // Debug output
+            dd($clearances->toArray());
+            @endphp --}}
         </div>
 
         <div class="mt-6">
