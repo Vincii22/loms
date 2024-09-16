@@ -55,7 +55,7 @@
                                 <td class="px-6 py-4 whitespace-nowrap">{{ $finance->fee->name }}</td>
                                 <td class="px-6 py-4 whitespace-nowrap">{{ $finance->default_amount }}</td>
                                 <td class="px-6 py-4 whitespace-nowrap">{{ $finance->status }}</td>
-                                <td>{{ $finance->officer->name ?? 'N/A' }}</td>
+                                <td>{{ $finance->officer->role->name ?? 'N/A' }}</td>
                                 <td class="px-6 py-4 whitespace-nowrap">
                                     <a href="{{ route('finances.edit', $finance->id) }}" class="bg-yellow-500 text-white px-3 py-1 rounded hover:bg-yellow-600">Edit</a>
                                     <form action="{{ route('finances.destroy', $finance->id) }}" method="POST" class="inline">

@@ -25,8 +25,16 @@ class SanctionController extends Controller
         $filterSchoolYear = $request->input('filter_school_year');
 
         // Fetch available semesters and school years
-        $semesters = Semester::all(); // Adjust if necessary
-        $schoolYears = Sanction::distinct()->pluck('school_year'); // Adjust as needed
+        $semesters = Semester::all();
+        $schoolYears = Sanction::distinct()->pluck('school_year');
+
+        Log::info('Filter Parameters:', [
+            'searchName' => $searchName,
+            'searchSchoolId' => $searchSchoolId,
+            'filterType' => $filterType,
+            'filterSemester' => $filterSemester,
+            'filterSchoolYear' => $filterSchoolYear,
+        ]);
 
         $sanctions = Sanction::with('student')
             ->when($searchName, function ($query, $searchName) {
@@ -58,7 +66,7 @@ class SanctionController extends Controller
 
     public function edit($id)
     {
-        $sanction = Sanction::with('student')->findOrFail($id); // Fetch a single sanction with its related student
+        $sanction = Sanction::with('student')->findOrFail($id);
         return view('officer.sanctions.edit', ['sanction' => $sanction]);
     }
 
@@ -69,28 +77,27 @@ class SanctionController extends Controller
         $request->validate([
             'fine_amount' => 'nullable|numeric|min:0',
             'required_action' => 'nullable|string|max:255',
-            'resolved' => 'nullable|boolean',
+            'resolved' => 'required|in:resolved,not resolved', // Ensure it's one of the ENUM values
         ]);
 
         $sanction->update([
             'fine_amount' => $request->input('fine_amount'),
             'required_action' => $request->input('required_action'),
-            'resolved' => $request->has('resolved') ? true : false,
+            'resolved' => $request->input('resolved'), // Store the ENUM value
         ]);
 
-        // Update clearance status after sanction update
-        $user = $sanction->student;
-        $user->updateClearanceStatus();
+        // Update clearance status
+        $sanction->student->updateClearanceStatus();
 
         return redirect()->route('sanctions.index')->with('success', 'Sanction updated successfully.');
     }
+
     public function destroy(Sanction $sanction)
     {
         $sanction->delete();
 
         return redirect()->route('sanctions.index')->with('success', 'Sanction deleted successfully.');
     }
-    // Other methods...
 
     public function checkSanctions()
     {
@@ -105,35 +112,27 @@ class SanctionController extends Controller
 
                 foreach ($unpaidFees as $fee) {
                     $feeName = optional($fee->fee)->name ?? 'Unknown Fee';
+                    $semesterId = optional($fee->fee)->semester_id;
+                    $schoolYear = optional($fee->fee)->school_year;
 
-                    // Check if a sanction for this fee already exists
                     $existingSanction = Sanction::where([
                         ['student_id', $student->id],
-                        ['type', "Unpaid Fees - $feeName"]
+                        ['type', "Unpaid Fees - $feeName"],
+                        ['semester_id', $semesterId],
+                        ['school_year', $schoolYear]
                     ])->first();
 
                     if (!$existingSanction) {
-                        // Fetch semester_id and school_year from the related fee
-                        $semesterId = optional($fee->fee)->semester_id;
-                        $schoolYear = optional($fee->fee)->school_year;
-
                         Sanction::create([
                             'student_id' => $student->id,
                             'type' => "Unpaid Fees - $feeName",
                             'fine_amount' => 100,
-                            'semester_id' => $semesterId,  // Add semester_id
-                            'school_year' => $schoolYear,  // Add school_year
-                            'resolved' => false,
+                            'semester_id' => $semesterId,
+                            'school_year' => $schoolYear,
+                            'resolved' => 'not resolved',
                         ]);
 
-                        // Ensure the clearance record exists
-                        $clearance = $student->clearance()->first();
-                        if ($clearance) {
-                            $clearance->status = 'not cleared';
-                            $clearance->save();
-                        } else {
-                            $student->clearance()->create(['status' => 'not cleared']);
-                        }
+                        $student->clearance()->firstOrCreate(['status' => 'not cleared']);
                     }
                 }
             }
@@ -148,55 +147,104 @@ class SanctionController extends Controller
 
                 if ($attendance) {
                     $activityName = optional($attendance->activity)->name ?? 'Unknown Activity';
+                    $semesterId = optional($attendance->activity)->semester_id;
+                    $schoolYear = optional($attendance->activity)->school_year;
 
-                    // Check if a sanction for this attendance already exists
                     $existingSanction = Sanction::where([
                         ['student_id', $student->id],
-                        ['type', "Absence from $activityName"]
+                        ['type', "Absence from $activityName"],
+                        ['semester_id', $semesterId],
+                        ['school_year', $schoolYear]
                     ])->first();
 
                     if (!$existingSanction) {
-                        // Fetch semester_id and school_year from the related activity
-                        $semesterId = optional($attendance->activity)->semester_id;
-                        $schoolYear = optional($attendance->activity)->school_year;
-
                         Sanction::create([
                             'student_id' => $student->id,
                             'type' => "Absence from $activityName",
                             'description' => 'Absent from mandatory activity',
                             'fine_amount' => 50,
-                            'semester_id' => $semesterId,  // Add semester_id
-                            'school_year' => $schoolYear,  // Add school_year
-                            'resolved' => false,
+                            'semester_id' => $semesterId,
+                            'school_year' => $schoolYear,
+                            'resolved' => 'not resolved',
                         ]);
 
-                        // Ensure the clearance record exists
-                        $clearance = $student->clearance()->first();
-                        if ($clearance) {
-                            $clearance->status = 'not cleared';
-                            $clearance->save();
-                        } else {
-                            $student->clearance()->create(['status' => 'not cleared']);
-                        }
+                        $student->clearance()->firstOrCreate(['status' => 'not cleared']);
+                    }
+                }
+            }
+        });
+
+        // Update sanctions to resolved based on Finance status updates
+        User::whereHas('finances', function ($query) {
+            $query->where('status', 'Paid');
+        })->chunk(100, function ($students) {
+            foreach ($students as $student) {
+                $paidFees = $student->finances->where('status', 'Paid');
+
+                foreach ($paidFees as $fee) {
+                    $feeName = optional($fee->fee)->name ?? 'Unknown Fee';
+                    $semesterId = optional($fee->fee)->semester_id;
+                    $schoolYear = optional($fee->fee)->school_year;
+
+                    $sanctions = Sanction::where([
+                        ['student_id', $student->id],
+                        ['type', "Unpaid Fees - $feeName"],
+                        ['semester_id', $semesterId],
+                        ['school_year', $schoolYear]
+                    ])->where('resolved', 'not resolved')->get();
+
+                    foreach ($sanctions as $sanction) {
+                        $sanction->update(['resolved' => 'resolved']);
+                    }
+                }
+            }
+        });
+
+        // Update sanctions to resolved based on Attendance status updates
+        User::whereHas('attendances', function ($query) {
+            $query->where('status', 'present');
+        })->chunk(100, function ($students) {
+            foreach ($students as $student) {
+                $attendances = $student->attendances()->where('status', 'present')->get();
+
+                foreach ($attendances as $attendance) {
+                    $activityName = optional($attendance->activity)->name ?? 'Unknown Activity';
+                    $semesterId = optional($attendance->activity)->semester_id;
+                    $schoolYear = optional($attendance->activity)->school_year;
+
+                    $sanctions = Sanction::where([
+                        ['student_id', $student->id],
+                        ['type', "Absence from $activityName"],
+                        ['semester_id', $semesterId],
+                        ['school_year', $schoolYear]
+                    ])->where('resolved', 'not resolved')->get();
+
+                    foreach ($sanctions as $sanction) {
+                        $sanction->update(['resolved' => 'resolved']);
                     }
                 }
             }
         });
     }
 
-    public function deleteSanction($sanctionId)
+
+
+
+
+    public function resolveSanction($sanctionId)
     {
-    $sanction = Sanction::findOrFail($sanctionId);
-    $user = $sanction->student; // Use student relation or user if that's how it's defined
+        $sanction = Sanction::find($sanctionId);
+        if ($sanction) {
+            $sanction->resolved = 'resolved'; // Use ENUM value
+            $sanction->save();
 
-    // Delete the sanction
-    $sanction->delete();
+            // Update the student's clearance status after resolving
+            $student = User::find($sanction->student_id);
+            if ($student) {
+                $student->updateClearanceStatus();
+            }
 
-    // Update clearance status after deleting the sanction
-    $user->updateClearanceStatus();
-
-    return redirect()->back()->with('success', 'Sanction deleted and clearance status updated successfully!');
+            Log::info("Sanction ID {$sanction->id} marked as resolved. Clearance status updated.");
+        }
     }
-
-
 }

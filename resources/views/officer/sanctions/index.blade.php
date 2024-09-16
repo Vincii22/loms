@@ -3,31 +3,31 @@
     <div class="overflow-x-auto">
         <form method="GET" action="{{ route('sanctions.index') }}" class="mb-4">
             <div class="grid grid-cols-1 md:grid-cols-2 gap-4 mb-4">
-                 <!-- Semester Filter -->
-        <div>
-            <label for="filter_semester" class="block text-sm font-medium text-gray-700">Semester</label>
-            <select id="filter_semester" name="filter_semester" class="form-select mt-1 block w-full rounded-md border-gray-300 shadow-sm focus:border-indigo-500 focus:ring-indigo-500 sm:text-sm">
-                <option value="">All Semesters</option>
-                @foreach ($semesters as $semester)
-                    <option value="{{ $semester->id }}" {{ request('filter_semester') == $semester->id ? 'selected' : '' }}>
-                        {{ $semester->name }}
-                    </option>
-                @endforeach
-            </select>
-        </div>
+                <!-- Semester Filter -->
+                <div>
+                    <label for="filter_semester" class="block text-sm font-medium text-gray-700">Semester</label>
+                    <select id="filter_semester" name="filter_semester" class="form-select mt-1 block w-full rounded-md border-gray-300 shadow-sm focus:border-indigo-500 focus:ring-indigo-500 sm:text-sm">
+                        <option value="">All Semesters</option>
+                        @foreach ($semesters as $semester)
+                            <option value="{{ $semester->id }}" {{ request('filter_semester') == $semester->id ? 'selected' : '' }}>
+                                {{ $semester->name }}
+                            </option>
+                        @endforeach
+                    </select>
+                </div>
 
-        <!-- School Year Filter -->
-        <div>
-            <label for="filter_school_year" class="block text-sm font-medium text-gray-700">School Year</label>
-            <select id="filter_school_year" name="filter_school_year" class="form-select mt-1 block w-full rounded-md border-gray-300 shadow-sm focus:border-indigo-500 focus:ring-indigo-500 sm:text-sm">
-                <option value="">All School Years</option>
-                @foreach ($schoolYears as $year)
-                    <option value="{{ $year }}" {{ request('filter_school_year') == $year ? 'selected' : '' }}>
-                        {{ $year }}
-                    </option>
-                @endforeach
-            </select>
-        </div>
+                <!-- School Year Filter -->
+                <div>
+                    <label for="filter_school_year" class="block text-sm font-medium text-gray-700">School Year</label>
+                    <select id="filter_school_year" name="filter_school_year" class="form-select mt-1 block w-full rounded-md border-gray-300 shadow-sm focus:border-indigo-500 focus:ring-indigo-500 sm:text-sm">
+                        <option value="">All School Years</option>
+                        @foreach ($schoolYears as $year)
+                            <option value="{{ $year }}" {{ request('filter_school_year') == $year ? 'selected' : '' }}>
+                                {{ $year }}
+                            </option>
+                        @endforeach
+                    </select>
+                </div>
 
                 <!-- Sanction Type Filter -->
                 <div>
@@ -41,6 +41,7 @@
                         @endforeach
                     </select>
                 </div>
+
                 <!-- Student Name Search -->
                 <div>
                     <label for="search_name" class="block text-sm font-medium text-gray-700">Student Name</label>
@@ -52,9 +53,6 @@
                     <label for="search_school_id" class="block text-sm font-medium text-gray-700">School ID</label>
                     <input type="text" id="search_school_id" name="search_school_id" value="{{ request('search_school_id') }}" class="mt-1 block w-full rounded-md border-gray-300 shadow-sm focus:border-indigo-500 focus:ring-indigo-500 sm:text-sm" placeholder="Search by school ID">
                 </div>
-
-
-
             </div>
         </form>
 
@@ -72,24 +70,22 @@
             </thead>
             <tbody>
                 @forelse($sanctions as $sanction)
-                @if (!$sanction->resolved)
-                    <tr>
-                        <td class="py-2 px-4 border-b">{{ $sanction->student->school_id ?? 'N/A' }}</td>
-                        <td class="py-2 px-4 border-b">{{ $sanction->student->name ?? 'N/A' }}</td>
-                        <td class="py-2 px-4 border-b">{{ $sanction->type }}</td>
-                        <td class="py-2 px-4 border-b">{{ $sanction->fine_amount ? number_format($sanction->fine_amount, 2) : 'N/A' }}</td>
-                        <td class="py-2 px-4 border-b">{{ $sanction->required_action ?: 'N/A' }}</td>
-                        <td class="py-2 px-4 border-b">{{ $sanction->resolved ? 'Yes' : 'No' }}</td>
-                        <td class="py-2 px-4 border-b flex space-x-2">
-                            <a href="{{ route('sanctions.edit', $sanction->id) }}" class="bg-yellow-500 text-white px-3 py-1 rounded-lg shadow hover:bg-yellow-600 transition text-xs">Edit</a>
-                            <form action="{{ route('sanctions.destroy', $sanction->id) }}" method="POST" class="inline">
-                                @csrf
-                                @method('DELETE')
-                                <button type="submit" class="bg-red-500 text-white px-3 py-1 rounded-lg shadow hover:bg-red-600 transition text-xs" onclick="return confirm('Are you sure?')">Delete</button>
-                            </form>
-                        </td>
-                    </tr>
-                @endif
+                <tr>
+                    <td class="py-2 px-4 border-b">{{ $sanction->student->school_id ?? 'N/A' }}</td>
+                    <td class="py-2 px-4 border-b">{{ $sanction->student->name ?? 'N/A' }}</td>
+                    <td class="py-2 px-4 border-b">{{ $sanction->type }}</td>
+                    <td class="py-2 px-4 border-b">{{ $sanction->fine_amount ? number_format($sanction->fine_amount, 2) : 'N/A' }}</td>
+                    <td class="py-2 px-4 border-b">{{ $sanction->required_action ?: 'N/A' }}</td>
+                    <td class="py-2 px-4 border-b">{{ $sanction->resolved == 'resolved' ? 'Yes' : 'No' }}</td>
+                    <td class="py-2 px-4 border-b flex space-x-2">
+                        <a href="{{ route('sanctions.edit', $sanction->id) }}" class="bg-yellow-500 text-white px-3 py-1 rounded-lg shadow hover:bg-yellow-600 transition text-xs">Edit</a>
+                        <form action="{{ route('sanctions.destroy', $sanction->id) }}" method="POST" class="inline">
+                            @csrf
+                            @method('DELETE')
+                            <button type="submit" class="bg-red-500 text-white px-3 py-1 rounded-lg shadow hover:bg-red-600 transition text-xs" onclick="return confirm('Are you sure?')">Delete</button>
+                        </form>
+                    </td>
+                </tr>
                 @empty
                 <tr>
                     <td colspan="7" class="py-2 px-4 border-b text-center text-gray-500">No sanctions found.</td>

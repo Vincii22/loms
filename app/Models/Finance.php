@@ -31,51 +31,51 @@ class Finance extends Model
     {
         return $this->belongsTo(Officer::class); // Add this line
     }
+ // Automatically update sanctions when status is updated
+ public static function boot()
+ {
+     parent::boot();
 
-    // Automatically remove sanctions when status is updated
-    public static function boot()
-    {
-        parent::boot();
+     static::updated(function ($finance) {
+         if ($finance->isDirty('status')) {
+             if ($finance->status === 'Paid') {
+                 // Update sanctions if status changes to Paid
+                 $finance->resolveSanctionsForPaidStatus();
+             } elseif ($finance->status === 'Not Paid') {
+                 // Create sanctions if status changes to Not Paid
+                 $finance->createSanctionsForUnpaidStatus();
+             }
+         }
+     });
+ }
 
-        static::updated(function ($finance) {
-            if ($finance->isDirty('status')) {
-                if ($finance->status === 'Paid') {
-                    // Remove sanctions if status changes to Paid
-                    $finance->removeSanctionsForPaidStatus();
-                } elseif ($finance->status === 'Not Paid') {
-                    // Create sanctions if status changes to Not Paid
-                    $finance->createSanctionsForUnpaidStatus();
-                }
-            }
-        });
-    }
+ protected function resolveSanctionsForPaidStatus()
+ {
+     Sanction::where('student_id', $this->user_id)
+         ->where('type', 'Unpaid Fees - ' . optional($this->fee)->name)
+         ->where('resolved', 'not resolved')
+         ->update(['resolved' => 'resolved']);
+ }
 
-    protected function removeSanctionsForPaidStatus()
-    {
-        Sanction::where('student_id', $this->user_id)
-            ->where('type', 'finance')
-            ->delete();
-    }
+ protected function createSanctionsForUnpaidStatus()
+ {
+     $existingSanction = Sanction::where('student_id', $this->user_id)
+                                 ->where('type', 'Unpaid Fees - ' . optional($this->fee)->name)
+                                 ->where('resolved', 'not resolved')
+                                 ->first();
 
-    protected function createSanctionsForUnpaidStatus()
-    {
-        $existingSanction = Sanction::where('student_id', $this->user_id)
-                                    ->where('type', 'finance')
-                                    ->where('resolved', false)
-                                    ->first();
+     if (!$existingSanction) {
+         $unpaidFeesCount = $this->user->finances()->where('status', 'Not Paid')->count();
+         $fineAmount = $unpaidFeesCount * 100; // Example fine calculation
 
-        if (!$existingSanction) {
-            $unpaidFeesCount = $this->user->finances()->where('status', 'Not Paid')->count();
-            $fineAmount = $unpaidFeesCount * 100; // Example fine calculation
-
-            Sanction::create([
-                'student_id' => $this->user_id,
-                'type' => 'finance',
-                'fine_amount' => $fineAmount,
-                'required_action' => 'Pay outstanding fees',
-                'resolved' => false,
-            ]);
-        }
-    }
+         Sanction::create([
+             'student_id' => $this->user_id,
+             'type' => 'Unpaid Fees - ' . optional($this->fee)->name,
+             'fine_amount' => $fineAmount,
+             'required_action' => 'Pay outstanding fees',
+             'resolved' => 'not resolved',
+         ]);
+     }
+ }
 
 }

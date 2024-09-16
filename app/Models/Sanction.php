@@ -55,7 +55,7 @@ public static function boot()
     parent::boot();
 
     static::created(function ($sanction) {
-        // Fetch the student and their clearance
+        // Check if a clearance record exists for the student and the given semester and school year
         $clearance = Clearance::firstOrCreate(
             [
                 'user_id' => $sanction->student_id,
@@ -73,6 +73,6 @@ public static function boot()
         // Ensure the student's clearance status is updated
         $sanction->student->updateClearanceStatus();
     });
-}
 
+}
 }

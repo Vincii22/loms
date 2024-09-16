@@ -20,7 +20,7 @@ return new class extends Migration
             $table->string('type'); // Example: 'attendance', 'finance'
             $table->decimal('fine_amount', 8, 2)->nullable(); // Fine amount, nullable if there's no fine
             $table->text('required_action')->nullable(); // Required action to resolve the sanction
-            $table->boolean('resolved')->default(false);
+            $table->enum('resolved', ['resolved', 'not resolved'])->default('not resolved');
             $table->foreignId('semester_id')->nullable()->constrained('semesters'); // Semester reference
             $table->string('school_year')->nullable(); // School year reference
             $table->timestamps();
