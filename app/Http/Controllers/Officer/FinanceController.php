@@ -100,14 +100,31 @@ class FinanceController extends Controller
 
     public function edit(Finance $finance)
     {
+        $officer = auth('officer')->user();
+        $allowedRoles = ['Finance Officer', 'Deputy Finance', 'Auditor'];
+
+        if (!in_array($officer->role->name, $allowedRoles)) {
+            return redirect()->route('finances.index')->with('error', 'You are not allowed to Edit. ');
+        }
+
         $users = User::all();
         $fees = Fees::all();
+
+        session()->flash('error', 'An error occurred while editing the finance record.');
+
         $officer = auth('officer')->user();
         return view('officer.finances.edit', compact('finance', 'users', 'fees', 'officer'));
     }
 
     public function update(Request $request, Finance $finance)
     {
+        $officer = auth('officer')->user();
+        $allowedRoles = ['Finance Officer', 'Deputy Finance', 'Auditor'];
+
+           // Check if the officer has one of the allowed roles
+        if (!in_array($officer->role->name, $allowedRoles)) {
+            return redirect()->route('finances.index')->with('error', 'Unauthorized access.');
+        }
         $request->validate([
             'user_id' => 'required|exists:users,id',
             'fee_id' => 'required|exists:fees,id',
@@ -128,6 +145,7 @@ class FinanceController extends Controller
         } elseif ($finance->status === 'Not Paid') {
             $this->checkAndSanctionUnpaidStudents();
         }
+
 
         return redirect()->route('finances.index')->with('success', 'Finance entry updated successfully.');
     }
