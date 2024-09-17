@@ -57,7 +57,7 @@ class AdminAuthController extends Controller
         $officer->save();
         $officer->notify(new OfficerRegistrationApproved($officer));
 
-        return redirect()->route('admin.pending_officers')->with('success', 'Officer approved.');
+        return redirect()->route('admin.pending_users')->with('success', 'Officer approved.');
     }
 
     /**
