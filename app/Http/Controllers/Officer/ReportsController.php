@@ -204,17 +204,21 @@ class ReportsController extends Controller
     {
         $dateRange = $request->input('date_range');
 
-        $query = Clearance::query();
+        $query = Clearance::with(['user', 'semester'])
+            ->select('id', 'user_id', 'semester_id', 'school_year', 'status');
 
         if ($dateRange) {
-            [$startDate, $endDate] = explode(' to ', $dateRange);
-            $query->whereBetween('date', [$startDate, $endDate]);
+            // Placeholder for future date range filtering if needed
+            // [$startDate, $endDate] = explode(' to ', $dateRange);
+            // $query->whereBetween('date', [$startDate, $endDate]);
         }
 
-        $clearances = $query->get();
+        // Apply pagination (e.g., 10 items per page)
+        $clearances = $query->paginate(10);
 
         return view('officer.reports.clearance', compact('clearances'));
     }
+
 
     /**
      * Generate and display the student report with optional filtering.
