@@ -1,52 +1,52 @@
 <x-guest-layout>
-    <div class="mb-4 text-sm text-gray-600 dark:text-gray-400">
-        {{ __('Thank you for registering! Your account is currently under review by an administrator. We will notify you once your registration has been approved and your account is active.') }}
-    </div>
-
-    <div class="mt-4 flex items-center justify-between">
-        <form method="POST" action="{{ route('verification.send') }}">
-            @csrf
-
-            <div>
-                <x-primary-button>
-                    {{ __('Request a New Verification Email') }}
-                </x-primary-button>
+    <div class="flex items-center justify-center min-h-screen bg-gray-100">
+        <div class="w-full max-w-lg bg-[#5C0E0F] text-white p-6 rounded-lg shadow-lg" style="width: 45%;">
+            <div class="mb-4 text-sm">
+                {{ __('Thank you for registering! Your account is currently under review by an administrator. We will notify you once your registration has been approved and your account is active.') }}
             </div>
-        </form>
 
-        <form method="POST" action="{{ route('logout') }}">
-            @csrf
+            <div class="mt-4 flex items-center justify-between">
+                <form method="POST" action="{{ route('verification.send') }}">
+                    @csrf
+                    <div>
+                        <x-primary-button>
+                            {{ __('Request a New Verification Email') }}
+                        </x-primary-button>
+                    </div>
+                </form>
 
-            <button type="submit" class="underline text-sm text-gray-600 dark:text-gray-400 hover:text-gray-900 dark:hover:text-gray-100 rounded-md focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-indigo-500 dark:focus:ring-offset-gray-800">
-                {{ __('Log Out') }}
-            </button>
-        </form>
+                <form method="POST" action="{{ route('logout') }}">
+                    @csrf
+                    <button type="submit" class="underline text-sm text-white hover:text-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-indigo-500 dark:focus:ring-offset-gray-800">
+                        {{ __('Log Out') }}
+                    </button>
+                </form>
+            </div>
+        </div>
     </div>
 
     <!-- Add JavaScript to check for status change -->
     <script>
-document.addEventListener('DOMContentLoaded', function () {
-    const checkStatusInterval = setInterval(() => {
-        fetch('{{ route('check.status') }}', {
-            method: 'GET',
-            headers: {
-                'Content-Type': 'application/json',
-                'X-CSRF-TOKEN': '{{ csrf_token() }}'
-            }
-        })
-        .then(response => response.json())
-        .then(data => {
-            if (data.status === 'active') {
-                clearInterval(checkStatusInterval); // Stop checking
-                window.location.href = '{{ route('dashboard') }}'; // Redirect to the dashboard
-            }
-        })
-        .catch(error => {
-            console.error('Error checking status:', error);
+        document.addEventListener('DOMContentLoaded', function () {
+            const checkStatusInterval = setInterval(() => {
+                fetch('{{ route('check.status') }}', {
+                    method: 'GET',
+                    headers: {
+                        'Content-Type': 'application/json',
+                        'X-CSRF-TOKEN': '{{ csrf_token() }}'
+                    }
+                })
+                .then(response => response.json())
+                .then(data => {
+                    if (data.status === 'active') {
+                        clearInterval(checkStatusInterval); // Stop checking
+                        window.location.href = '{{ route('dashboard') }}'; // Redirect to the dashboard
+                    }
+                })
+                .catch(error => {
+                    console.error('Error checking status:', error);
+                });
+            }, 5000); // Check every 5 seconds
         });
-    }, 5000); // Check every 5 seconds
-});
-
-
     </script>
 </x-guest-layout>
