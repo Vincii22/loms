@@ -170,18 +170,31 @@ class ReportsController extends Controller
      */
     public function sanctionReport(Request $request)
     {
-        $dateRange = $request->input('date_range');
+        // Capture filtering parameters from the request
+        $semesterId = $request->input('semester');
+        $schoolYear = $request->input('school_year');
+        $resolvedStatus = $request->input('resolved'); // Optional filter for resolved status
 
-        $query = Sanction::query();
+        // Build the query
+        $query = Sanction::with('student', 'semester') // eager load relationships
+            ->when($semesterId, function ($q) use ($semesterId) {
+                $q->where('semester_id', $semesterId);
+            })
+            ->when($schoolYear, function ($q) use ($schoolYear) {
+                $q->where('school_year', $schoolYear);
+            })
+            ->when($resolvedStatus, function ($q) use ($resolvedStatus) {
+                $q->where('resolved', $resolvedStatus);
+            });
 
-        if ($dateRange) {
-            [$startDate, $endDate] = explode(' to ', $dateRange);
-            $query->whereBetween('date', [$startDate, $endDate]);
-        }
+        // Fetch sanctions
+        $sanctions = $query->paginate(10);
 
-        $sanctions = $query->get();
+        // Fetch available semesters and school years for filters
+        $semesters = Semester::pluck('name', 'id');
+        $schoolYears = Sanction::distinct()->pluck('school_year', 'school_year');
 
-        return view('officer.reports.sanction', compact('sanctions'));
+        return view('officer.reports.sanction', compact('sanctions', 'semesters', 'schoolYears'));
     }
 
     /**

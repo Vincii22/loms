@@ -22,6 +22,7 @@
                     </tr>
                 </thead>
                 <tbody>
+                    <!-- Loop through pending users -->
                     @foreach($pendingUsers as $user)
                         <tr class="border-t">
                             <td class="py-3 px-6">{{ $user->name }}</td>
@@ -29,11 +30,13 @@
                             <td class="py-3 px-6">User</td>
                             <td class="py-3 px-6">
                                 <div class="flex space-x-2">
-                                    <form action="{{ route('admin.approve', $user->id) }}" method="POST">
+                                    <!-- Update action to approve user -->
+                                    <form action="{{ route('admin.approveUser', $user->id) }}" method="POST">
                                         @csrf
                                         <button type="submit" class="bg-green-500 hover:bg-green-600 text-white font-bold py-1 px-4 rounded">Approve</button>
                                     </form>
-                                    <form action="{{ route('admin.reject', $user->id) }}" method="POST">
+                                    <!-- Update action to reject user -->
+                                    <form action="{{ route('admin.rejectUser', $user->id) }}" method="POST">
                                         @csrf
                                         <button type="submit" class="bg-red-500 hover:bg-red-600 text-white font-bold py-1 px-4 rounded">Reject</button>
                                     </form>
@@ -42,6 +45,7 @@
                         </tr>
                     @endforeach
 
+                    <!-- Loop through pending officers -->
                     @foreach($pendingOfficers as $officer)
                         <tr class="border-t">
                             <td class="py-3 px-6">{{ $officer->name }}</td>
@@ -49,11 +53,13 @@
                             <td class="py-3 px-6">Officer</td>
                             <td class="py-3 px-6">
                                 <div class="flex space-x-2">
-                                    <form action="{{ route('admin.approve', $officer->id) }}" method="POST">
+                                    <!-- Update action to approve officer -->
+                                    <form action="{{ route('admin.approveOfficer', $officer->id) }}" method="POST">
                                         @csrf
                                         <button type="submit" class="bg-green-500 hover:bg-green-600 text-white font-bold py-1 px-4 rounded">Approve</button>
                                     </form>
-                                    <form action="{{ route('admin.reject', $officer->id) }}" method="POST">
+                                    <!-- Update action to reject officer -->
+                                    <form action="{{ route('admin.rejectOfficer', $officer->id) }}" method="POST">
                                         @csrf
                                         <button type="submit" class="bg-red-500 hover:bg-red-600 text-white font-bold py-1 px-4 rounded">Reject</button>
                                     </form>
