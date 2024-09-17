@@ -1,5 +1,9 @@
 <x-officer-app-layout>
     @section('content')
+    <div id="alert" class="bg-[maroon] text-white p-2 rounded mb-4 shadow-md flex items-center justify-between {{ session('error') ? '' : 'hidden' }}" role="alert">
+        <span class="text-white">{{ session('error') }}</span>
+    </div>
+
     <div class="container mx-auto mt-4 p-6 bg-white shadow-md rounded-lg">
         <h1 class="text-2xl font-bold mb-4">Finance Management</h1>
 
@@ -57,7 +61,7 @@
                                 <td class="px-6 py-4 whitespace-nowrap">{{ $finance->status }}</td>
                                 <td>{{ $finance->officer->role->name ?? 'N/A' }}</td>
                                 <td class="px-6 py-4 whitespace-nowrap">
-                                    <a href="{{ route('finances.edit', $finance->id) }}" class="bg-yellow-500 text-white px-3 py-1 rounded hover:bg-yellow-600">Edit</a>
+                                    <a href="{{ route('finances.edit', $finance->id) }}" class="bg-yellow-500 text-white px-3 py-1 rounded hover:bg-yellow-600" onclick="showAlert(event)">Edit</a>
                                     <form action="{{ route('finances.destroy', $finance->id) }}" method="POST" class="inline">
                                         @csrf
                                         @method('DELETE')
@@ -95,5 +99,26 @@
                 window.location.href = "{{ route('finances.index') }}?" + searchParams.toString();
             });
         });
+
+
+        window.addEventListener('load', function() {
+    const showAlert = localStorage.getItem('showAlert');
+    console.log('showAlert:', showAlert); // Check if the item is correctly retrieved
+    if (showAlert === 'true') {
+        localStorage.removeItem('showAlert');
+        const alert = document.getElementById('alert');
+        if (alert) {
+            alert.classList.remove('hidden');
+            alert.classList.add('block');
+            console.log('Alert is shown'); // Confirm the alert is shown
+
+            setTimeout(function() {
+                alert.classList.remove('block');
+                alert.classList.add('hidden');
+                console.log('Alert is hidden'); // Confirm the alert is hidden after delay
+            }, 3000); // 3 seconds
+        }
+    }
+});
     </script>
 </x-officer-app-layout>
