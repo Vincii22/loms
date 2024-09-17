@@ -49,8 +49,14 @@ Route::prefix('admin')->middleware('auth:admin')->group(function () {
 
 
     Route::get('pending-users', [AdminAuthController::class, 'index'])->name('admin.pending_users');
-    Route::post('approve/{id}', [AdminAuthController::class, 'approve'])->name('admin.approve');
-    Route::post('reject/{id}', [AdminAuthController::class, 'reject'])->name('admin.reject');
+
+    // Separate approval routes for users and officers
+    Route::post('approve-user/{id}', [AdminAuthController::class, 'approveUser'])->name('admin.approveUser');
+    Route::post('approve-officer/{id}', [AdminAuthController::class, 'approveOfficer'])->name('admin.approveOfficer');
+
+    // Separate rejection routes for users and officers (if needed)
+    Route::post('reject-user/{id}', [AdminAuthController::class, 'rejectUser'])->name('admin.rejectUser');
+    Route::post('reject-officer/{id}', [AdminAuthController::class, 'rejectOfficer'])->name('admin.rejectOfficer');
 });
 
 

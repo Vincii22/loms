@@ -28,34 +28,36 @@ class AdminAuthController extends Controller
      * @param  int  $id
      * @return \Illuminate\Http\RedirectResponse
      */
-    public function approve($id)
+    public function approveUser($id)
     {
-        Log::info("Approving user/officer with ID: $id");
+        Log::info("Approving User with ID: $id");
 
-        // First, try to find a user
-        $user = User::find($id);
-        if ($user) {
-            Log::info("Updating User: " . $user->email);
-            $user->status = 'active';
-            $user->email_verified_at = now();
-            $user->save();
-            $user->notify(new UserRegistrationApproved($user));
-            return redirect()->route('admin.pending_users')->with('success', 'User approved.');
-        }
+        $user = User::findOrFail($id);
+        $user->status = 'active';
+        $user->email_verified_at = now();
+        $user->save();
+        $user->notify(new UserRegistrationApproved($user));
 
-        // If no user is found, then check for an officer
-        $officer = Officer::find($id);
-        if ($officer) {
-            Log::info("Updating Officer: " . $officer->email);
-            $officer->status = 'active';
-            $officer->email_verified_at = now();
-            $officer->save();
-            $officer->notify(new OfficerRegistrationApproved($officer));
-            return redirect()->route('admin.pending_users')->with('success', 'Officer approved.');
-        }
+        return redirect()->route('admin.pending_users')->with('success', 'User approved.');
+    }
 
-        Log::error("User/Officer with ID $id not found.");
-        return redirect()->route('admin.pending_users')->with('error', 'User/Officer not found.');
+    /**
+     * Approve an officer.
+     *
+     * @param  int  $id
+     * @return \Illuminate\Http\RedirectResponse
+     */
+    public function approveOfficer($id)
+    {
+        Log::info("Approving Officer with ID: $id");
+
+        $officer = Officer::findOrFail($id);
+        $officer->status = 'active';
+        $officer->email_verified_at = now();
+        $officer->save();
+        $officer->notify(new OfficerRegistrationApproved($officer));
+
+        return redirect()->route('admin.pending_officers')->with('success', 'Officer approved.');
     }
 
     /**
@@ -64,19 +66,19 @@ class AdminAuthController extends Controller
      * @param  int  $id
      * @return \Illuminate\Http\RedirectResponse
      */
-    public function reject($id)
+    public function rejectUser($id)
     {
-        $user = User::find($id);
-        if ($user) {
-            $user = User::findOrFail($id);
-            $user->status = 'inactive'; // or delete the user if preferred
-            $user->save();
-        } else {
-            $officer = Officer::findOrFail($id);
-            $officer->status = 'inactive'; // or delete the officer if preferred
-            $officer->save();
-        }
+        $user = User::findOrFail($id);
+        $user->status = 'inactive'; // Or delete the user if necessary
+        $user->save();
+        return redirect()->route('admin.pending_users')->with('success', 'User rejected.');
+    }
 
-        return redirect()->route('admin.pending_users')->with('success', 'User/Officer rejected.');
+    public function rejectOfficer($id)
+    {
+        $officer = Officer::findOrFail($id);
+        $officer->status = 'inactive'; // Or delete the officer if necessary
+        $officer->save();
+        return redirect()->route('admin.pending_users')->with('success', 'Officer rejected.');
     }
 }
