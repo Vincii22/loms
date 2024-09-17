@@ -61,11 +61,11 @@
     </aside>
 
     <!-- Content Wrapper -->
-    <div class="content-wrapper">
+    <div class="content-wrapper !h-full overflow-auto pb-3">
         <!-- Page Heading -->
         @isset($header)
             <div class="flex justify-center">
-                <header class="bg-white shadow mb-4 p-4 !mt-5 !ml-5 w-[95%] flex justify-between">
+                <header class="bg-white shadow mb-4 p-4 !mt-5 !ml-5 w-[95%] flex justify-between rounded-[10px]">
                     <div class="max-w-7xl mx-10">
                         {{ $header }}
                     </div>
@@ -75,8 +75,9 @@
         @endisset
 
         <!-- Main Content -->
-        <main class="main-content p-6">
-            @yield('content')
+        <main class="main-content mr-6 ml-10 !bg-transparent">
+            @yield('AdminContent')
+            {{ $slot }}
         </main>
     </div>
 

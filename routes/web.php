@@ -19,6 +19,7 @@ use App\Http\Controllers\ProfileController;
 use App\Http\Controllers\UserController;
 use App\Http\Controllers\StudentFinanceController;
 use App\Http\Controllers\StudentDashboardController;
+use App\Http\Middleware\CheckFinanceRole;
 use Illuminate\Support\Facades\Route;
 
 Route::get('/', function () {
@@ -61,27 +62,31 @@ Route::prefix('admin')->middleware('auth:admin')->group(function () {
 
 
 Route::prefix('officer')->middleware('auth:officer')->group(function () {
+    // Resources
     Route::resource('students', StudentsController::class);
     Route::resource('finances', FinanceController::class);
-    Route::post('/finances/update-payment-status', [FinanceController::class, 'updatePaymentStatus'])->name('finances.updatePaymentStatus');
     Route::resource('fees', FeesController::class);
     Route::resource('attendance', AttendanceController::class);
-    route::post('/attendance/mark-by-barcode', [AttendanceController::class, 'markAttendanceByBarcode'])->name('attendance.mark');
     Route::resource('activities', ActivityController::class);
     Route::resource('sanctions', SanctionController::class);
-
     Route::resource('clearances', ClearanceController::class);
     Route::resource('audit', AuditController::class);
-});
+    Route::resource('finances', FinanceController::class);
 
-Route::prefix('officer')->middleware('auth:officer')->group(function () {
 
+    // Custom routes
+
+    // Reports
     Route::get('reports/attendance', [ReportsController::class, 'attendanceReport'])->name('reports.attendance');
     Route::get('reports/attendance_statistics', [ReportsController::class, 'attendanceStats'])->name('reports.attendance_statistics');
     Route::get('reports/finance', [ReportsController::class, 'financeReport'])->name('reports.finance');
     Route::get('reports/sanction', [ReportsController::class, 'sanctionReport'])->name('reports.sanction');
     Route::get('reports/clearance', [ReportsController::class, 'clearanceReport'])->name('reports.clearance');
     Route::get('reports/student', [ReportsController::class, 'studentReport'])->name('reports.student');
+
+
+    // Dashboard
+    Route::get('/dashboard', [DashboardController::class, 'index'])->name('officer.dashboard');
 });
 
 
