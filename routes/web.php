@@ -37,6 +37,9 @@ Route::middleware('auth')->group(function () {
     Route::resource('finance', StudentFinanceController::class);
     Route::resource('sAttendance', StudentAttendanceController::class);
     Route::get('/finance/receipt/{id}', [StudentFinanceController::class, 'receipt'])->name('receipt');
+    Route::get('/check-status', [UserController::class, 'checkStatus'])->name('check.status');
+
+
 
 });
 
@@ -76,6 +79,7 @@ Route::prefix('officer')->middleware('auth:officer')->group(function () {
     Route::resource('audit', AuditController::class);
     Route::resource('finances', FinanceController::class);
 
+    Route::post('attendance/mark', [AttendanceController::class, 'markAttendanceByBarcode'])->name('attendance.mark');
 
     // Custom routes
 
@@ -94,7 +98,6 @@ Route::prefix('officer')->middleware('auth:officer')->group(function () {
 
 
 
-route::middleware('auth')->get('/check-status', [UserController::class, 'checkStatus'])->name('check.status');
 
 Route::get('/officer/dashboard', [DashboardController::class, 'index'])->name('officer.dashboard');
 Route::post('/finances/update-payment-status', [FinanceController::class, 'updatePaymentStatus'])->name('finances.updatePaymentStatus')->middleware('auth:officer');

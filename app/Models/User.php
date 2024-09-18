@@ -29,6 +29,7 @@ class User extends Authenticatable implements MustVerifyEmailContract
         'password',
     ];
 
+
     // Relationships
     public function organization(): BelongsTo
     {

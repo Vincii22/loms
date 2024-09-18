@@ -12,18 +12,19 @@ class UserController extends Controller
 {
     public function checkStatus()
     {
-        try {
+        if (Auth::check()) {
             $user = Auth::user();
-            if ($user) {
-                return response()->json(['status' => $user->status]);
+            if ($user->status === 'active') {
+                // User is authenticated and active
+                return response()->json(['status' => 'active']);
+            } else {
+                // User is authenticated but not active
+                return response()->json(['status' => 'inactive']);
             }
-            return response()->json(['status' => 'pending']);
-        } catch (\Exception $e) {
-            Log::error('Error in checkStatus method: ' . $e->getMessage());
-            return response()->json(['status' => 'error'], 500);
+        } else {
+            // User is not authenticated
+            return response()->json(['status' => 'unauthenticated'], 401);
         }
     }
-
-
 }
 ?>

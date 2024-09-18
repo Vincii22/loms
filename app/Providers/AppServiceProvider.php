@@ -4,7 +4,8 @@ namespace App\Providers;
 
 use Illuminate\Support\ServiceProvider;
 use Illuminate\Support\Facades\Blade;
-
+use App\Observers\UserObserver;
+use App\Models\User;
 class AppServiceProvider extends ServiceProvider
 {
     /**
@@ -23,5 +24,6 @@ class AppServiceProvider extends ServiceProvider
         Blade::component('student-sidebar', \App\View\Components\StudentSidebar::class);
         Blade::component('officer-sidebar', \App\View\Components\OfficerSidebar::class);
         Blade::component('admin-sidebar', \App\View\Components\AdminSidebar::class);
+        User::observe(UserObserver::class);
     }
 }
