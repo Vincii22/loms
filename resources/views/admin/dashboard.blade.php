@@ -1,6 +1,6 @@
 <x-admin-app-layout>
     <x-slot name="header">
-        <h2 class="font-semibold text-xl text-gray-800 leading-tight">
+        <h2 class="font-semibold text-lg text-gray-800 leading-tight">
             {{ __('Admin') }} / 
             <a href="{{ route('admin.dashboard') }}" class="text-indigo-600">Dashboard</a>
         </h2>
@@ -28,23 +28,23 @@
     </div>
 
     <!-- Statistics Container -->
-    <div class="max-w-7xl flex gap-4">
+    <div class="max-w-full flex gap-4">
         <div class="bg-white overflow-hidden shadow-sm sm:rounded-lg w-2/3 sm:px-6 lg:px-8">
             <div class="p-6">
                 <div class="flex space-x-6">
                     <!-- Total Students -->
                     <div class="flex-1 border border-gray-300 rounded-md py-2 px-4 bg-gray-50">
-                        <h3 class="text-xl">Total Students</h3>
+                        <h3 class="text-lg">Total Students</h3>
                     </div>
 
                     <!-- Total Officers -->
                     <div class="flex-1 border border-gray-300 rounded-md py-2 px-4 bg-gray-50">
-                        <h3 class="text-xl">Total Officers</h3>
+                        <h3 class="text-lg">Total Officers</h3>
                     </div>
 
                     <!-- Total Admins -->
                     <div class="flex-1 border border-gray-300 rounded-md py-2 px-4 bg-gray-50">
-                        <h3 class="text-xl">Total Admins</h3>
+                        <h3 class="text-lg">Total Admins</h3>
                     </div>
                 </div>
 
@@ -53,42 +53,99 @@
                     <div class="flex flex-wrap justify-between gap-6">
                         <!-- Organization Counts Chart -->
                         <div class="flex-1 min-w-[300px] max-w-[400px]" style="height: 300px;">
-                            <h3 class="text-xl font-semibold mb-2">Organization Counts</h3>
+                            <h3 class="text-lg font-semibold mb-2">Organization Counts</h3>
                             <canvas id="organizationBarChart" style="width: 100%; height: 100%;"></canvas>
                         </div>
 
                         <!-- Program Counts Chart -->
                         <div class="flex-1 min-w-[300px] max-w-[400px]" style="height: 300px;">
-                            <h3 class="text-xl font-semibold mb-2">Course Counts</h3>
+                            <h3 class="text-lg font-semibold mb-2">Course Counts</h3>
                             <canvas id="programBarChart" style="width: 100%; height: 100%;"></canvas>
                         </div>
 
                         <!-- Year Counts Chart -->
                         <div class="flex-1 min-w-[300px] max-w-[400px]" style="height: 300px;">
-                            <h3 class="text-xl font-semibold mb-2">Year Counts</h3>
+                            <h3 class="text-lg font-semibold mb-2">Year Counts</h3>
                             <canvas id="yearBarChart" style="width: 100%; height: 100%;"></canvas>
                         </div>
                     </div>
                 </div>
             </div>
         </div>
-        <div class="bg-white overflow-hidden shadow-sm sm:rounded-lg w-1/3">
-            <div class="p-6">
-                <h1 class="text-center text-lg font-semibold text-[#5C0E0F] pb-4">Upcoming Activities</h1>
-                <div class="flex flex-col gap-4">
-                    <div class="border border-gray-300 rounded-md p-4 bg-gray-50">
-                        <h3 class="text-xl font-semibold mb-2">Activity 1</h3>
-                        <p class="text-lg">Details about upcoming activity 1.</p>
-                    </div>
+        <div class="w-1/3">
+            <div class="bg-white shadow-sm sm:rounded-lg h-fit mb-3">
+                <div class="p-6">
+                    <h1 class="text-center text-lg font-semibold text-[#5C0E0F] pb-4">Upcoming Activities</h1>
+                    <div class="flex flex-col gap-4 max-h-[420px] overflow-auto custom-scroll">
+                        <div class="border border-gray-300 rounded-md p-4 bg-gray-50">
+                            <h3 class="text-lg font-semibold mb-2">Activity 1</h3>
+                            <p class="text-lg">Details about upcoming activity 1.</p>
+                        </div>
 
-                    <div class="border border-gray-300 rounded-md p-4 bg-gray-50">
-                        <h3 class="text-xl font-semibold mb-2">Activity 2</h3>
-                        <p class="text-lg">Details about upcoming activity 2.</p>
-                    </div>
+                        <div class="border border-gray-300 rounded-md p-4 bg-gray-50">
+                            <h3 class="text-lg font-semibold mb-2">Activity 2</h3>
+                            <p class="text-lg">Details about upcoming activity 2.</p>
+                        </div>
 
-                    <div class="border border-gray-300 rounded-md p-4 bg-gray-50">
-                        <h3 class="text-xl font-semibold mb-2">Activity 3</h3>
-                        <p class="text-lg">Details about upcoming activity 3.</p>
+                        <div class="border border-gray-300 rounded-md p-4 bg-gray-50">
+                            <h3 class="text-lg font-semibold mb-2">Activity 3</h3>
+                            <p class="text-lg">Details about upcoming activity 3.</p>
+                        </div>
+                        <div class="border border-gray-300 rounded-md p-4 bg-gray-50">
+                            <h3 class="text-lg font-semibold mb-2">Activity 3</h3>
+                            <p class="text-lg">Details about upcoming activity 3.</p>
+                        </div>
+                        <div class="border border-gray-300 rounded-md p-4 bg-gray-50">
+                            <h3 class="text-lg font-semibold mb-2">Activity 3</h3>
+                            <p class="text-lg">Details about upcoming activity 3.</p>
+                        </div>
+                        <div class="border border-gray-300 rounded-md p-4 bg-gray-50">
+                            <h3 class="text-lg font-semibold mb-2">Activity 3</h3>
+                            <p class="text-lg">Details about upcoming activity 3.</p>
+                        </div>
+                    </div>
+                </div>
+            </div>
+            <div class="bg-white shadow-sm sm:rounded-lg h-fit ">
+                <div class="p-6">
+                    <h1 class="text-center text-lg font-semibold text-[#5C0E0F] pb-4">Pending Approval</h1>
+                    <div class="flex flex-col gap-4 max-h-[420px] overflow-auto custom-scroll">
+                        <div class="flex justify-between px-5 rounded-md p-4 bg-gray-50">
+                            <h3 class="text-sm font-semibold mb-2">Username</h3>
+                            <h3 class="text-sm font-semibold mb-2">Officer</h3>
+                            <div class="flex gap-2">
+                                <a href="">
+                                    <img src="{{ asset('images/image 1.png') }}" alt="" class="w-5">
+                                </a>
+                                <a href="">
+                                    <img src="{{ asset('images/Group 174.png') }}" alt="" class="w-5">
+                                </a>
+                            </div>
+                        </div>
+                        <div class="flex justify-between px-5 rounded-md p-4 bg-gray-50">
+                            <h3 class="text-sm font-semibold mb-2">Username</h3>
+                            <h3 class="text-sm font-semibold mb-2">Officer</h3>
+                            <div class="flex gap-2">
+                                <a href="">
+                                    <img src="{{ asset('images/image 1.png') }}" alt="" class="w-5">
+                                </a>
+                                <a href="">
+                                    <img src="{{ asset('images/Group 174.png') }}" alt="" class="w-5">
+                                </a>
+                            </div>
+                        </div>
+                        <div class="flex justify-between px-5 rounded-md p-4 bg-gray-50">
+                            <h3 class="text-sm font-semibold mb-2">Username</h3>
+                            <h3 class="text-sm font-semibold mb-2">Officer</h3>
+                            <div class="flex gap-2">
+                                <a href="">
+                                    <img src="{{ asset('images/image 1.png') }}" alt="" class="w-5">
+                                </a>
+                                <a href="">
+                                    <img src="{{ asset('images/Group 174.png') }}" alt="" class="w-5">
+                                </a>
+                            </div>
+                        </div>
                     </div>
                 </div>
             </div>
@@ -97,4 +154,47 @@
 
     <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
 
+    <style>
+        ::-webkit-scrollbar {
+        width: 8px;
+        height: 8px;
+    }
+
+    ::-webkit-scrollbar-track {
+        background-color: #f0f0f0;
+        border-radius: 10px;
+    }
+
+    ::-webkit-scrollbar-thumb {
+        background-color: #800000;
+        border-radius: 10px;
+    }
+
+    ::-webkit-scrollbar-thumb:hover {
+        background-color: #660000;
+    }
+
+    ::-webkit-scrollbar-corner {
+        background-color: transparent;
+    }
+
+    .custom-scroll::-webkit-scrollbar {
+        width: 8px;
+        height: 8px;
+    }
+
+    .custom-scroll::-webkit-scrollbar-track {
+        background-color: #f0f0f0;
+        border-radius: 10px;
+    }
+
+    .custom-scroll::-webkit-scrollbar-thumb {
+        background-color: #800000;
+        border-radius: 10px;
+    }
+
+    .custom-scroll::-webkit-scrollbar-thumb:hover {
+        background-color: #660000;
+    }
+    </style>
 </x-admin-app-layout>
