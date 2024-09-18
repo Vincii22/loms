@@ -2,8 +2,13 @@
 
     @section('content')
         <div class="max-w-7xl mx-auto p-6 bg-white shadow-lg rounded-lg">
-            <h1 class="text-2xl font-semibold text-gray-800 mb-4">Create New Fee</h1>
-
+            <x-slot name="header">
+                <h2 class="font-semibold text-lg text-gray-800 leading-tight">
+                    {{ __('Officer') }} /
+                    <a href="{{ route('fees.index') }}" class="text-black hover:underline">FINANCE /</a>
+                    <a href="{{ route('finances.index') }}" class="text-indigo-600 uppercase">create new fee</a>
+                </h2>
+            </x-slot>
             <form action="{{ route('fees.store') }}" method="POST">
                 @csrf
                 <div class="mb-4">

@@ -1,8 +1,12 @@
 <x-officer-app-layout>
     @section('content')
+        <x-slot name="header">
+            <h2 class="font-semibold text-lg text-gray-800 leading-tight">
+                {{ __('Officer') }} /
+                <a href="{{ route('clearances.index') }}" class="text-black hover:underline uppercase">Clearance status</a>
+            </h2>
+        </x-slot>
     <div class="container mx-auto px-4 py-6">
-        <h1 class="text-2xl font-bold mb-4">Clearance Status</h1>
-
         @if(session('success'))
             <div class="alert alert-success bg-green-100 border border-green-400 text-green-700 px-4 py-3 rounded relative mb-4">
                 {{ session('success') }}
@@ -39,31 +43,33 @@
                 </div>
             </div>
 
-            <!-- Student Name Search -->
-            <div>
-                <label for="search_name" class="block text-sm font-medium text-gray-700">Student Name</label>
-                <input type="text" id="search_name" name="search_name" value="{{ request('search_name') }}" class="mt-1 block w-full rounded-md border-gray-300 shadow-sm focus:border-indigo-500 focus:ring-indigo-500 sm:text-sm" placeholder="Search by student name">
-            </div>
+            <div class="flex gap-5 justify-between w-full">
+                <!-- Student Name Search -->
+                <div class="w-full">
+                    <label for="search_name" class="block text-sm font-medium text-gray-700">Student Name</label>
+                    <input type="text" id="search_name" name="search_name" value="{{ request('search_name') }}" class="mt-1 block w-full rounded-md border-gray-300 shadow-sm focus:border-indigo-500 focus:ring-indigo-500 sm:text-sm" placeholder="Search by student name">
+                </div>
 
-            <!-- School ID Search -->
-            <div>
-                <label for="search_school_id" class="block text-sm font-medium text-gray-700">School ID</label>
-                <input type="text" id="search_school_id" name="search_school_id" value="{{ request('search_school_id') }}" class="mt-1 block w-full rounded-md border-gray-300 shadow-sm focus:border-indigo-500 focus:ring-indigo-500 sm:text-sm" placeholder="Search by school ID">
-            </div>
+                <!-- School ID Search -->
+                <div class="w-full">
+                    <label for="search_school_id" class="block text-sm font-medium text-gray-700">School ID</label>
+                    <input type="text" id="search_school_id" name="search_school_id" value="{{ request('search_school_id') }}" class="mt-1 block w-full rounded-md border-gray-300 shadow-sm focus:border-indigo-500 focus:ring-indigo-500 sm:text-sm" placeholder="Search by school ID">
+                </div>
 
-            <!-- Status Filter -->
-            <div class="mt-4">
-                <label for="status" class="block text-sm font-medium text-gray-700">Filter by Status</label>
-                <select id="status" name="status" class="form-select mt-1 block w-full rounded-md border-gray-300 shadow-sm focus:border-indigo-500 focus:ring-indigo-500 sm:text-sm">
-                    <option value="">All Statuses</option>
-                    <option value="not cleared" {{ request('status') === 'not cleared' ? 'selected' : '' }}>Not Cleared</option>
-                    <option value="cleared" {{ request('status') === 'cleared' ? 'selected' : '' }}>Cleared</option>
-                </select>
+                <!-- Status Filter -->
+                <div class="w-1/2">
+                    <label for="status" class="block text-sm font-medium text-gray-700">Filter by Status</label>
+                    <select id="status" name="status" class="form-select mt-1 block w-full rounded-md border-gray-300 shadow-sm focus:border-indigo-500 focus:ring-indigo-500 sm:text-sm">
+                        <option value="">All Statuses</option>
+                        <option value="not cleared" {{ request('status') === 'not cleared' ? 'selected' : '' }}>Not Cleared</option>
+                        <option value="cleared" {{ request('status') === 'cleared' ? 'selected' : '' }}>Cleared</option>
+                    </select>
+                </div>
             </div>
         </form>
 
-        <div class="overflow-x-auto">
-            <table class="min-w-full bg-white border border-gray-200 rounded-lg shadow-md">
+        <div class="overflow-x-auto bg-white p-5 rounded shadow-sm">
+            <table id="userTable" class="min-w-full bg-white border border-gray-200 rounded-lg shadow-md">
                 <thead class="bg-gray-100 border-b border-gray-200">
                     <tr>
                         <th class="py-2 px-4 text-left text-gray-600">Name</th>
@@ -88,11 +94,12 @@
             // Debug output
             dd($clearances->toArray());
             @endphp --}}
+            <div class="mt-6">
+                {{ $clearances->links('pagination::tailwind') }}
+            </div>
         </div>
 
-        <div class="mt-6">
-            {{ $clearances->links('pagination::tailwind') }}
-        </div>
+        
     </div>
 
     <script>
@@ -104,5 +111,16 @@
             });
         });
     </script>
+
+<style>
+        .dataTables_paginate{
+            display: none !important;
+        }
+        
+        .dataTables_info{
+            display: none !important;
+
+        }
+    </style>
     @endsection
 </x-officer-app-layout>

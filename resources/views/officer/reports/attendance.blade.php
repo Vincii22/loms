@@ -1,14 +1,12 @@
 <x-officer-app-layout>
     @section('content')
-    <div class="container mx-auto px-4 py-8">
-        <h1 class="text-2xl font-semibold mb-6">Attendance Report</h1>
-
-        <div class="mb-6">
-            <a href="{{ route('reports.attendance_statistics') }}" class="inline-flex items-center px-4 py-2 bg-green-600 border border-transparent rounded-md shadow-sm text-white text-sm font-medium hover:bg-green-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-green-500">
-                View Statistical Report
-            </a>
-        </div>
-
+    <x-slot name="header">
+        <a class="font-semibold text-lg text-gray-800 leading-tight" href="{{ route('officer.dashboard') }}">
+            {{ __('Officer') }} /
+            <a href="{{ route('reports.attendance') }}" class="text-indigo-600 uppercase">ATTENDANCE REPORT</a>
+        </a>
+    </x-slot>
+    <div class="container mx-auto px-4">
         <form method="GET" action="{{ route('reports.attendance') }}" class="mb-6">
             <div class="grid grid-cols-1 md:grid-cols-3 gap-4">
                 <div>
@@ -37,13 +35,19 @@
                 </div>
             </div>
 
-            <button type="submit" class="mt-4 inline-flex items-center px-4 py-2 bg-indigo-600 border border-transparent rounded-md shadow-sm text-white text-sm font-medium hover:bg-indigo-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-indigo-500">
-                Filter
-            </button>
+            <div class="mb-6 flex justify-between">
+                <button type="submit" class="mt-4 inline-flex items-center px-4 py-2 bg-indigo-600 border border-transparent rounded-md shadow-sm text-white text-sm font-medium hover:bg-indigo-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-indigo-500">
+                    Filter
+                </button>
+                <a href="{{ route('reports.attendance_statistics') }}" class="mt-4 inline-flex items-center px-4 py-2 bg-green-600 border border-transparent rounded-md shadow-sm text-white text-sm font-medium hover:bg-green-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-indigo-500">
+                    View Statistical Report
+                </a>
+            </div>
+
         </form>
 
-        <div class="overflow-x-auto">
-            <table class="min-w-full divide-y divide-gray-200">
+        <div class="overflow-x-auto bg-white p-5 rounded shadow-sm">
+            <table id="userTable" class="min-w-full divide-y divide-gray-200">
                 <thead class="bg-gray-50">
                     <tr>
                         <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Student Name</th>
@@ -57,7 +61,7 @@
                 <tbody class="bg-white divide-y divide-gray-200">
                     @forelse($attendances as $attendance)
                     <tr>
-                        <td class="px-6 py-4 whitespace-nowrap text-sm font-medium text-gray-900">{{ $attendance->user->name ?? 'N/A' }}</td>
+                        <td class="px-6 py-4 whitespace-nowrap text-sm font-medium text-gray-900`">{{ $attendance->user->name ?? 'N/A' }}</td>
                         <td class="px-6 py-4 whitespace-nowrap text-sm text-gray-500">{{ $attendance->user->school_id ?? 'N/A' }}</td>
                         <td class="px-6 py-4 whitespace-nowrap text-sm text-gray-500">{{ $attendance->activity->name ?? 'N/A' }}</td>
                         <td class="px-6 py-4 whitespace-nowrap text-sm text-gray-500">{{ $attendance->activity->semester->name ?? 'N/A' }}</td>
@@ -71,12 +75,24 @@
                     @endforelse
                 </tbody>
             </table>
+            <div class="mt-4">
+                {{ $attendances->appends(request()->query())->links('pagination::tailwind') }}
+            </div>
         </div>
 
         <!-- Pagination -->
-        <div class="mt-4">
-            {{ $attendances->appends(request()->query())->links('pagination::tailwind') }}
-        </div>
+        
     </div>
     @endsection
+
+    <style>
+        .dataTables_paginate{
+            display: none !important;
+        }
+        
+        .dataTables_info{
+            display: none !important;
+
+        }
+    </style>
 </x-officer-app-layout>
