@@ -75,7 +75,7 @@
                 <img src="{{ asset('images/csit.png') }}" alt="PICE Logo" class="h-20">
                 <img src="{{ asset('images/iiee.png') }}" alt="CSIT Logo" class="h-20">
                 <img src="{{ asset('images/pice.jpg') }}" alt="IIEE Logo" class="h-20">
-                <img src="{{ asset('images/pice.jpg') }}" alt="SLISS Logo" class="h-20">
+                <img src="{{ asset('images/sliss.png') }}" alt="SLISS Logo" class="h-20">
             </div>
         </div>
         

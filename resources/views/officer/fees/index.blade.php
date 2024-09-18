@@ -1,11 +1,11 @@
 <x-officer-app-layout>
     @section('content')
         <x-slot name="header">
-            <h2 class="font-semibold text-lg text-gray-800 leading-tight">
+            <a class="font-semibold text-lg text-gray-800 leading-tight" href="{{ route('officer.dashboard') }}">
                 {{ __('Officer') }} /
                 <a href="{{ route('fees.index') }}" class="text-black hover:underline">FINANCE /</a>
-                <a href="{{ route('finances.index') }}" class="text-indigo-600 uppercase">Fee Management</a>
-            </h2>
+                <a href="" class="text-indigo-600 uppercase">Fee Management</a>
+            </a>
         </x-slot>
         <div class="max-w-7xl mx-auto p-6 bg-white shadow-lg rounded-lg">
             <div class="flex justify-end mb-4">

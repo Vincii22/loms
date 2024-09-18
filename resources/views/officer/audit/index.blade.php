@@ -3,11 +3,11 @@
     @section('content')
     <div class="container mx-auto py-2 ">
         <x-slot name="header">
-            <h2 class="font-semibold text-lg text-gray-800 leading-tight">
+            <a href="{{ route('officer.dashboard') }}" class="font-semibold text-lg text-gray-800 leading-tight" >
                 {{ __('Officer') }} /
                 <a href="{{ route('fees.index') }}" class="text-black hover:underline">FINANCE /</a>
-                <a href="{{ route('finances.index') }}" class="text-indigo-600 uppercase">Manage audit</a>
-            </h2>
+                <a href="" class="text-indigo-600 uppercase">Manage audit</a>
+            </a>
         </x-slot>
         <form id="fee-form" action="{{ route('audit.index') }}" method="GET" class="mb-6">
             <div class="flex items-center space-x-4">
@@ -27,11 +27,16 @@
 
         @if($selectedFeeId)
             <!-- Fee Summary Card -->
-            <div class="bg-[maroon] p-6 rounded-lg shadow-md mb-6">
-                <h2 class="text-xl font-semibold text-white mb-2">Summary for {{ $fees->find($selectedFeeId)->name }}</h2>
-                <p class="text-lg font-medium text-green-200">Fee Collected: <span class="font-bold text-green-100">{{ $feeCollected }}</span></p>
-                <p class="text-lg font-medium text-red-200">Fee Not Collected: <span class="font-bold text-red-100">{{ $feeNotCollected }}</span></p>
-                <p class="text-lg font-medium text-gray-200">Target Budget: <span class="font-bold text-gray-100">{{ $targetBudget }}</span></p>
+            <div class=" p-6 rounded-lg shadow-md mb-6 flex justify-between" style="background: linear-gradient(to right, #c43e3e 20%, #5C0E0F);">
+                <div class="">
+                    <h2 class="text-xl font-semibold text-white mb-2">Summary for {{ $fees->find($selectedFeeId)->name }}</h2>
+                    <p class="text-lg font-medium text-green-200">Fee Collected: <span class="font-bold text-green-100">₱{{ $feeCollected }}</span></p>
+                    <p class="text-lg font-medium text-red-200">Fee Not Collected: <span class="font-bold text-red-100">₱{{ $feeNotCollected }}</span></p>
+                    <p class="text-lg font-medium text-gray-200">Target Budget: <span class="font-bold text-gray-100">₱{{ $targetBudget }}.00</span></p>
+                </div>
+                <div>
+                    <img src="{{ asset('images/licoes.png') }}" alt="Logo" class="block h-[120px] w-auto fill-current">
+                </div>
             </div>
 
 

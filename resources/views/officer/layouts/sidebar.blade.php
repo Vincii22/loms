@@ -24,9 +24,9 @@
         </header>
 
         <!-- Sidebar Content -->
-        <div class="flex-1  py-4 w-64" style=" color: black; height: 65%;">
+        <div class="flex-1  py-4 w-64 overflow-y-scroll scrollbar-hidden h-[653px] text-black">
             <nav>
-                <ul class="space-y-4 overflow-y-scroll scrollbar-hidden h-[653px]">
+                <ul class="space-y-4 ">
                     <li class="nav-links w-[220px] relative py-3 rounded-r-[10px] {{ request()->routeIs('officer.dashboard') ? 'bg-[maroon] text-white' : '' }}"><a href="{{ route('officer.dashboard') }}" class="relative  hover:text-gray-300  px-10 ">Dashboard</a></li>
                     <li class="nav-links w-[220px] relative py-3 rounded-r-[10px] {{ request()->routeIs('students.index') ? 'bg-[maroon] text-white' : '' }}"><a href="{{ route('students.index') }}" class="relative  hover:text-gray-300  px-10 ">Students</a></li>
 
