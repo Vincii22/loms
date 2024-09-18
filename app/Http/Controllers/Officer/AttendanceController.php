@@ -171,4 +171,6 @@ class AttendanceController extends Controller
             Log::info("Sanction updated to resolved for student ID: {$studentId}, Sanction ID: {$sanction->id}");
         }
     }
+
+
 }

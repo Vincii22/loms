@@ -69,6 +69,28 @@ class Attendance extends Model
             Log::info("Sanction updated to resolved for student ID: {$this->student_id}, Sanction ID: {$sanction->id}");
         }
     }
+
+    public static function addNewUsersToAttendance($activityId)
+{
+    $students = User::where('status', 'active')->get(); // Fetch all active users
+
+    foreach ($students as $student) {
+        // Check if the attendance record already exists for this user and activity
+        $attendanceExists = self::where('student_id', $student->id)
+            ->where('activity_id', $activityId)
+            ->exists();
+
+        if (!$attendanceExists) {
+            // Create attendance record with 'Absent' status
+            self::create([
+                'student_id' => $student->id,
+                'activity_id' => $activityId,
+                'status' => 'Absent',
+            ]);
+        }
+    }
+}
+
 }
 
 

@@ -78,4 +78,28 @@ class Finance extends Model
      }
  }
 
+ public static function addNewUsersToFinance($feeId)
+ {
+     $students = User::where('status', 'active')->get(); // Fetch all active users
+
+     foreach ($students as $student) {
+         // Check if the finance record already exists for this user and fee
+         $financeExists = self::where('user_id', $student->id)
+             ->where('fee_id', $feeId)
+             ->exists();
+
+         if (!$financeExists) {
+             // Create finance record with default amount and 'Not Paid' status
+             self::create([
+                 'user_id' => $student->id,
+                 'fee_id' => $feeId,
+                 'default_amount' => 100, // Example default amount
+                 'status' => 'Not Paid',
+                 'officer_id' => null, // Set as needed
+             ]);
+         }
+     }
+ }
+
+
 }
