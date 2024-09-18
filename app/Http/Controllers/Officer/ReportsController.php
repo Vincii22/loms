@@ -202,23 +202,99 @@ class ReportsController extends Controller
      */
     public function clearanceReport(Request $request)
     {
-        $dateRange = $request->input('date_range');
+        $status = $request->input('status');
+        $semesterId = $request->input('semester_id');
+        $schoolYear = $request->input('school_year');
 
-        $query = Clearance::with(['user', 'semester'])
-            ->select('id', 'user_id', 'semester_id', 'school_year', 'status');
+        // Fetch available semesters from unique semester IDs in clearances
+        $semesters = Semester::whereIn('id', Clearance::pluck('semester_id')->unique())->get();
 
-        if ($dateRange) {
-            // Placeholder for future date range filtering if needed
-            // [$startDate, $endDate] = explode(' to ', $dateRange);
-            // $query->whereBetween('date', [$startDate, $endDate]);
-        }
+        // Fetch distinct school years from clearances
+        $schoolYears = Clearance::distinct()->pluck('school_year');
 
-        // Apply pagination (e.g., 10 items per page)
-        $clearances = $query->paginate(10);
+        // Fetch filtered and paginated clearance records
+        $clearances = Clearance::when($status, function ($query, $status) {
+            return $query->whereRaw('LOWER(status) = ?', [strtolower($status)]);
+        })
+        ->when($semesterId, function ($query, $semesterId) {
+            return $query->where('semester_id', $semesterId);
+        })
+        ->when($schoolYear, function ($query, $schoolYear) {
+            return $query->where('school_year', $schoolYear);
+        })
+        ->paginate(10); // Adjust the number per page as needed
 
-        return view('officer.reports.clearance', compact('clearances'));
+        return view('officer.reports.clearance', [
+            'clearances' => $clearances,
+            'semesters' => $semesters,
+            'schoolYears' => $schoolYears,
+        ]);
     }
+    public function clearanceStats(Request $request)
+    {
+        $semesterId = $request->input('semester_id');
+        $schoolYear = $request->input('school_year');
 
+        // Fetch available semesters and school years
+        $semesters = Semester::whereIn('id', Clearance::pluck('semester_id')->unique())->get();
+        $schoolYears = Clearance::distinct()->pluck('school_year');
+
+        // Fetch clearance statistics
+        $clearances = Clearance::when($semesterId, function ($query, $semesterId) {
+            return $query->where('semester_id', $semesterId);
+        })
+        ->when($schoolYear, function ($query, $schoolYear) {
+            return $query->where('school_year', $schoolYear);
+        })
+        ->get();
+
+        // Prepare data for Status Distribution Chart
+        $statusCounts = $clearances->groupBy('status')->map->count();
+        $statusLabels = $statusCounts->keys();
+        $statusData = $statusCounts->values();
+
+        // Prepare data for Clearances by Semester Chart
+        $semesterData = $semesters->map(function ($semester) use ($clearances) {
+            return $clearances->where('semester_id', $semester->id)->count();
+        });
+
+        // Prepare data for Clearances by School Year Chart
+        $yearData = $schoolYears->map(function ($year) use ($clearances) {
+            return $clearances->where('school_year', $year)->count();
+        });
+
+        // Prepare data for Top 5 Users by Clearances Chart
+        $topUsers = $clearances->groupBy('user_id')
+            ->map(function ($items, $userId) {
+                return [
+                    'name' => User::find($userId)->name,
+                    'clearances_count' => $items->count(),
+                ];
+            })
+            ->sortByDesc('clearances_count')
+            ->take(5);
+        $topUsersData = $topUsers->pluck('clearances_count');
+
+        // Prepare user clearances data for the table
+        $userClearances = $clearances->groupBy('user_id')->map(function ($items, $userId) {
+            return [
+                'name' => User::find($userId)->name,
+                'status' => $items->pluck('status')->unique()->implode(', ')
+            ];
+        });
+
+        return view('officer.reports.clearance_statistics', [
+            'semesters' => $semesters,
+            'schoolYears' => $schoolYears,
+            'statusLabels' => $statusLabels,
+            'statusData' => $statusData,
+            'semesterData' => $semesterData,
+            'yearData' => $yearData,
+            'topUsers' => $topUsers,
+            'topUsersData' => $topUsersData,
+            'userClearances' => $userClearances,
+        ]);
+    }
 
     /**
      * Generate and display the student report with optional filtering.
