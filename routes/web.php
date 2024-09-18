@@ -63,7 +63,7 @@ Route::prefix('admin')->middleware('auth:admin')->group(function () {
     Route::post('reject-officer/{id}', [AdminAuthController::class, 'rejectOfficer'])->name('admin.rejectOfficer');
 
         // Dashboard
-        Route::get('/admin/dashboard', [AdminDashboardController::class, 'index'])->name('admin.dashboard');
+        Route::get('/dashboard', [AdminDashboardController::class, 'index'])->name('admin.dashboard');
 });
 
 
@@ -90,8 +90,8 @@ Route::prefix('officer')->middleware('auth:officer')->group(function () {
     Route::get('reports/finance', [ReportsController::class, 'financeReport'])->name('reports.finance');
     Route::get('reports/sanction', [ReportsController::class, 'sanctionReport'])->name('reports.sanction');
     Route::get('reports/clearance', [ReportsController::class, 'clearanceReport'])->name('reports.clearance');
+    Route::get('reports/clearance_statistics', [ReportsController::class, 'clearanceStats'])->name('reports.clearance_statistics');
     Route::get('reports/student', [ReportsController::class, 'studentReport'])->name('reports.student');
-
 
     // Dashboard
     Route::get('/dashboard', [DashboardController::class, 'index'])->name('officer.dashboard');

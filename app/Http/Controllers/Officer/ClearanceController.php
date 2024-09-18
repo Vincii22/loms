@@ -5,90 +5,67 @@ namespace App\Http\Controllers\Officer;
 use App\Http\Controllers\Controller;
 use Illuminate\Http\Request;
 use App\Models\User;
-use App\Models\Sanction;
 use App\Models\Semester;
 use App\Models\Clearance;
 
 class ClearanceController extends Controller
 {
     public function index(Request $request)
-    {
-        $searchName = $request->input('search_name');
-        $searchSchoolId = $request->input('search_school_id');
-        $status = $request->input('status');
-        $semesterId = $request->input('semester_id');
-        $schoolYear = $request->input('filter_school_year');
+{
+    $status = $request->input('status');
+    $semesterId = $request->input('semester_id');
+    $schoolYear = $request->input('filter_school_year');
+    // Fetch available semesters from unique semester IDs in clearances
+    $semesters = Semester::whereIn('id', Clearance::pluck('semester_id')->unique())->get();
 
-        // Fetch available semesters
-        $semesters = Semester::all();
+    // Fetch distinct school years from clearances
+    $schoolYears = Clearance::distinct()->pluck('school_year');
 
-        // Fetch distinct school years from sanctions
-        $schoolYears = Sanction::distinct()->pluck('school_year');
+      // Fetch filtered and paginated clearance records
+      $clearances = Clearance::when($status, function ($query, $status) {
+        return $query->whereRaw('LOWER(status) = ?', [strtolower($status)]);
+    })
+    ->when($semesterId, function ($query, $semesterId) {
+        return $query->where('semester_id', $semesterId);
+    })
+    ->when($schoolYear, function ($query, $schoolYear) {
+        return $query->where('school_year', $schoolYear);
+    })
+    ->paginate(10); // Adjust the number per page as needed
 
-        // Find all clearance records where the associated user does not exist
-        $orphanClearances = Clearance::whereNotIn('user_id', User::pluck('id'))->get();
-        foreach ($orphanClearances as $clearance) {
-            $clearance->delete();
-        }
+    return view('officer.clearance.index', [
+        'clearances' => $clearances,
+        'semesters' => $semesters,
+        'schoolYears' => $schoolYears,
+    ]);
+}
 
-        // Query to fetch users with their clearances and apply filters
-        $query = User::with('clearance')
-            ->when($searchName, function ($query, $searchName) {
-                return $query->where('name', 'like', "%{$searchName}%");
-            })
-            ->when($searchSchoolId, function ($query, $searchSchoolId) {
-                return $query->where('school_id', 'like', "%{$searchSchoolId}%");
-            })
-            ->when($status, function ($query, $status) {
-                $query->whereHas('clearance', function ($query) use ($status) {
-                    $query->whereRaw('LOWER(status) = ?', [strtolower($status)]);
-                });
-            })
-            ->when($semesterId, function ($query, $semesterId) {
-                $query->whereHas('clearance', function ($query) use ($semesterId) {
-                    $query->where('semester_id', $semesterId);
-                });
-            })
-            ->when($schoolYear, function ($query, $schoolYear) {
-                $query->whereHas('clearance', function ($query) use ($schoolYear) {
-                    $query->where('school_year', $schoolYear);
-                });
-            });
 
-        $clearances = $query->paginate(10);
-
-        // Debugging to inspect the query results
-        // dd($clearances->toArray());
-
-        return view('officer.clearance.index', [
-            'clearances' => $clearances,
-            'semesters' => $semesters,
-            'schoolYears' => $schoolYears,
-        ]);
-    }
 
     public function update(Request $request, $id)
     {
         $request->validate([
-            'semester_id' => 'nullable|exists:semesters,id', // Validate semester_id if provided
-            'school_year' => 'nullable|string', // Validate school_year if provided
+            'status' => 'required|string|in:not cleared,cleared',
+            'semester_id' => 'required|exists:semesters,id',
+            'school_year' => 'required|string',
         ]);
 
         $user = User::findOrFail($id);
-        $clearance = $user->clearance;
+
+        // Find or create clearance record
+        $clearance = $user->clearances()->where([
+            'semester_id' => $request->input('semester_id'),
+            'school_year' => $request->input('school_year'),
+        ])->first();
 
         if ($clearance) {
-            $clearance->update([
-                'status' => $request->status,
-                'semester_id' => $request->semester_id, // Update semester_id
-                'school_year' => $request->school_year, // Update school_year
-            ]);
+            $clearance->update(['status' => $request->status]);
         } else {
             Clearance::create([
                 'user_id' => $id,
                 'status' => $request->status,
-                'semester_id' => $request->semester_id, // Create with semester_id
-                'school_year' => $request->school_year, // Create with school_year
+                'semester_id' => $request->input('semester_id'),
+                'school_year' => $request->input('school_year'),
             ]);
         }
 

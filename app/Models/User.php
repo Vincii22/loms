@@ -61,15 +61,14 @@ class User extends Authenticatable implements MustVerifyEmailContract
         return $this->hasMany(Sanction::class, 'student_id');
     }
 
-    public function clearance(): HasOne
+    public function clearances(): HasMany
     {
-        return $this->hasOne(Clearance::class, 'user_id');
+        return $this->hasMany(Clearance::class, 'user_id');
     }
-
     public function updateClearanceStatus()
     {
         // Fetch the student's clearances
-        $clearances = Clearance::where('user_id', $this->id)->get();
+        $clearances = $this->clearances;
 
         foreach ($clearances as $clearance) {
             $semester = $clearance->semester_id;
@@ -111,6 +110,7 @@ class User extends Authenticatable implements MustVerifyEmailContract
             $clearance->save();
         }
     }
+
 
 
 

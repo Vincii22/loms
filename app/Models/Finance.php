@@ -56,7 +56,7 @@ class Finance extends Model
 
      Sanction::where('student_id', $this->user_id)
          ->where('type', 'Unpaid Fees - ' . $fee->name) // Fee-specific sanction
-        ->where('semester', $fee->semester_id) // Check for the same semester
+        ->where('semester_id', $fee->semester_id) // Check for the same semester
         ->where('school_year', $fee->school_year) // Check for the same school_year
          ->where('resolved', 'not resolved')
          ->update(['resolved' => 'resolved']);
