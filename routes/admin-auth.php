@@ -10,6 +10,7 @@ use App\Http\Controllers\Admin\Auth\PasswordResetLinkController;
 use App\Http\Controllers\Admin\Auth\RegisteredUserController;
 use App\Http\Controllers\Admin\Auth\VerifyEmailController;
 use App\Http\Controllers\Admin\ProfileController;
+use App\Http\Controllers\Admin\AdminDashboardController;
 use Illuminate\Support\Facades\Route;
 
 Route::middleware('guest:admin')->prefix('admin')->name('admin.')->group(function () {
@@ -38,9 +39,9 @@ Route::middleware('guest:admin')->prefix('admin')->name('admin.')->group(functio
 
 Route::middleware('auth:admin')->prefix('admin')->name('admin.')->group(function () {
 
-    Route::get('/dashboard', function () {
-        return view('admin.dashboard');
-    })->middleware(['verified'])->name('dashboard');
+    Route::get('adminDashboard', [AdminDashboardController::class, 'index'])
+        ->middleware(['verified'])
+        ->name('admin.dashboard');
 
         Route::get('/profile', [ProfileController::class, 'edit'])->name('profile.edit');
         Route::patch('/profile', [ProfileController::class, 'update'])->name('profile.update');

@@ -46,7 +46,7 @@ Route::prefix('admin')->middleware('auth:admin')->group(function () {
     Route::resource('astudents', StudentController::class);
     Route::resource('officers', OfficerController::class);
     Route::resource('admins', AdminController::class);
-    Route::resource('adminDashboard', AdminDashboardController::class);
+
 
 
     Route::get('pending-users', [AdminAuthController::class, 'index'])->name('admin.pending_users');
@@ -58,6 +58,9 @@ Route::prefix('admin')->middleware('auth:admin')->group(function () {
     // Separate rejection routes for users and officers (if needed)
     Route::post('reject-user/{id}', [AdminAuthController::class, 'rejectUser'])->name('admin.rejectUser');
     Route::post('reject-officer/{id}', [AdminAuthController::class, 'rejectOfficer'])->name('admin.rejectOfficer');
+
+        // Dashboard
+        Route::get('/admin/dashboard', [AdminDashboardController::class, 'index'])->name('admin.dashboard');
 });
 
 
