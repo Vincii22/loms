@@ -1,10 +1,10 @@
 <x-officer-app-layout>
     @section('content')
         <x-slot name="header">
-            <h2 class="font-semibold text-lg text-gray-800 leading-tight">
+            <a class="font-semibold text-lg text-gray-800 leading-tight" href="{{ route('officer.dashboard') }}">
                 {{ __('Officer') }} /
-                <a href="{{ route('sanctions.index') }}" class="text-black hover:underline">SANCTION</a>
-            </h2>
+            <a href="{{ route('sanctions.index') }}" class="text-indigo-600 uppercase">clearance REPORT</a>
+        </a>
         </x-slot>
     <div class="overflow-x-auto">
         <form method="GET" action="{{ route('sanctions.index') }}" class="mb-4">
@@ -46,18 +46,6 @@
                             </option>
                         @endforeach
                     </select>
-                </div>
-
-                <!-- Student Name Search -->
-                <div>
-                    <label for="search_name" class="block text-sm font-medium text-gray-700">Student Name</label>
-                    <input type="text" id="search_name" name="search_name" value="{{ request('search_name') }}" class="mt-1 block w-full rounded-md border-gray-300 shadow-sm focus:border-indigo-500 focus:ring-indigo-500 sm:text-sm" placeholder="Search by student name">
-                </div>
-
-                <!-- School ID Search -->
-                <div>
-                    <label for="search_school_id" class="block text-sm font-medium text-gray-700">School ID</label>
-                    <input type="text" id="search_school_id" name="search_school_id" value="{{ request('search_school_id') }}" class="mt-1 block w-full rounded-md border-gray-300 shadow-sm focus:border-indigo-500 focus:ring-indigo-500 sm:text-sm" placeholder="Search by school ID">
                 </div>
             </div>
         </form>

@@ -15,7 +15,7 @@
 
         <!-- Filter Form -->
         <form action="{{ route('clearances.index') }}" method="GET" class="mb-4">
-            <div class="grid grid-cols-1 md:grid-cols-2 gap-4 mb-4">
+            <div class="grid grid-cols-1 md:grid-cols-3 gap-4 mb-4">
                 <!-- Semester Filter -->
                 <div>
                     <label for="semester_id" class="block text-sm font-medium text-gray-700">Semester</label>
@@ -41,23 +41,9 @@
                         @endforeach
                     </select>
                 </div>
-            </div>
-
-            <div class="flex gap-5 justify-between w-full">
-                <!-- Student Name Search -->
-                <div class="w-full">
-                    <label for="search_name" class="block text-sm font-medium text-gray-700">Student Name</label>
-                    <input type="text" id="search_name" name="search_name" value="{{ request('search_name') }}" class="mt-1 block w-full rounded-md border-gray-300 shadow-sm focus:border-indigo-500 focus:ring-indigo-500 sm:text-sm" placeholder="Search by student name">
-                </div>
-
-                <!-- School ID Search -->
-                <div class="w-full">
-                    <label for="search_school_id" class="block text-sm font-medium text-gray-700">School ID</label>
-                    <input type="text" id="search_school_id" name="search_school_id" value="{{ request('search_school_id') }}" class="mt-1 block w-full rounded-md border-gray-300 shadow-sm focus:border-indigo-500 focus:ring-indigo-500 sm:text-sm" placeholder="Search by school ID">
-                </div>
 
                 <!-- Status Filter -->
-                <div class="w-1/2">
+                <div class="">
                     <label for="status" class="block text-sm font-medium text-gray-700">Filter by Status</label>
                     <select id="status" name="status" class="form-select mt-1 block w-full rounded-md border-gray-300 shadow-sm focus:border-indigo-500 focus:ring-indigo-500 sm:text-sm">
                         <option value="">All Statuses</option>

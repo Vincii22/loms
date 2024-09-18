@@ -75,7 +75,6 @@
                             <li class="pl-14 nav-links w-[220px] relative py-3 rounded-r-[10px] {{ request()->routeIs('reports.finance') ? 'bg-[maroon] text-white' : '' }}"><a href="{{ route('reports.finance') }}" class="hover:text-gray-300">Finance Report</a></li>
                             <li class="pl-14 nav-links w-[220px] relative py-3 rounded-r-[10px] {{ request()->routeIs('reports.sanction') ? 'bg-[maroon] text-white' : '' }}"><a href="{{ route('reports.sanction') }}" class="hover:text-gray-300">Sanction Report</a></li>
                             <li class="pl-14 nav-links w-[220px] relative py-3 rounded-r-[10px] {{ request()->routeIs('reports.clearance') ? 'bg-[maroon] text-white' : '' }}"><a href="{{ route('reports.clearance') }}" class="hover:text-gray-300">Clearance Report</a></li>
-                            <li class="pl-14 nav-links w-[220px] relative py-3 rounded-r-[10px] {{ request()->routeIs('reports.student') ? 'bg-[maroon] text-white' : '' }}"><a href="{{ route('reports.student') }}" class="hover:text-gray-300">Student Report</a></li>
                         </ul>
                     </li>
                 </ul>
