@@ -88,6 +88,7 @@ Route::prefix('officer')->middleware('auth:officer')->group(function () {
     Route::get('reports/attendance', [ReportsController::class, 'attendanceReport'])->name('reports.attendance');
     Route::get('reports/attendance_statistics', [ReportsController::class, 'attendanceStats'])->name('reports.attendance_statistics');
     Route::get('reports/finance', [ReportsController::class, 'financeReport'])->name('reports.finance');
+    Route::get('reports/sanction_statistics', [ReportsController::class, 'sanctionStats'])->name('reports.sanction_statistics');
     Route::get('reports/sanction', [ReportsController::class, 'sanctionReport'])->name('reports.sanction');
     Route::get('reports/clearance', [ReportsController::class, 'clearanceReport'])->name('reports.clearance');
     Route::get('reports/clearance_statistics', [ReportsController::class, 'clearanceStats'])->name('reports.clearance_statistics');
