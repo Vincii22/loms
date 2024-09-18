@@ -1,10 +1,14 @@
 <x-officer-app-layout>
     @section('content')
-    <div class="container mx-auto p-6">
-        <h1 class="text-2xl font-bold mb-4">Finance Report</h1>
-
+        <x-slot name="header">
+            <a class="font-semibold text-lg text-gray-800 leading-tight" href="{{ route('officer.dashboard') }}">
+                {{ __('Officer') }} /
+                <a href="{{ route('reports.finance') }}" class="text-indigo-600 uppercase">Finance REPORT</a>
+            </a>
+        </x-slot>
+    <div class="container mx-auto">
         <!-- Filters Form -->
-        <form method="GET" action="{{ route('reports.finance') }}" class="mb-6 p-4 bg-white shadow-md rounded-lg">
+        <form method="GET" action="{{ route('reports.finance') }}" class=" pb-3">
             <div class="grid grid-cols-1 md:grid-cols-3 gap-4">
                 <div class="form-group">
                     <label for="fee_id" class="block text-sm font-medium text-gray-700">Fee</label>
@@ -32,14 +36,14 @@
                 </div>
             </div>
 
-            <div class="mt-4">
-                <button type="submit" class="btn btn-primary">Filter</button>
+            <div class="">
+                <button type="submit" class="mt-4 inline-flex items-center px-4 py-2 bg-indigo-600 border border-transparent rounded-md shadow-sm text-white text-sm font-medium hover:bg-indigo-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-indigo-500">Filter</button>
             </div>
         </form>
 
         <!-- Finance Report Table -->
-        <div class="overflow-x-auto bg-white shadow-md rounded-lg">
-            <table class="min-w-full divide-y divide-gray-200">
+        <div class="overflow-x-auto bg-white p-5 rounded shadow-lg">
+            <table id="userTable" class="min-w-full divide-y divide-gray-200">
                 <thead class="bg-gray-50">
                     <tr>
                         <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">ID</th>
@@ -67,12 +71,25 @@
                     @endforeach
                 </tbody>
             </table>
+            <div class="mt-4">
+                {{ $finances->links() }}
+            </div>
         </div>
 
         <!-- Pagination -->
-        <div class="mt-4">
-            {{ $finances->links() }}
-        </div>
+        
     </div>
     @endsection
+
+    
+    <style>
+        .dataTables_paginate{
+            display: none !important;
+        }
+        
+        .dataTables_info{
+            display: none !important;
+
+        }
+    </style>
     </x-officer-app-layout>

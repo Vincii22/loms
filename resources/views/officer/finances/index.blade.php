@@ -4,42 +4,49 @@
         <span class="text-white">{{ session('error') }}</span>
     </div>
 
-    <div class="container mx-auto mt-4 p-6 bg-white shadow-md rounded-lg">
-        <h1 class="text-2xl font-bold mb-4">Finance Management</h1>
-
-        <form method="GET" action="{{ route('finances.index') }}" class="mb-4">
-            <!-- Select Fee Dropdown -->
-            <div class="mb-4">
-                <label for="fee_id" class="block text-sm font-medium text-gray-700">Select Fee</label>
-                <select name="fee_id" id="fee_id" class="form-select mt-1 block w-full rounded-md border-gray-300 shadow-sm focus:border-indigo-500 focus:ring-indigo-500 sm:text-sm">
-                    <option value="">Select Fee</option>
-                    @foreach($fees as $fee)
-                        <option value="{{ $fee->id }}" {{ request('fee_id') == $fee->id ? 'selected' : '' }}>
-                            {{ $fee->name }}
-                        </option>
-                    @endforeach
-                </select>
-            </div>
-
-            <!-- Other Filters -->
-            <div class="flex flex-wrap -mx-2 mb-4">
-                <!-- Search by Name -->
-                <div class="w-full md:w-1/2 lg:w-1/4 px-2 mb-4">
-                    <label for="search_name" class="block text-sm font-medium text-gray-700">Search by Name</label>
-                    <input type="text" name="search_name" id="search_name" placeholder="Search by name" value="{{ request('search_name') }}" class="form-input mt-1 block w-full rounded-md border-gray-300 shadow-sm focus:border-indigo-500 focus:ring-indigo-500 sm:text-sm">
+    <div class="container mx-auto mt-4 ">
+        <x-slot name="header">
+            <h2 class="font-semibold text-lg text-gray-800 leading-tight">
+                {{ __('Officer') }} /
+                <a href="{{ route('fees.index') }}" class="text-black hover:underline">FINANCE /</a>
+                <a href="{{ route('finances.index') }}" class="text-indigo-600">MANAGE FINANCE</a>
+            </h2>
+        </x-slot>
+        <div class="bg-white shadow-md rounded-lg p-5">
+            <form method="GET" action="{{ route('finances.index') }}" class="mb-4">
+                <!-- Select Fee Dropdown -->
+                <div class="mb-4">
+                    <label for="fee_id" class="block text-sm font-medium text-gray-700">Select Fee</label>
+                    <select name="fee_id" id="fee_id" class="form-select mt-1 block w-full rounded-md border-gray-300 shadow-sm focus:border-indigo-500 focus:ring-indigo-500 sm:text-sm">
+                        <option value="">Select Fee</option>
+                        @foreach($fees as $fee)
+                            <option value="{{ $fee->id }}" {{ request('fee_id') == $fee->id ? 'selected' : '' }}>
+                                {{ $fee->name }}
+                            </option>
+                        @endforeach
+                    </select>
                 </div>
 
-                <!-- Search by School ID -->
-                <div class="w-full md:w-1/2 lg:w-1/4 px-2 mb-4">
-                    <label for="search_school_id" class="block text-sm font-medium text-gray-700">Search by School ID</label>
-                    <input type="text" name="search_school_id" id="search_school_id" placeholder="Search by school ID" value="{{ request('search_school_id') }}" class="form-input mt-1 block w-full rounded-md border-gray-300 shadow-sm focus:border-indigo-500 focus:ring-indigo-500 sm:text-sm">
+                <!-- Other Filters -->
+                <div class="flex flex-wrap -mx-2 mb-4">
+                    <!-- Search by Name -->
+                    <div class="w-full md:w-1/2 lg:w-1/4 px-2 mb-4">
+                        <label for="search_name" class="block text-sm font-medium text-gray-700">Search by Name</label>
+                        <input type="text" name="search_name" id="search_name" placeholder="Search by name" value="{{ request('search_name') }}" class="form-input mt-1 block w-full rounded-md border-gray-300 shadow-sm focus:border-indigo-500 focus:ring-indigo-500 sm:text-sm">
+                    </div>
+
+                    <!-- Search by School ID -->
+                    <div class="w-full md:w-1/2 lg:w-1/4 px-2 mb-4">
+                        <label for="search_school_id" class="block text-sm font-medium text-gray-700">Search by School ID</label>
+                        <input type="text" name="search_school_id" id="search_school_id" placeholder="Search by school ID" value="{{ request('search_school_id') }}" class="form-input mt-1 block w-full rounded-md border-gray-300 shadow-sm focus:border-indigo-500 focus:ring-indigo-500 sm:text-sm">
+                    </div>
                 </div>
-            </div>
-        </form>
+            </form>
+        </div>
 
         @if($finances->count())
-            <div class="overflow-x-auto">
-                <table class="min-w-full bg-white border border-gray-200 rounded-lg shadow-sm">
+            <div class="overflow-x-auto bg-white rounded shadow-sm p-5 mt-5">
+                <table id="userTable" class="min-w-full bg-white border border-gray-200 rounded-lg shadow-sm">
                     <thead class="bg-gray-100 border-b">
                         <tr>
                             <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">School ID</th>
@@ -121,4 +128,15 @@
     }
 });
     </script>
+
+    <style>
+        .dataTables_paginate{
+            display: none !important;
+        }
+        
+        .dataTables_info{
+            display: none !important;
+
+        }
+    </style>
 </x-officer-app-layout>

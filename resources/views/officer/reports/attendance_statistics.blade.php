@@ -1,8 +1,12 @@
 <x-officer-app-layout>
     @section('content')
+    <x-slot name="header">
+        <a class="font-semibold text-lg text-gray-800 leading-tight" href="{{ route('officer.dashboard') }}">
+            {{ __('Officer') }} /
+            <a href="{{ route('reports.attendance_statistics') }}" class="text-indigo-600 uppercase">Statical REPORT</a>
+        </a>
+    </x-slot>
     <div class="container mx-auto px-4 py-8">
-        <h1 class="text-2xl font-semibold mb-6">Statistical Report</h1>
-
         <!-- Filter Form -->
         <form method="GET" action="{{ route('reports.attendance_statistics') }}" class="mb-6">
             <div class="grid grid-cols-1 md:grid-cols-3 gap-4">

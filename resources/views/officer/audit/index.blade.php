@@ -1,9 +1,14 @@
 <x-officer-app-layout>
 
     @section('content')
-    <div class="container mx-auto p-6">
-        <h1 class="text-2xl font-bold mb-4">Audit Summary</h1>
-
+    <div class="container mx-auto py-2 ">
+        <x-slot name="header">
+            <h2 class="font-semibold text-lg text-gray-800 leading-tight">
+                {{ __('Officer') }} /
+                <a href="{{ route('fees.index') }}" class="text-black hover:underline">FINANCE /</a>
+                <a href="{{ route('finances.index') }}" class="text-indigo-600 uppercase">Manage audit</a>
+            </h2>
+        </x-slot>
         <form id="fee-form" action="{{ route('audit.index') }}" method="GET" class="mb-6">
             <div class="flex items-center space-x-4">
                 <div class="flex-1">
@@ -31,8 +36,8 @@
 
 
             <!-- Table to display detailed information -->
-            <div class="overflow-x-auto">
-                <table class="min-w-full divide-y divide-gray-200 bg-white shadow-md rounded-lg">
+            <div class="overflow-x-auto bg-white p-5 rounded shadow-sm">
+                <table id="userTable" class="min-w-full divide-y divide-gray-200 bg-white shadow-md rounded-lg">
                     <thead class="bg-gray-50">
                         <tr>
                             <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">User ID</th>
