@@ -39,7 +39,20 @@ class RegisteredUserController extends Controller
     {
         $request->validate([
             'name' => ['required', 'string', 'max:255'],
-            'email' => ['required', 'string', 'lowercase', 'email', 'max:255', 'unique:officers,email'],
+            'email' => [
+                'required',
+                'string',
+                'lowercase',
+                'email',
+                'max:255',
+                'unique:officers,email',
+                function ($attribute, $value, $fail) {
+                    // Check if the email ends with @dwc-legazpi.edu
+                    if (!str_ends_with($value, '@dwc-legazpi.edu')) {
+                        $fail('The :attribute must be a valid @dwc-legazpi.edu email address.');
+                    }
+                },
+            ],
             'role_id' => ['required', 'exists:roles,id'],
             'password' => ['required', 'confirmed', Rules\Password::defaults()],
         ]);
