@@ -197,6 +197,60 @@ class ReportsController extends Controller
         return view('officer.reports.sanction', compact('sanctions', 'semesters', 'schoolYears'));
     }
 
+    public function sanctionStats(Request $request)
+    {
+        // Capture filtering parameters from the request
+        $searchName = $request->input('search_name');
+        $searchSchoolId = $request->input('search_school_id');
+        $filterType = $request->input('filter_type');
+        $semesterId = $request->input('semester');
+        $schoolYear = $request->input('school_year');
+        $resolvedStatus = $request->input('resolved'); // Optional filter for resolved status
+
+        // Build the query based on the filtering parameters
+        $sanctions = Sanction::with('student', 'semester')
+            ->when($searchName, function ($query, $searchName) {
+                return $query->whereHas('student', function ($query) use ($searchName) {
+                    $query->where('name', 'like', '%' . $searchName . '%');
+                });
+            })
+            ->when($searchSchoolId, function ($query, $searchSchoolId) {
+                return $query->whereHas('student', function ($query) use ($searchSchoolId) {
+                    $query->where('school_id', 'like', '%' . $searchSchoolId . '%');
+                });
+            })
+            ->when($filterType, function ($query, $filterType) {
+                return $query->where('type', $filterType);
+            })
+            ->when($semesterId, function ($query, $semesterId) {
+                return $query->where('semester_id', $semesterId);
+            })
+            ->when($schoolYear, function ($query, $schoolYear) {
+                return $query->where('school_year', $schoolYear);
+            })
+            ->when($resolvedStatus, function ($query, $resolvedStatus) {
+                return $query->where('resolved', $resolvedStatus);
+            })
+            ->get();
+
+        // Prepare data for Status Distribution Chart
+        $statusCounts = $sanctions->groupBy('resolved')->map->count();
+        $statusLabels = ['Resolved', 'Not Resolved'];
+        $statusData = [
+            $statusCounts->get('resolved', 0),  // Resolved count
+            $statusCounts->get('not resolved', 0)  // Not resolved count
+        ];
+
+        // Fetch available semesters and school years for filters
+        $semesters = Semester::pluck('name', 'id');
+        $schoolYears = Sanction::distinct()->pluck('school_year', 'school_year');
+        $sanctionTypes = Sanction::distinct()->pluck('type');
+
+        return view('officer.reports.sanction_statistics', compact(
+            'sanctions', 'semesters', 'schoolYears', 'sanctionTypes', 'statusLabels', 'statusData'
+        ));
+    }
+
     /**
      * Generate and display the clearance report with optional filtering.
      */
@@ -231,70 +285,71 @@ class ReportsController extends Controller
         ]);
     }
     public function clearanceStats(Request $request)
-    {
-        $semesterId = $request->input('semester_id');
-        $schoolYear = $request->input('school_year');
+{
+    $semesterId = $request->input('semester_id');
+    $schoolYear = $request->input('school_year');
 
-        // Fetch available semesters and school years
-        $semesters = Semester::whereIn('id', Clearance::pluck('semester_id')->unique())->get();
-        $schoolYears = Clearance::distinct()->pluck('school_year');
+    // Fetch available semesters and school years
+    $semesters = Semester::whereIn('id', Clearance::pluck('semester_id')->unique())->get();
+    $schoolYears = Clearance::distinct()->pluck('school_year');
 
-        // Fetch clearance statistics
-        $clearances = Clearance::when($semesterId, function ($query, $semesterId) {
-            return $query->where('semester_id', $semesterId);
-        })
-        ->when($schoolYear, function ($query, $schoolYear) {
-            return $query->where('school_year', $schoolYear);
-        })
-        ->get();
+    // Fetch clearance statistics
+    $clearances = Clearance::when($semesterId, function ($query, $semesterId) {
+        return $query->where('semester_id', $semesterId);
+    })
+    ->when($schoolYear, function ($query, $schoolYear) {
+        return $query->where('school_year', $schoolYear);
+    })
+    ->get();
 
-        // Prepare data for Status Distribution Chart
-        $statusCounts = $clearances->groupBy('status')->map->count();
-        $statusLabels = $statusCounts->keys();
-        $statusData = $statusCounts->values();
+    // Prepare data for Status Distribution Chart
+    $statusCounts = $clearances->groupBy('status')->map->count();
+    $statusLabels = $statusCounts->keys();
+    $statusData = $statusCounts->values();
 
-        // Prepare data for Clearances by Semester Chart
-        $semesterData = $semesters->map(function ($semester) use ($clearances) {
-            return $clearances->where('semester_id', $semester->id)->count();
-        });
+    // Prepare data for Clearances by Semester Chart
+    $semesterData = $semesters->map(function ($semester) use ($clearances) {
+        return $clearances->where('semester_id', $semester->id)->count();
+    });
 
-        // Prepare data for Clearances by School Year Chart
-        $yearData = $schoolYears->map(function ($year) use ($clearances) {
-            return $clearances->where('school_year', $year)->count();
-        });
+    // Prepare data for Clearances by School Year Chart
+    $yearData = $schoolYears->map(function ($year) use ($clearances) {
+        return $clearances->where('school_year', $year)->count();
+    });
 
-        // Prepare data for Top 5 Users by Clearances Chart
-        $topUsers = $clearances->groupBy('user_id')
-            ->map(function ($items, $userId) {
-                return [
-                    'name' => User::find($userId)->name,
-                    'clearances_count' => $items->count(),
-                ];
-            })
-            ->sortByDesc('clearances_count')
-            ->take(5);
-        $topUsersData = $topUsers->pluck('clearances_count');
-
-        // Prepare user clearances data for the table
-        $userClearances = $clearances->groupBy('user_id')->map(function ($items, $userId) {
+    // Prepare data for Top 5 Users by Clearances Chart
+    $topUsers = $clearances->groupBy('user_id')
+        ->map(function ($items, $userId) {
             return [
                 'name' => User::find($userId)->name,
-                'status' => $items->pluck('status')->unique()->implode(', ')
+                'clearances_count' => $items->count(),
             ];
-        });
+        })
+        ->sortByDesc('clearances_count')
+        ->take(5);
+    $topUsersData = $topUsers->pluck('clearances_count');
 
-        return view('officer.reports.clearance_statistics', [
-            'semesters' => $semesters,
-            'schoolYears' => $schoolYears,
-            'statusLabels' => $statusLabels,
-            'statusData' => $statusData,
-            'semesterData' => $semesterData,
-            'yearData' => $yearData,
-            'topUsers' => $topUsers,
-            'topUsersData' => $topUsersData,
-            'userClearances' => $userClearances,
-        ]);
-    }
+    // Prepare user clearances data for the table
+    $userClearances = $clearances->groupBy('user_id')->map(function ($items, $userId) {
+        return [
+            'name' => User::find($userId)->name,
+            'status' => $items->pluck('status')->unique()->implode(', ')
+        ];
+    });
+
+    return view('officer.reports.clearance_statistics', [
+        'semesters' => $semesters,
+        'schoolYears' => $schoolYears,
+        'statusLabels' => $statusLabels,
+        'statusData' => $statusData,
+        'semesterData' => $semesterData,
+        'yearData' => $yearData,
+        'topUsers' => $topUsers,
+        'topUsersData' => $topUsersData,
+        'userClearances' => $userClearances,
+    ]);
+}
+
 
     /**
      * Generate and display the student report with optional filtering.

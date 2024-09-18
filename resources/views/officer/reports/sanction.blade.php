@@ -7,47 +7,50 @@
         </a>
     </x-slot>
     <div class="container mx-auto">
-            <form method="GET" action="{{ route('reports.sanction') }}" class="">
-                <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-6">
-                    <div class="w-full">
-                        <label for="semester" class="block text-sm font-medium text-gray-700">Semester</label>
-                        <div class="mt-1 relative rounded-md shadow-sm">
-                            <select name="semester" id="semester" class="block w-full pl-3 pr-10 py-2 text-base border-gray-300 focus:outline-none focus:ring-indigo-500 focus:border-indigo-500 sm:text-sm rounded-md">
-                                <option value="">All Semesters</option>
-                                @foreach($semesters as $id => $name)
-                                    <option value="{{ $id }}" {{ request('semester') == $id ? 'selected' : '' }}>{{ $name }}</option>
-                                @endforeach
-                            </select>
-                        </div>
-                    </div>
-
-                    <div class="w-full">
-                        <label for="school_year" class="block text-sm font-medium text-gray-700">School Year</label>
-                        <div class="mt-1 relative rounded-md shadow-sm">
-                            <select name="school_year" id="school_year" class="block w-full pl-3 pr-10 py-2 text-base border-gray-300 focus:outline-none focus:ring-indigo-500 focus:border-indigo-500 sm:text-sm rounded-md">
-                                <option value="">All School Years</option>
-                                @foreach($schoolYears as $year)
-                                    <option value="{{ $year }}" {{ request('school_year') == $year ? 'selected' : '' }}>{{ $year }}</option>
-                                @endforeach
-                            </select>
-                        </div>
-                    </div>
-
-                    <div class="w-full">
-                        <label for="resolved" class="block text-sm font-medium text-gray-700">Status</label>
-                        <div class="mt-1 relative rounded-md shadow-sm">
-                            <select name="resolved" id="resolved" class="block w-full pl-3 pr-10 py-2 text-base border-gray-300 focus:outline-none focus:ring-indigo-500 focus:border-indigo-500 sm:text-sm rounded-md">
-                                <option value="">All Statuses</option>
-                                <option value="resolved" {{ request('resolved') == 'resolved' ? 'selected' : '' }}>Resolved</option>
-                                <option value="not resolved" {{ request('resolved') == 'not resolved' ? 'selected' : '' }}>Not Resolved</option>
-                            </select>
-                        </div>
+        <form method="GET" action="{{ route('reports.sanction') }}" id="filterForm">
+            <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-6">
+                <div class="w-full">
+                    <label for="semester" class="block text-sm font-medium text-gray-700">Semester</label>
+                    <div class="mt-1 relative rounded-md shadow-sm">
+                        <select name="semester" id="semester" class="block w-full pl-3 pr-10 py-2 text-base border-gray-300 focus:outline-none focus:ring-indigo-500 focus:border-indigo-500 sm:text-sm rounded-md">
+                            <option value="">All Semesters</option>
+                            @foreach($semesters as $id => $name)
+                                <option value="{{ $id }}" {{ request('semester') == $id ? 'selected' : '' }}>{{ $name }}</option>
+                            @endforeach
+                        </select>
                     </div>
                 </div>
-                <button type="submit" class="mt-4 inline-flex items-center px-4 py-2 bg-indigo-600 border border-transparent rounded-md shadow-sm text-white text-sm font-medium hover:bg-indigo-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-indigo-500">
-                     Filter
-                </button>
-            </form>
+
+                <div class="w-full">
+                    <label for="school_year" class="block text-sm font-medium text-gray-700">School Year</label>
+                    <div class="mt-1 relative rounded-md shadow-sm">
+                        <select name="school_year" id="school_year" class="block w-full pl-3 pr-10 py-2 text-base border-gray-300 focus:outline-none focus:ring-indigo-500 focus:border-indigo-500 sm:text-sm rounded-md">
+                            <option value="">All School Years</option>
+                            @foreach($schoolYears as $year)
+                                <option value="{{ $year }}" {{ request('school_year') == $year ? 'selected' : '' }}>{{ $year }}</option>
+                            @endforeach
+                        </select>
+                    </div>
+                </div>
+
+                <div class="w-full">
+                    <label for="resolved" class="block text-sm font-medium text-gray-700">Status</label>
+                    <div class="mt-1 relative rounded-md shadow-sm">
+                        <select name="resolved" id="resolved" class="block w-full pl-3 pr-10 py-2 text-base border-gray-300 focus:outline-none focus:ring-indigo-500 focus:border-indigo-500 sm:text-sm rounded-md">
+                            <option value="">All Statuses</option>
+                            <option value="resolved" {{ request('resolved') == 'resolved' ? 'selected' : '' }}>Resolved</option>
+                            <option value="not resolved" {{ request('resolved') == 'not resolved' ? 'selected' : '' }}>Not Resolved</option>
+                        </select>
+                    </div>
+                </div>
+                <div class="mb-6 flex justify-between">
+
+                    <a href="{{ route('reports.sanction_statistics') }}" class="mt-4 inline-flex items-center px-4 py-2 bg-green-600 border border-transparent rounded-md shadow-sm text-white text-sm font-medium hover:bg-green-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-indigo-500">
+                        View Statistical Report
+                    </a>
+                </div>
+            </div>
+        </form>
 
         <!-- Sanctions Table -->
         <div class="overflow-x-auto bg-white p-5 rounded shadow-sm mt-5">
@@ -89,19 +92,20 @@
                 {{ $sanctions->links() }}
             </div>
         </div>
-
-        <!-- Pagination Links -->
-        
     </div>
-    @endsection
-    <style>
-        .dataTables_paginate{
-            display: none !important;
-        }
-        
-        .dataTables_info{
-            display: none !important;
 
-        }
-    </style>
+    @endsection
+
+    <!-- Automatically submit form on filter change -->
+    <script>
+        document.getElementById('semester').addEventListener('change', function() {
+            document.getElementById('filterForm').submit();
+        });
+        document.getElementById('school_year').addEventListener('change', function() {
+            document.getElementById('filterForm').submit();
+        });
+        document.getElementById('resolved').addEventListener('change', function() {
+            document.getElementById('filterForm').submit();
+        });
+    </script>
 </x-officer-app-layout>
