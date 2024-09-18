@@ -55,6 +55,7 @@
                         <ul id="finance-dropdown" class="hidden space-y-2">
                             <li class="pl-14 nav-links w-[220px] relative py-3 rounded-r-[10px] {{ request()->routeIs('fees.index') ? 'bg-[maroon] text-white' : '' }}"><a href="{{ route('fees.index') }}" class="hover:text-gray-300">Manage Fees</a></li>
                             <li class="pl-14 nav-links w-[220px] relative py-3 rounded-r-[10px] {{ request()->routeIs('finances.index') ? 'bg-[maroon] text-white' : '' }}"><a href="{{ route('finances.index') }}" class="hover:text-gray-300">Manage Finance</a></li>
+                            <li class="pl-14 nav-links w-[220px] relative py-3 rounded-r-[10px] {{ request()->routeIs('audit.index') ? 'bg-[maroon] text-white' : '' }}"><a href="{{ route('audit.index') }}" class="hover:text-gray-300">Manage Audit</a></li>
                         </ul>
                     </li>
 
