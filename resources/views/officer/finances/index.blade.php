@@ -26,21 +26,6 @@
                         @endforeach
                     </select>
                 </div>
-
-                <!-- Other Filters -->
-                <div class="flex flex-wrap -mx-2 mb-4">
-                    <!-- Search by Name -->
-                    <div class="w-full md:w-1/2 lg:w-1/4 px-2 mb-4">
-                        <label for="search_name" class="block text-sm font-medium text-gray-700">Search by Name</label>
-                        <input type="text" name="search_name" id="search_name" placeholder="Search by name" value="{{ request('search_name') }}" class="form-input mt-1 block w-full rounded-md border-gray-300 shadow-sm focus:border-indigo-500 focus:ring-indigo-500 sm:text-sm">
-                    </div>
-
-                    <!-- Search by School ID -->
-                    <div class="w-full md:w-1/2 lg:w-1/4 px-2 mb-4">
-                        <label for="search_school_id" class="block text-sm font-medium text-gray-700">Search by School ID</label>
-                        <input type="text" name="search_school_id" id="search_school_id" placeholder="Search by school ID" value="{{ request('search_school_id') }}" class="form-input mt-1 block w-full rounded-md border-gray-300 shadow-sm focus:border-indigo-500 focus:ring-indigo-500 sm:text-sm">
-                    </div>
-                </div>
             </form>
         </div>
 

@@ -66,7 +66,7 @@
     </div>
     @endsection
     
-    <style>
+    <style> 
         .dataTables_paginate{
             display: none !important;
         }

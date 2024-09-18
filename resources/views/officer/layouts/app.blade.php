@@ -5,7 +5,8 @@
     <meta name="viewport" content="width=device-width, initial-scale=1">
     <meta name="csrf-token" content="{{ csrf_token() }}">
 
-    <title>{{ config('app.name', 'Laravel') }}</title>
+    <title>Automated Management System for LICOES Organization</title>
+    <link rel="icon" href="{{ asset('images/licoes.png') }}" type="image/x-icon">
 
     <!-- Fonts -->
     <link rel="preconnect" href="https://fonts.bunny.net">
@@ -176,7 +177,7 @@
             <div class="px-[150px] mt-5">
                 <hr style="border: 2px solid #5C0E0F; " >
             <div class="text-center text-sm mt-2">
-                Copyright @ {{ date('Y') }} DWCL <span class="text-gray-400 ml-2">All rights reserved.</span>
+                Copyright @ {{ date('Y') }} MILBOR Tech <span class="text-gray-400 ml-2">All rights reserved.</span>
             </div>
             </div>
         </footer>

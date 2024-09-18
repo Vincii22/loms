@@ -15,8 +15,8 @@
         <!-- Search and Filter Form -->
         <div class="mb-4 flex justify-between items-center">
             <div class="">
-                <input type="text" id="name" name="name" placeholder="Search by Name" class="form-control mb-2">
-                <input type="text" id="school_id" name="school_id" placeholder="Search by School ID" class="form-control mb-2">
+                <!-- <input type="text" id="name" name="name" placeholder="Search by Name" class="form-control mb-2"> -->
+                <!-- <input type="text" id="school_id" name="school_id" placeholder="Search by School ID" class="form-control mb-2"> -->
 
                 <select id="organization" name="organization" class="form-control mb-2">
                     <option value="">Select Organization</option>

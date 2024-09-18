@@ -1,8 +1,13 @@
 <x-officer-app-layout>
 
     @section('content')
+        <x-slot name="header">
+            <h2 class="font-semibold text-lg text-gray-800 leading-tight">
+                {{ __('Officer') }} /
+                <a href="{{ route('clearances.index') }}" class="text-black hover:underline uppercase">Manage Activities</a>
+            </h2>
+        </x-slot>
     <div class="container mx-auto px-4 py-6">
-        <h1 class="text-2xl font-bold mb-4">Activities</h1>
 
         <!-- Filter Form -->
         <form method="GET" action="{{ route('activities.index') }}" class="mb-4">
@@ -46,7 +51,7 @@
                 <thead>
                     <tr class="bg-gray-100 text-left">
                         <th class="px-6 py-3 border-b">Name</th>
-                        <th class="px-6 py-3 border-b">Description</th>
+                        <!-- <th class="px-6 py-3 border-b">Description</th> -->
                         <th class="px-6 py-3 border-b">Start Time</th>
                         <th class="px-6 py-3 border-b">End Time</th>
                         <th class="px-6 py-3 border-b">Location</th>
@@ -59,7 +64,7 @@
                     @foreach($activities as $activity)
                         <tr class="hover:bg-gray-50">
                             <td class="px-6 py-4 border-b">{{ $activity->name }}</td>
-                            <td class="px-6 py-4 border-b">{{ $activity->description }}</td>
+                            <!-- <td class="px-6 py-4 border-b">{{ $activity->description }}</td> -->
                             <td class="px-6 py-4 border-b">{{ \Carbon\Carbon::parse($activity->start_time)->format('F j, Y g:i A') }}</td>
                             <td class="px-6 py-4 border-b">{{ \Carbon\Carbon::parse($activity->end_time)->format('F j, Y g:i A') }}</td>
                             <td class="px-6 py-4 border-b">{{ $activity->location }}</td>
