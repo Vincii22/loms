@@ -37,8 +37,9 @@
         </div>
 
         <!-- Sidebar Footer -->
-        <footer class="flex items-center justify-center p-4 border-t border-gray-200" style="height: 5%;">
-            <p class="text-sm text-gray-500">© {{ date('Y') }} Your Company</p>
+        <footer class=" bold text-center py-4 border-t border-gray-200" style="height: 10%;">
+            <p class="text-sm text-[#5C0E0F] font-semibold">League of Integrated</p>
+            <p class="text-sm text-[#5C0E0F] font-semibold">COmputer and Engineering Students</p>
         </footer>
     </div>
 </aside>

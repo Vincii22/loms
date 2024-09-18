@@ -76,9 +76,18 @@
 
         <!-- Main Content -->
         <main class="main-content mr-6 ml-10 !bg-transparent">
-            @yield('AdminContent')
+            @yield('content')
             {{ $slot }}
         </main>
+
+        <footer>
+            <div class="px-[150px] mt-5">
+                <hr style="border: 2px solid #5C0E0F; " >
+            <div class="text-center text-sm mt-2">
+                Copyright @ {{ date('Y') }} DWCL <span class="text-gray-400 ml-2">All rights reserved.</span>
+            </div>
+            </div>
+        </footer>
     </div>
 
     @yield('scripts')
