@@ -13,6 +13,28 @@
 
     <!-- Scripts -->
     @vite(['resources/css/app.css', 'resources/js/app.js'])
+
+
+     <!-- jQuery -->
+     <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
+
+    <!-- DataTables CSS -->
+    <link rel="stylesheet" href="https://cdn.datatables.net/1.11.5/css/jquery.dataTables.min.css">
+
+    <!-- DataTables JS -->
+    <script src="https://cdn.datatables.net/1.11.5/js/jquery.dataTables.min.js"></script>
+
+    <!-- DataTables Buttons CSS -->
+    <link rel="stylesheet" href="https://cdn.datatables.net/buttons/2.2.3/css/buttons.dataTables.min.css">
+
+    <!-- DataTables Buttons JS -->
+    <script src="https://cdn.datatables.net/buttons/2.2.3/js/dataTables.buttons.min.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/jszip/3.1.3/jszip.min.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/pdfmake/0.1.53/pdfmake.min.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/pdfmake/0.1.53/vfs_fonts.js"></script>
+    <script src="https://cdn.datatables.net/buttons/2.2.3/js/buttons.html5.min.js"></script>
+    <script src="https://cdn.datatables.net/buttons/2.2.3/js/buttons.print.min.js"></script>
+
     <style>
         /* Fixed sidebar below the navigation bar */
         .fixed-sidebar {
@@ -30,7 +52,7 @@
             margin-left: 240px; /* Adjust to the width of the fixed sidebar */
             display: flex;
             flex-direction: column;
-            height: calc(100vh - 64px); /* Full height minus header height */
+            min-height: 100vh;
             background-color: #f9f9f9; /* Light background for content */
         }
 
@@ -51,6 +73,63 @@
                 margin-left: 0;
             }
         }
+
+        .dt-button{
+            border-radius: 5px !important;
+            margin: 0 !important;
+            border-right: 1px solid #5C0E0F !important;
+            background: white !important;
+            font-size: .875rem !important;
+            line-height: 1.25rem !important;
+            padding: 5px 20px 5px 20px !important;
+            outline: none !important;
+            border: none !important;
+            box-shadow: 0 4px 4px rgba(0, 0, 0, 0.1) !important;
+        }
+
+        .dt-button:hover{
+            background: #5C0E0F !important;
+            color: white !important;
+            transition: .3s ease;
+        }
+        .dt-buttons{
+            margin-bottom: 20px;
+        }
+        .dataTables_info{
+            font-size: .800rem;
+            margin: 10px 0;
+            line-height: 1rem;
+        }
+        
+        .dataTables_paginate {
+            margin: 10px 0;
+        }
+
+        .paginate_button{
+            border-radius: 5px !important;
+            border-right: 1px solid #5C0E0F !important;
+            background: white !important;
+            outline: none !important;
+            font-size: .800rem;
+            line-height: 1rem;
+            border: none !important;
+            box-shadow: 0 4px 4px rgba(0, 0, 0, 0.1) !important;
+        }
+        .paginate_button:hover{
+            background: #805C0E0F !important;
+            color: #ccc !important;
+            transition: .3s ease;
+        }
+
+        .dataTables_filter{
+            font-size: .875rem;
+            line-height: 1.25rem;
+
+        }
+        .dataTables_filter input{
+            height: 25px !important; 
+        }
+
     </style>
 </head>
 <body class="font-sans antialiased">
@@ -61,7 +140,7 @@
     </aside>
 
     <!-- Content Wrapper -->
-    <div class="content-wrapper !h-full overflow-auto pb-3">
+    <div class="content-wrapper !min-h-full overflow-auto pb-3">
         <!-- Page Heading -->
         @isset($header)
             <div class="flex justify-center">
@@ -118,5 +197,16 @@
         updateTime();
     });
     </script>
+
+<script>
+    $(document).ready(function() {
+        $('#userTable').DataTable({
+            dom: 'Bfrtip',
+            buttons: [
+                'copy', 'csv', 'excel', 'pdf', 'print'
+            ]
+        });
+    });
+</script>
 </body>
 </html>

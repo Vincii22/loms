@@ -1,44 +1,50 @@
 <x-admin-app-layout>
+    <x-slot name="header">
+        <a class="font-semibold text-lg text-gray-800 leading-tight" href="{{ route('admin.dashboard') }}">
+            {{ __('Admin') }} /
+            <a href="" class="font-semibold text-indigo-600 uppercase">Pending Registrations</a>
+        </a>
+    </x-slot>
 
     @section('content')
 
-    <div class="container mx-auto p-6">
-        <h1 class="text-2xl font-bold mb-4">Pending Registrations</h1>
-
+    <div class="container mx-auto">
         @if(session('success'))
             <div class="bg-green-100 text-green-800 px-4 py-2 rounded mb-4">
                 {{ session('success') }}
             </div>
         @endif
 
-        <div class="overflow-x-auto">
-            <table class="min-w-full bg-white border rounded-lg shadow-md">
-                <thead class="bg-gray-100">
-                    <tr>
-                        <th class="py-3 px-6 text-left font-semibold text-gray-700">Name</th>
-                        <th class="py-3 px-6 text-left font-semibold text-gray-700">Email</th>
-                        <th class="py-3 px-6 text-left font-semibold text-gray-700">Type</th>
-                        <th class="py-3 px-6 text-left font-semibold text-gray-700">Action</th>
+        <div class="overflow-x-auto bg-white shadow mb-4 p-4 rounded-[10px]">
+            <table id="userTable" class="min-w-full bg-white border border-gray-200">
+                <thead class="bg-white border-b border-gray-300">
+                    <tr class="bg-gray-100">
+                        <th class="px-4 py-2 border-b">Name</th>
+                        <th class="px-4 py-2 border-b">Email</th>
+                        <th class="px-4 py-2 border-b">Type</th>
+                        <th class="px-4 py-2 border-b w-[10px]">Action</th>
                     </tr>
                 </thead>
                 <tbody>
                     <!-- Loop through pending users -->
                     @foreach($pendingUsers as $user)
-                        <tr class="border-t">
-                            <td class="py-3 px-6">{{ $user->name }}</td>
-                            <td class="py-3 px-6">{{ $user->email }}</td>
-                            <td class="py-3 px-6">User</td>
-                            <td class="py-3 px-6">
+                        <tr class="hover:bg-gray-50">
+                            <td class="px-4 py-2 border-b">{{ $user->name }}</td>
+                            <td class="px-4 py-2 border-b">{{ $user->email }}</td>
+                            <td class="px-4 py-2 border-b">User</td>
+                            <td class="py-4 px-2">
                                 <div class="flex space-x-2">
-                                    <!-- Update action to approve user -->
                                     <form action="{{ route('admin.approveUser', $user->id) }}" method="POST">
                                         @csrf
-                                        <button type="submit" class="bg-green-500 hover:bg-green-600 text-white font-bold py-1 px-4 rounded">Approve</button>
+                                        <button type="submit" class="bg-green-500 hover:bg-green-600 text-white font-bold py-1 px-4 rounded-xl transition-all duration-150">
+                                            Approve
+                                        </button>
                                     </form>
-                                    <!-- Update action to reject user -->
                                     <form action="{{ route('admin.rejectUser', $user->id) }}" method="POST">
                                         @csrf
-                                        <button type="submit" class="bg-red-500 hover:bg-red-600 text-white font-bold py-1 px-4 rounded">Reject</button>
+                                        <button type="submit" class="bg-[#C43E3E] hover:bg-[#5C0E0F] text-white font-bold py-1 px-4 rounded-xl transition-all duration-150">
+                                            Reject
+                                        </button>
                                     </form>
                                 </div>
                             </td>
@@ -47,21 +53,23 @@
 
                     <!-- Loop through pending officers -->
                     @foreach($pendingOfficers as $officer)
-                        <tr class="border-t">
-                            <td class="py-3 px-6">{{ $officer->name }}</td>
-                            <td class="py-3 px-6">{{ $officer->email }}</td>
-                            <td class="py-3 px-6">Officer</td>
-                            <td class="py-3 px-6">
+                        <tr>
+                            <td class="px-4 py-2 border-b">{{ $officer->name }}</td>
+                            <td class="px-4 py-2 border-b">{{ $officer->email }}</td>
+                            <td class="px-4 py-2 border-b">Officer</td>
+                            <td class="py-4 px-2">
                                 <div class="flex space-x-2">
-                                    <!-- Update action to approve officer -->
                                     <form action="{{ route('admin.approveOfficer', $officer->id) }}" method="POST">
                                         @csrf
-                                        <button type="submit" class="bg-green-500 hover:bg-green-600 text-white font-bold py-1 px-4 rounded">Approve</button>
+                                        <button type="submit" class="bg-[#1fff1f] hover:bg-green-600 text-white font-bold py-1 px-4 rounded-xl transition-all duration-150">
+                                            Approve
+                                        </button>
                                     </form>
-                                    <!-- Update action to reject officer -->
                                     <form action="{{ route('admin.rejectOfficer', $officer->id) }}" method="POST">
                                         @csrf
-                                        <button type="submit" class="bg-red-500 hover:bg-red-600 text-white font-bold py-1 px-4 rounded">Reject</button>
+                                        <button type="submit" class="bg-[#C43E3E] hover:bg-[#5C0E0F] text-white font-bold py-1 px-4 rounded-xl transition-all duration-150">
+                                            Reject
+                                        </button>
                                     </form>
                                 </div>
                             </td>
@@ -72,14 +80,14 @@
         </div>
 
         <!-- Pagination -->
-        <div class="mt-4">
+        <div class="mt-6 flex justify-between">
             {{ $pendingUsers->links() }}
         </div>
 
         <!-- Confirmation Dialog -->
         <div id="confirmation-dialog" class="fixed inset-0 bg-gray-800 bg-opacity-50 hidden justify-center items-center">
             <div class="bg-white p-6 rounded shadow-lg">
-                <p>Are you sure you want to perform this action?</p>
+                <p class="text-gray-800">Are you sure you want to perform this action?</p>
                 <div class="mt-4 flex justify-end space-x-2">
                     <button id="confirm-button" class="bg-green-500 hover:bg-green-600 text-white font-bold py-2 px-4 rounded">Yes</button>
                     <button id="cancel-button" class="bg-gray-500 hover:bg-gray-600 text-white font-bold py-2 px-4 rounded">No</button>
@@ -89,5 +97,4 @@
     </div>
 
     @endsection
-
 </x-admin-app-layout>
