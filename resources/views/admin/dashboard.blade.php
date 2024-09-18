@@ -27,43 +27,36 @@
         </div>
     </div>
 
-    <!-- Statistics Container -->
+    <!-- Main Container -->
     <div class="max-w-full flex gap-4">
         <div class="bg-white overflow-hidden shadow-sm sm:rounded-lg w-2/3 sm:px-6 lg:px-8">
             <div class="p-6">
                 <div class="flex space-x-6">
-                    <!-- Total Students -->
                     <div class="flex-1 border border-gray-300 rounded-md py-2 px-4 bg-gray-50">
                         <h3 class="text-lg">Total Students</h3>
                     </div>
 
-                    <!-- Total Officers -->
                     <div class="flex-1 border border-gray-300 rounded-md py-2 px-4 bg-gray-50">
                         <h3 class="text-lg">Total Officers</h3>
                     </div>
 
-                    <!-- Total Admins -->
                     <div class="flex-1 border border-gray-300 rounded-md py-2 px-4 bg-gray-50">
                         <h3 class="text-lg">Total Admins</h3>
                     </div>
                 </div>
 
-                <!-- Container for Charts -->
                 <div class="rounded-md p-4 mb-6 mt-10">
                     <div class="flex flex-wrap justify-between gap-6">
-                        <!-- Organization Counts Chart -->
                         <div class="flex-1 min-w-[300px] max-w-[400px]" style="height: 300px;">
                             <h3 class="text-lg font-semibold mb-2">Organization Counts</h3>
                             <canvas id="organizationBarChart" style="width: 100%; height: 100%;"></canvas>
                         </div>
 
-                        <!-- Program Counts Chart -->
                         <div class="flex-1 min-w-[300px] max-w-[400px]" style="height: 300px;">
                             <h3 class="text-lg font-semibold mb-2">Course Counts</h3>
                             <canvas id="programBarChart" style="width: 100%; height: 100%;"></canvas>
                         </div>
 
-                        <!-- Year Counts Chart -->
                         <div class="flex-1 min-w-[300px] max-w-[400px]" style="height: 300px;">
                             <h3 class="text-lg font-semibold mb-2">Year Counts</h3>
                             <canvas id="yearBarChart" style="width: 100%; height: 100%;"></canvas>
