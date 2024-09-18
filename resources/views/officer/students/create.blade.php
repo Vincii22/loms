@@ -10,7 +10,6 @@
             </a>
         </x-slot>
             <div class="">
-
                 <div class="flex justify-between">
                     <div class="w-full pr-5 bg-white rounded-lg shadow-md p-6 mr-5 h-auto">
                     <form action="{{ route('students.store') }}" method="POST">

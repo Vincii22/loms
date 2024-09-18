@@ -61,7 +61,7 @@
                                 <div class="flex space-x-2">
                                     <form action="{{ route('admin.approveOfficer', $officer->id) }}" method="POST">
                                         @csrf
-                                        <button type="submit" class="bg-[#1fff1f] hover:bg-green-600 text-white font-bold py-1 px-4 rounded-xl transition-all duration-150">
+                                        <button type="submit" class="bg-green-500 hover:bg-green-600 text-white font-bold py-1 px-4 rounded-xl transition-all duration-150">
                                             Approve
                                         </button>
                                     </form>

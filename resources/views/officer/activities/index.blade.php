@@ -57,7 +57,7 @@
                         <th class="px-6 py-3 border-b">Location</th>
                         <th class="px-6 py-3 border-b">School Year</th>
                         <th class="px-6 py-3 border-b">Semester</th>
-                        <th class="px-6 py-3 border-b">Actions</th>
+                        <th class="px-6 py-3 border-b w-[150px]">Actions</th>
                     </tr>
                 </thead>
                 <tbody>

@@ -15,7 +15,7 @@
                 </div>
                 <div>
                     <h2 class="w-[50rem] mt-8">
-                        Lorem ipsum dolor sit amet consectetur adipisicing elit. Nulla, repellendus? Ut sed commodi modi quidem est perferendis amet. Eligendi eaque laboriosam esse?
+                        <span class="uppercase">Automated Management System for LICOES Organization</span>. This is the Admin page where the Organization Adviser can edit or view the current progress of the organization.
                     </h2>
                 </div>
             </div>
@@ -77,7 +77,10 @@
                     @else
                         <ul>
                             @foreach($activities as $activity)
-                                <li>{{ $activity->name }} - {{ $activity->start_time->format('M d, Y') }}</li>
+                                <div class="flex justify-between">
+                                    <li>{{ $activity->name }}</li>
+                                    <li>{{ $activity->start_time->format('M d, Y') }}</li>
+                                </div>
                             @endforeach
                         </ul>
                     @endif
