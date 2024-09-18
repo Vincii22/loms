@@ -75,7 +75,7 @@ class AttendanceController extends Controller
 
         // Update sanctions if status has changed from 'Absent' to 'Present'
         if ($originalStatus === 'Absent' && $attendance->status === 'Completed') {
-            $this->updateSanctionsToResolved($attendance->student_id);
+           $this->updateSanctionsToResolved($attendance->student_id, $attendance->activity->semester_id, $attendance->activity->school_year);
         }
 
         return redirect()->route('attendance.index', ['filter_activity' => $attendance->activity_id])
@@ -127,7 +127,7 @@ class AttendanceController extends Controller
 
                 // Update sanctions if status has changed from 'Absent' to 'Present'
                 if ($originalStatus === 'Absent' && $attendance->status === 'Completed') {
-                    $this->updateSanctionsToResolved($attendance->student_id);
+                    $this->updateSanctionsToResolved($attendance->student_id, $attendance->activity->semester_id, $attendance->activity->school_year);
                 }
             });
 
@@ -155,13 +155,15 @@ class AttendanceController extends Controller
         }
     }
 
-    protected function updateSanctionsToResolved($studentId)
+    protected function updateSanctionsToResolved($studentId, $semesterId, $schoolYear)
     {
         Log::info("Updating sanctions for student ID: {$studentId}");
 
         // Fetch and update sanctions for the student related to 'Absence from%'
         $sanctions = Sanction::where('student_id', $studentId)
             ->where('type', 'LIKE', 'Absence from%')
+            ->where('semester_id', $semesterId) // Use semester_id here
+            ->where('school_year', $schoolYear)
             ->where('resolved', 'not resolved')
             ->get();
 

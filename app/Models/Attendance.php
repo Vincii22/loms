@@ -55,11 +55,14 @@ class Attendance extends Model
 
     public function updateSanctionsToResolved()
     {
+        $activity = $this->activity;
         Log::info("Updating sanctions for student ID: {$this->student_id} with status: {$this->status}");
 
         // Fetch and update sanctions for the student related to 'Absence from%'
         $sanctions = Sanction::where('student_id', $this->student_id)
             ->where('type', 'LIKE', 'Absence from%')
+            ->where('semester_id', $activity->semester_id) // Check for the same semester
+            ->where('school_year', $activity->school_year) // Check for the same school_year
             ->where('resolved', 'not resolved')
             ->get();
 

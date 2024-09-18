@@ -51,31 +51,15 @@ class Finance extends Model
 
  protected function resolveSanctionsForPaidStatus()
  {
+     // Get the semester and school_year from the fee related to this finance entry
+     $fee = $this->fee;
+
      Sanction::where('student_id', $this->user_id)
-         ->where('type', 'Unpaid Fees - ' . optional($this->fee)->name)
+         ->where('type', 'Unpaid Fees - ' . $fee->name) // Fee-specific sanction
+        ->where('semester', $fee->semester_id) // Check for the same semester
+        ->where('school_year', $fee->school_year) // Check for the same school_year
          ->where('resolved', 'not resolved')
          ->update(['resolved' => 'resolved']);
- }
-
- protected function createSanctionsForUnpaidStatus()
- {
-     $existingSanction = Sanction::where('student_id', $this->user_id)
-                                 ->where('type', 'Unpaid Fees - ' . optional($this->fee)->name)
-                                 ->where('resolved', 'not resolved')
-                                 ->first();
-
-     if (!$existingSanction) {
-         $unpaidFeesCount = $this->user->finances()->where('status', 'Not Paid')->count();
-         $fineAmount = $unpaidFeesCount * 100; // Example fine calculation
-
-         Sanction::create([
-             'student_id' => $this->user_id,
-             'type' => 'Unpaid Fees - ' . optional($this->fee)->name,
-             'fine_amount' => $fineAmount,
-             'required_action' => 'Pay outstanding fees',
-             'resolved' => 'not resolved',
-         ]);
-     }
  }
 
  public static function addNewUsersToFinance($feeId)

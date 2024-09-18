@@ -99,133 +99,134 @@ class SanctionController extends Controller
         return redirect()->route('sanctions.index')->with('success', 'Sanction deleted successfully.');
     }
 
-    public function checkSanctions()
-    {
-        Log::info('Running checkSanctions...');
+   public function checkSanctions()
+{
+    Log::info('Running checkSanctions...');
 
-        // Check for unpaid fees and create sanctions
-        User::whereHas('finances', function ($query) {
-            $query->where('status', 'Not Paid');
-        })->chunk(100, function ($students) {
-            foreach ($students as $student) {
-                $unpaidFees = $student->finances->where('status', 'Not Paid');
+    // Check for unpaid fees and create sanctions
+    User::whereHas('finances', function ($query) {
+        $query->where('status', 'Not Paid');
+    })->chunk(100, function ($students) {
+        foreach ($students as $student) {
+            $unpaidFees = $student->finances->where('status', 'Not Paid');
 
-                foreach ($unpaidFees as $fee) {
-                    $feeName = optional($fee->fee)->name ?? 'Unknown Fee';
-                    $semesterId = optional($fee->fee)->semester_id;
-                    $schoolYear = optional($fee->fee)->school_year;
+            foreach ($unpaidFees as $fee) {
+                $feeName = optional($fee->fee)->name ?? 'Unknown Fee';
+                $semesterId = optional($fee->fee)->semester_id;
+                $schoolYear = optional($fee->fee)->school_year;
 
-                    $existingSanction = Sanction::where([
-                        ['student_id', $student->id],
-                        ['type', "Unpaid Fees - $feeName"],
-                        ['semester_id', $semesterId],
-                        ['school_year', $schoolYear]
-                    ])->first();
+                $existingSanction = Sanction::where([
+                    ['student_id', $student->id],
+                    ['type', "Unpaid Fees - $feeName"],
+                    ['semester_id', $semesterId],
+                    ['school_year', $schoolYear]
+                ])->first();
 
-                    if (!$existingSanction) {
-                        Sanction::create([
-                            'student_id' => $student->id,
-                            'type' => "Unpaid Fees - $feeName",
-                            'fine_amount' => 100,
-                            'semester_id' => $semesterId,
-                            'school_year' => $schoolYear,
-                            'resolved' => 'not resolved',
-                        ]);
+                if (!$existingSanction) {
+                    Sanction::create([
+                        'student_id' => $student->id,
+                        'type' => "Unpaid Fees - $feeName",
+                        'fine_amount' => 100,
+                        'semester_id' => $semesterId,
+                        'school_year' => $schoolYear,
+                        'resolved' => 'not resolved',
+                    ]);
 
-                        $student->clearance()->firstOrCreate(['status' => 'not cleared']);
-                    }
+                    $student->clearance()->firstOrCreate(['status' => 'not cleared']);
                 }
             }
-        });
+        }
+    });
 
-        // Check for absences and create sanctions
-        User::whereHas('attendances', function ($query) {
-            $query->where('status', 'absent');
-        })->chunk(100, function ($studentsAbsent) {
-            foreach ($studentsAbsent as $student) {
-                $attendance = $student->attendances()->latest()->first();
+    // Check for absences and create sanctions
+    User::whereHas('attendances', function ($query) {
+        $query->where('status', 'absent');
+    })->chunk(100, function ($studentsAbsent) {
+        foreach ($studentsAbsent as $student) {
+            $attendances = $student->attendances()->latest()->get();
 
-                if ($attendance) {
-                    $activityName = optional($attendance->activity)->name ?? 'Unknown Activity';
-                    $semesterId = optional($attendance->activity)->semester_id;
-                    $schoolYear = optional($attendance->activity)->school_year;
+            foreach ($attendances as $attendance) {
+                $activityName = optional($attendance->activity)->name ?? 'Unknown Activity';
+                $semesterId = optional($attendance->activity)->semester_id;
+                $schoolYear = optional($attendance->activity)->school_year;
 
-                    $existingSanction = Sanction::where([
-                        ['student_id', $student->id],
-                        ['type', "Absence from $activityName"],
-                        ['semester_id', $semesterId],
-                        ['school_year', $schoolYear]
-                    ])->first();
+                $existingSanction = Sanction::where([
+                    ['student_id', $student->id],
+                    ['type', "Absence from $activityName"],
+                    ['semester_id', $semesterId],
+                    ['school_year', $schoolYear]
+                ])->first();
 
-                    if (!$existingSanction) {
-                        Sanction::create([
-                            'student_id' => $student->id,
-                            'type' => "Absence from $activityName",
-                            'description' => 'Absent from mandatory activity',
-                            'fine_amount' => 50,
-                            'semester_id' => $semesterId,
-                            'school_year' => $schoolYear,
-                            'resolved' => 'not resolved',
-                        ]);
+                if (!$existingSanction) {
+                    Sanction::create([
+                        'student_id' => $student->id,
+                        'type' => "Absence from $activityName",
+                        'description' => 'Absent from mandatory activity',
+                        'fine_amount' => 50,
+                        'semester_id' => $semesterId,
+                        'school_year' => $schoolYear,
+                        'resolved' => 'not resolved',
+                    ]);
 
-                        $student->clearance()->firstOrCreate(['status' => 'not cleared']);
-                    }
+                    $student->clearance()->firstOrCreate(['status' => 'not cleared']);
                 }
             }
-        });
+        }
+    });
 
-        // Update sanctions to resolved based on Finance status updates
-        User::whereHas('finances', function ($query) {
-            $query->where('status', 'Paid');
-        })->chunk(100, function ($students) {
-            foreach ($students as $student) {
-                $paidFees = $student->finances->where('status', 'Paid');
+    // Update sanctions to resolved based on Finance status updates
+    User::whereHas('finances', function ($query) {
+        $query->where('status', 'Paid');
+    })->chunk(100, function ($students) {
+        foreach ($students as $student) {
+            $paidFees = $student->finances->where('status', 'Paid');
 
-                foreach ($paidFees as $fee) {
-                    $feeName = optional($fee->fee)->name ?? 'Unknown Fee';
-                    $semesterId = optional($fee->fee)->semester_id;
-                    $schoolYear = optional($fee->fee)->school_year;
+            foreach ($paidFees as $fee) {
+                $feeName = optional($fee->fee)->name ?? 'Unknown Fee';
+                $semesterId = optional($fee->fee)->semester_id;
+                $schoolYear = optional($fee->fee)->school_year;
 
-                    $sanctions = Sanction::where([
-                        ['student_id', $student->id],
-                        ['type', "Unpaid Fees - $feeName"],
-                        ['semester_id', $semesterId],
-                        ['school_year', $schoolYear]
-                    ])->where('resolved', 'not resolved')->get();
+                $sanctions = Sanction::where([
+                    ['student_id', $student->id],
+                    ['type', "Unpaid Fees - $feeName"],
+                    ['semester_id', $semesterId],
+                    ['school_year', $schoolYear]
+                ])->where('resolved', 'not resolved')->get();
 
-                    foreach ($sanctions as $sanction) {
-                        $sanction->update(['resolved' => 'resolved']);
-                    }
+                foreach ($sanctions as $sanction) {
+                    $sanction->update(['resolved' => 'resolved']);
                 }
             }
-        });
+        }
+    });
 
-        // Update sanctions to resolved based on Attendance status updates
-        User::whereHas('attendances', function ($query) {
-            $query->where('status', 'present');
-        })->chunk(100, function ($students) {
-            foreach ($students as $student) {
-                $attendances = $student->attendances()->where('status', 'present')->get();
+    // Update sanctions to resolved based on Attendance status updates
+    User::whereHas('attendances', function ($query) {
+        $query->where('status', 'present');
+    })->chunk(100, function ($students) {
+        foreach ($students as $student) {
+            $attendances = $student->attendances()->where('status', 'present')->get();
 
-                foreach ($attendances as $attendance) {
-                    $activityName = optional($attendance->activity)->name ?? 'Unknown Activity';
-                    $semesterId = optional($attendance->activity)->semester_id;
-                    $schoolYear = optional($attendance->activity)->school_year;
+            foreach ($attendances as $attendance) {
+                $activityName = optional($attendance->activity)->name ?? 'Unknown Activity';
+                $semesterId = optional($attendance->activity)->semester_id;
+                $schoolYear = optional($attendance->activity)->school_year;
 
-                    $sanctions = Sanction::where([
-                        ['student_id', $student->id],
-                        ['type', "Absence from $activityName"],
-                        ['semester_id', $semesterId],
-                        ['school_year', $schoolYear]
-                    ])->where('resolved', 'not resolved')->get();
+                $sanctions = Sanction::where([
+                    ['student_id', $student->id],
+                    ['type', "Absence from $activityName"],
+                    ['semester_id', $semesterId],
+                    ['school_year', $schoolYear]
+                ])->where('resolved', 'not resolved')->get();
 
-                    foreach ($sanctions as $sanction) {
-                        $sanction->update(['resolved' => 'resolved']);
-                    }
+                foreach ($sanctions as $sanction) {
+                    $sanction->update(['resolved' => 'resolved']);
                 }
             }
-        });
-    }
+        }
+    });
+}
+
 
 
 
