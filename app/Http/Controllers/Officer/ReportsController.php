@@ -208,6 +208,9 @@ class ReportsController extends Controller
 
     // Build the query
     $query = Sanction::with('student', 'semester') // eager load relationships
+    ->when( $sanctionTypes , function ($query, $filterType) {
+        return $query->where('type', $filterType);
+    })
         ->when($semesterId, function ($q) use ($semesterId) {
             $q->where('semester_id', $semesterId);
         })

@@ -3,7 +3,7 @@
         <x-slot name="header">
             <a class="font-semibold text-lg text-gray-800 leading-tight" href="{{ route('officer.dashboard') }}">
                 {{ __('Officer') }} /
-            <a href="{{ route('sanctions.index') }}" class="text-indigo-600 uppercase">clearance REPORT</a>
+            <a href="{{ route('sanctions.index') }}" class="text-indigo-600 uppercase">MANAGE SANCTION</a>
         </a>
         </x-slot>
     <div class="overflow-x-auto">
@@ -93,7 +93,7 @@
         </div>
     </div>
 
-    
+
     <script>
         // Add event listener for text inputs
         document.querySelectorAll('input[type="text"]').forEach(input => {
@@ -118,7 +118,7 @@
         .dataTables_paginate{
             display: none !important;
         }
-        
+
         .dataTables_info{
             display: none !important;
 
