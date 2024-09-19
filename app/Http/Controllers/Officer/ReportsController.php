@@ -177,6 +177,7 @@ class ReportsController extends Controller
 
         // Build the query
         $query = Sanction::with('student', 'semester') // eager load relationships
+
             ->when($semesterId, function ($q) use ($semesterId) {
                 $q->where('semester_id', $semesterId);
             })
@@ -198,58 +199,49 @@ class ReportsController extends Controller
     }
 
     public function sanctionStats(Request $request)
-    {
-        // Capture filtering parameters from the request
-        $searchName = $request->input('search_name');
-        $searchSchoolId = $request->input('search_school_id');
-        $filterType = $request->input('filter_type');
-        $semesterId = $request->input('semester');
-        $schoolYear = $request->input('school_year');
-        $resolvedStatus = $request->input('resolved'); // Optional filter for resolved status
+{
+    // Capture filtering parameters from the request
+    $sanctionTypes = $request->input('filter_type');
+    $semesterId = $request->input('semester_id');
+    $schoolYear = $request->input('school_year');
+    $resolvedStatus = $request->input('resolved'); // Optional filter for resolved status
 
-        // Build the query based on the filtering parameters
-        $sanctions = Sanction::with('student', 'semester')
-            ->when($searchName, function ($query, $searchName) {
-                return $query->whereHas('student', function ($query) use ($searchName) {
-                    $query->where('name', 'like', '%' . $searchName . '%');
-                });
-            })
-            ->when($searchSchoolId, function ($query, $searchSchoolId) {
-                return $query->whereHas('student', function ($query) use ($searchSchoolId) {
-                    $query->where('school_id', 'like', '%' . $searchSchoolId . '%');
-                });
-            })
-            ->when($filterType, function ($query, $filterType) {
-                return $query->where('type', $filterType);
-            })
-            ->when($semesterId, function ($query, $semesterId) {
-                return $query->where('semester_id', $semesterId);
-            })
-            ->when($schoolYear, function ($query, $schoolYear) {
-                return $query->where('school_year', $schoolYear);
-            })
-            ->when($resolvedStatus, function ($query, $resolvedStatus) {
-                return $query->where('resolved', $resolvedStatus);
-            })
-            ->get();
+    // Build the query
+    $query = Sanction::with('student', 'semester') // eager load relationships
+        ->when($semesterId, function ($q) use ($semesterId) {
+            $q->where('semester_id', $semesterId);
+        })
+        ->when($schoolYear, function ($q) use ($schoolYear) {
+            $q->where('school_year', $schoolYear);
+        })
+        ->when($resolvedStatus, function ($q) use ($resolvedStatus) {
+            $q->where('resolved', $resolvedStatus);
+        });
 
-        // Prepare data for Status Distribution Chart
-        $statusCounts = $sanctions->groupBy('resolved')->map->count();
-        $statusLabels = ['Resolved', 'Not Resolved'];
-        $statusData = [
-            $statusCounts->get('resolved', 0),  // Resolved count
-            $statusCounts->get('not resolved', 0)  // Not resolved count
-        ];
+    // Fetch paginated sanctions
+    $sanctions = $query->paginate(10);
 
-        // Fetch available semesters and school years for filters
-        $semesters = Semester::pluck('name', 'id');
-        $schoolYears = Sanction::distinct()->pluck('school_year', 'school_year');
-        $sanctionTypes = Sanction::distinct()->pluck('type');
+    // Convert paginated result to a collection to perform groupBy
+    $sanctionsCollection = collect($sanctions->items());
 
-        return view('officer.reports.sanction_statistics', compact(
-            'sanctions', 'semesters', 'schoolYears', 'sanctionTypes', 'statusLabels', 'statusData'
-        ));
-    }
+    // Prepare data for Status Distribution Chart
+    $statusCounts = $sanctionsCollection->groupBy('resolved')->map->count();
+    $statusLabels = ['Resolved', 'Not Resolved'];
+    $statusData = [
+        $statusCounts->get('resolved', 0),  // Resolved count
+        $statusCounts->get('not resolved', 0)  // Not resolved count
+    ];
+
+    // Fetch available semesters and school years for filters
+    $semesters = Semester::pluck('name', 'id');
+    $schoolYears = Sanction::distinct()->pluck('school_year', 'school_year');
+
+    return view('officer.reports.sanction_statistics', compact(
+        'sanctions', 'semesters', 'schoolYears', 'statusLabels', 'statusData'
+    ));
+}
+
+
 
     /**
      * Generate and display the clearance report with optional filtering.
