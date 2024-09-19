@@ -34,7 +34,7 @@
                 </div>
 
                 <!-- Sanction Type Filter -->
-                <div class="w-full">
+                {{-- <div class="w-full">
                     <label for="filter_type" class="block text-sm font-medium text-gray-700">Sanction Type</label>
                     <select name="filter_type" id="filter_type" class="block w-full pl-3 pr-10 py-2 text-base border-gray-300 focus:outline-none focus:ring-indigo-500 focus:border-indigo-500 sm:text-sm rounded-md" onchange="this.form.submit()">
                         <option value="">All Types</option>
@@ -42,7 +42,7 @@
                             <option value="{{ $type }}" {{ request('filter_type') == $type ? 'selected' : '' }}>{{ $type }}</option>
                         @endforeach
                     </select>
-                </div>
+                </div> --}}
 
                 <!-- Status Filter -->
                 <div class="w-full">
