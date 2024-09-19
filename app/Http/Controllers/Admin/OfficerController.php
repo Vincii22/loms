@@ -43,10 +43,23 @@ class OfficerController extends Controller
     public function store(Request $request)
 {
     $validated = $request->validate([
-        'name' => 'required|string|max:255',
-        'email' => 'required|email|unique:officers,email',
-        'role_id' => 'required|exists:roles,id', // Changed to match form field
-        'password' => ['required', 'confirmed', Rules\Password::defaults()],
+        'name' => ['required', 'string', 'max:255'],
+            'email' => [
+                'required',
+                'string',
+                'lowercase',
+                'email',
+                'max:255',
+                'unique:officers,email',
+                function ($attribute, $value, $fail) {
+                    // Check if the email ends with @dwc-legazpi.edu
+                    if (!str_ends_with($value, '@dwc-legazpi.edu')) {
+                        $fail('The :attribute must be a valid @dwc-legazpi.edu email address.');
+                    }
+                },
+            ],
+            'role_id' => ['required', 'exists:roles,id'],
+            'password' => ['required', 'confirmed', Rules\Password::defaults()],
         'image' => ['nullable', 'image', 'max:2048'],
     ]);
 
