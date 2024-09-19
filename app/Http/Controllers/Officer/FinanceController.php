@@ -21,51 +21,31 @@ class FinanceController extends Controller
     // Finance-related methods
     public function index(Request $request)
     {
-        $searchName = $request->input('search_name');
-        $searchSchoolId = $request->input('search_school_id');
-        $filterOrganization = $request->input('filter_organization');
-        $filterCourse = $request->input('filter_course');
-        $filterYear = $request->input('filter_year');
         $feeId = $request->input('fee_id');
+    $filterSemester = $request->input('filter_semester');
+    $filterSchoolYear = $request->input('filter_school_year');
 
         $financesQuery = Finance::with('user', 'fee')
-            ->when($searchName, function ($query, $searchName) {
-                return $query->whereHas('user', function ($query) use ($searchName) {
-                    $query->where('name', 'like', '%' . $searchName . '%');
-                });
-            })
-            ->when($searchSchoolId, function ($query, $searchSchoolId) {
-                return $query->whereHas('user', function ($query) use ($searchSchoolId) {
-                    $query->where('school_id', 'like', '%' . $searchSchoolId . '%');
-                });
-            })
-            ->when($filterOrganization, function ($query, $filterOrganization) {
-                return $query->whereHas('user.organization', function ($query) use ($filterOrganization) {
-                    $query->where('id', $filterOrganization);
-                });
-            })
-            ->when($filterCourse, function ($query, $filterCourse) {
-                return $query->whereHas('user.course', function ($query) use ($filterCourse) {
-                    $query->where('id', $filterCourse);
-                });
-            })
-            ->when($filterYear, function ($query, $filterYear) {
-                return $query->whereHas('user.year', function ($query) use ($filterYear) {
-                    $query->where('id', $filterYear);
-                });
-            })
-            ->when($feeId, function ($query, $feeId) {
-                return $query->where('fee_id', $feeId);
+
+        ->when($feeId, function ($query, $feeId) {
+            return $query->where('fee_id', $feeId);
+        })
+        ->when($filterSemester, function ($query, $filterSemester) {
+            return $query->whereHas('fee', function ($query) use ($filterSemester) {
+                $query->where('semester_id', $filterSemester);
             });
+        })
+        ->when($filterSchoolYear, function ($query, $filterSchoolYear) {
+            return $query->whereHas('fee', function ($query) use ($filterSchoolYear) {
+                $query->where('school_year', $filterSchoolYear);
+            });
+        });
 
         $finances = $feeId ? $financesQuery->paginate(10) : collect();
 
-        $organizations = Organization::all();
-        $courses = Course::all();
-        $years = Year::all();
         $fees = Fees::all();
 
-        return view('officer.finances.index', compact('finances', 'organizations', 'courses', 'years', 'fees'));
+        return view('officer.finances.index', compact('finances','fees'));
     }
 
     public function create()

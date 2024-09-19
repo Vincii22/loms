@@ -11,23 +11,13 @@
                     <select name="filter_activity" id="filter_activity" class="form-control mt-1 block w-full" onchange="this.form.submit()">
                         <option value="">Select Activity</option>
                         @foreach($activities as $activity)
-                            <option value="{{ $activity->id }}" {{ request('filter_activity') == $activity->id ? 'selected' : '' }}>
-                                {{ $activity->name }}
-                            </option>
-                        @endforeach
+                        <option value="{{ $activity->id }}" {{ request('filter_activity') == $activity->id ? 'selected' : '' }}>
+                            {{ $activity->name }} -
+                            {{ $activity->semester_id == 1 ? 'Semester 1' : 'Semester 2' }}
+                            ({{ $activity->school_year }})
+                        </option>
+                    @endforeach
                     </select>
-                </div>
-
-                <!-- Name Filter -->
-                <div class="mb-4">
-                    <label for="search_name" class="block text-sm font-medium text-gray-700">Student Name</label>
-                    <input type="text" name="search_name" id="search_name" value="{{ request('search_name') }}" placeholder="Enter name" class="form-control mt-1 block w-full" autocomplete="off">
-                </div>
-
-                <!-- School ID Filter -->
-                <div class="mb-4">
-                    <label for="search_school_id" class="block text-sm font-medium text-gray-700">School ID</label>
-                    <input type="text" name="search_school_id" id="search_school_id" value="{{ request('search_school_id') }}" placeholder="Enter School ID" class="form-control mt-1 block w-full" autocomplete="off">
                 </div>
             </div>
         </form>
@@ -49,7 +39,7 @@
 
             <!-- Attendance Records Table -->
             <div class="overflow-x-auto mt-4">
-                <table class="min-w-full bg-white border border-gray-200 rounded-lg shadow-sm">
+                <table id="userTable" class="min-w-full bg-white border border-gray-200 rounded-lg shadow-sm">
                     <thead>
                         <tr>
                             <th class="px-4 py-2">Student ID</th>
@@ -156,6 +146,17 @@
             });
         });
     </script>
+
+<style>
+    .dataTables_paginate{
+        display: none !important;
+    }
+
+    .dataTables_info{
+        display: none !important;
+
+    }
+</style>
     @endsection
     @endsection
 </x-officer-app-layout>

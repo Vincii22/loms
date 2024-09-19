@@ -20,10 +20,12 @@
                     <select name="fee_id" id="fee_id" class="form-select mt-1 block w-full rounded-md border-gray-300 shadow-sm focus:border-indigo-500 focus:ring-indigo-500 sm:text-sm">
                         <option value="">Select Fee</option>
                         @foreach($fees as $fee)
-                            <option value="{{ $fee->id }}" {{ request('fee_id') == $fee->id ? 'selected' : '' }}>
-                                {{ $fee->name }}
-                            </option>
-                        @endforeach
+                        <option value="{{ $fee->id }}" {{ request('fee_id') == $fee->id ? 'selected' : '' }}>
+                            {{ $fee->name }} -
+                            {{ $fee->semester_id == 1 ? 'Semester 1' : 'Semester 2' }}
+                            ({{ $fee->school_year }})
+                        </option>
+                    @endforeach
                     </select>
                 </div>
             </form>
@@ -118,7 +120,7 @@
         .dataTables_paginate{
             display: none !important;
         }
-        
+
         .dataTables_info{
             display: none !important;
 
