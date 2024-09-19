@@ -125,5 +125,12 @@
             display: none !important;
 
         }
+        .dt-buttons{
+            display: none !important;
+        }
+
+        .dataTables_filter{
+            margin-bottom: 20px;
+        }
     </style>
 </x-officer-app-layout>

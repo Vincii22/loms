@@ -4,7 +4,7 @@
 <div class="container mx-auto py-3">
         <x-slot name="header">
             <a class="font-semibold text-lg text-gray-800 leading-tight" href="{{ route('officer.dashboard') }}">
-                {{ __('Admin') }} / 
+                {{ __('Officer') }} / 
                 <a class="font-semibold text-gray-800 leading-tight hover:underline" href="{{ route('students.index') }}">STUDENT LISTS /</a>
                 <a href="" class="font-semibold text-indigo-600 uppercase">Create Student</a>
             </a>

@@ -54,12 +54,24 @@ class StudentController extends Controller
     {
         $request->validate([
             'name' => ['required', 'string', 'max:255'],
-            'email' => ['required', 'string', 'lowercase', 'email', 'max:255', 'unique:' . User::class],
+            'email' => [
+                'required',
+                'string',
+                'lowercase',
+                'email',
+                'max:255',
+                'unique:' . User::class,
+                function ($attribute, $value, $fail) {
+                    // Check if the email ends with @dwc-legazpi.edu
+                    if (!str_ends_with($value, '@dwc-legazpi.edu')) {
+                        $fail('The :attribute must be a valid @dwc-legazpi.edu email address.');
+                    }
+                },
+            ],
             'school_id' => ['required', 'string', 'max:8'],
             'organization_id' => ['required', 'exists:organizations,id'],
             'course_id' => ['required', 'exists:courses,id'],
             'year_id' => ['required', 'exists:years,id'],
-            'image' => ['nullable', 'image', 'mimes:jpeg,png,jpg', 'max:2048'],
             'password' => ['required', 'confirmed', Rules\Password::defaults()],
         ]);
 
@@ -78,7 +90,7 @@ class StudentController extends Controller
             'password' => Hash::make($request->password),
         ]);
 
-        return redirect()->route('astudents.index')->with('success', 'Student created successfully with active status and no email verification.');
+        return redirect()->route('astudents.index')->with('success', 'Student created successfully with active status and no email approval.');
     }
     /**
      * Display the specified resource.

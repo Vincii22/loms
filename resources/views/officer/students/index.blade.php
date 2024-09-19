@@ -75,6 +75,10 @@
                     @endforeach
                 </tbody>
             </table>
+            <!-- Pagination Links -->
+            <div class="mt-4">
+                    {{ $users->appends(request()->query())->links() }}
+                </div>
         </div>
     </div>
 
@@ -112,5 +116,16 @@
             inputs.forEach(input => input.addEventListener('input', debounce(fetchStudents, 300)));
         });
     </script>
+
+    <style>
+        .dataTables_paginate{
+        display: none !important;
+    }
+
+    .dataTables_info{
+        display: none !important;
+
+    }
+    </style>
     @endsection
 </x-officer-app-layout>
