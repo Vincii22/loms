@@ -132,7 +132,7 @@ class SanctionController extends Controller
                         'resolved' => 'not resolved',
                     ]);
 
-                    $student->clearance()->firstOrCreate(['status' => 'not cleared']);
+                    $student->clearances()->firstOrCreate(['status' => 'not cleared']);
                 }
             }
         }
@@ -168,7 +168,7 @@ class SanctionController extends Controller
                         'resolved' => 'not resolved',
                     ]);
 
-                    $student->clearance()->firstOrCreate(['status' => 'not cleared']);
+                    $student->clearances()->firstOrCreate(['status' => 'not cleared']);
                 }
             }
         }

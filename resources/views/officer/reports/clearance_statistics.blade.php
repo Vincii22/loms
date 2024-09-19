@@ -93,6 +93,16 @@
     <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
     <script>
         document.addEventListener('DOMContentLoaded', function () {
+            // Helper function to generate random colors for charts
+            function generateRandomColors(length) {
+                const colors = [];
+                for (let i = 0; i < length; i++) {
+                    const randomColor = `rgba(${Math.floor(Math.random() * 255)}, ${Math.floor(Math.random() * 255)}, ${Math.floor(Math.random() * 255)}, 0.2)`;
+                    colors.push(randomColor);
+                }
+                return colors;
+            }
+
             // Pie Chart for Status Distribution
             var ctxStatus = document.getElementById('statusDistributionChart').getContext('2d');
             new Chart(ctxStatus, {
@@ -102,8 +112,8 @@
                     datasets: [{
                         label: 'Status Distribution',
                         data: @json($statusData),
-                        backgroundColor: ['rgba(54, 162, 235, 0.2)', 'rgba(255, 99, 132, 0.2)'],
-                        borderColor: ['rgba(54, 162, 235, 1)', 'rgba(255, 99, 132, 1)'],
+                        backgroundColor: generateRandomColors(@json($statusLabels).length),
+                        borderColor: generateRandomColors(@json($statusLabels).length),
                         borderWidth: 1
                     }]
                 },
