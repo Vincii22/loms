@@ -5,7 +5,8 @@
     <meta name="viewport" content="width=device-width, initial-scale=1">
     <meta name="csrf-token" content="{{ csrf_token() }}">
 
-    <title>{{ config('app.name', 'Laravel') }}</title>
+    <title>Automated Management System for LICOES Organization</title>
+    <link rel="icon" href="{{ asset('images/licoes.png') }}" type="image/x-icon">
 
     <!-- Fonts -->
     <link rel="preconnect" href="https://fonts.bunny.net">
@@ -26,21 +27,12 @@
                         </div>
                     </div>
                     <div class="">
-                        <div class="mb-4 text-gray-600 dark:text-white">
-                            {{ __('Thank you for registering! Your account is currently under review by an administrator. We will notify you once your registration has been approved and your account is active.') }}
+                        <div class="mb-4 text-gray-600 dark:text-white text-center">
+                            {{ __('Thank you for registering! Your account is currently under review by an administrator. Please wait for an administrator to approve the registration.') }}
+                            <h1 class="text-sm text-center py-3 text-gray-400">Please re-login in a few hours</h1>
                         </div>
 
-                        <div class="mt-4 w-full flex items-center justify-between">
-                            <form method="POST" action="{{ route('verification.send') }}">
-                                @csrf
-
-                                <div>
-                                    <x-primary-button>
-                                        {{ __('Request a New Email Approval') }}
-                                    </x-primary-button>
-                                </div>
-                            </form>
-
+                        <div class="mt-4 w-full flex items-center justify-center">
                             <form method="POST" action="{{ route('logout') }}">
                                 @csrf
 
@@ -131,6 +123,7 @@
     position: relative;
     z-index: 2;
     }
+}
 </style>
 </body>
 </html>

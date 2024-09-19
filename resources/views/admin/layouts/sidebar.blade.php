@@ -27,11 +27,11 @@
         <div class="flex-1 overflow-auto mt-16 py-4 w-64" style=" color: black; height: 65%;">
             <nav>
             <ul class="space-y-2 text-sm">
-                <li class="nav-links w-[220px] relative py-3 rounded-r-[10px] {{ request()->routeIs('admin.dashboard') ? 'bg-[maroon] text-white' : '' }}"><a href="{{ route('admin.dashboard') }}" class="relative  hover:text-gray-300  px-10 ">Dashboard</a></li>
-                <li class="nav-links w-[220px] relative py-3 rounded-r-[10px] {{ request()->routeIs('admins.index') ? 'bg-[maroon] text-white' : '' }}"><a href="{{ route('admins.index') }}" class="relative  hover:text-gray-300  px-10 ">Admins</a></li>
-                <li class="nav-links w-[220px] relative py-3 rounded-r-[10px] {{ request()->routeIs('officers.index') ? 'bg-[maroon] text-white' : '' }}"><a href="{{ route('officers.index') }}" class="relative  hover:text-gray-300  px-10">Officers</a></li>
-                <li class="nav-links w-[220px] relative py-3 rounded-r-[10px] {{ request()->routeIs('astudents.index') ? 'bg-[maroon] text-white' : '' }}"><a href="{{ route('astudents.index') }}" class="relative  hover:text-gray-300  px-10 ">Students</a></li>
-                <li class="nav-links w-[220px] relative py-3 rounded-r-[10px] {{ request()->routeIs('admin.pending_users') ? 'bg-[maroon] text-white' : '' }}"><a href="{{ route('admin.pending_users') }}" class="relative  hover:text-gray-300  px-10 ">Account Approval</a></li>
+                <li class="nav-links w-[220px] relative py-3 rounded-r-[10px] {{ request()->routeIs('admin.dashboard') ? 'bg-[maroon] text-white' : '' }}"><a href="{{ route('admin.dashboard') }}" class="relative  hover:text-gray-300  pl-10 pr-24 py-3 ">Dashboard</a></li>
+                <li class="nav-links w-[220px] relative py-3 rounded-r-[10px] {{ request()->routeIs('admins.index') ? 'bg-[maroon] text-white' : '' }}"><a href="{{ route('admins.index') }}" class="relative  hover:text-gray-300  pl-10 pr-24 py-3 ">Admins</a></li>
+                <li class="nav-links w-[220px] relative py-3 rounded-r-[10px] {{ request()->routeIs('officers.index') ? 'bg-[maroon] text-white' : '' }}"><a href="{{ route('officers.index') }}" class="relative  hover:text-gray-300  pl-10 pr-24 py-3">Officers</a></li>
+                <li class="nav-links w-[220px] relative py-3 rounded-r-[10px] {{ request()->routeIs('astudents.index') ? 'bg-[maroon] text-white' : '' }}"><a href="{{ route('astudents.index') }}" class="relative  hover:text-gray-300  pl-10 pr-24 py-3 ">Students</a></li>
+                <li class="nav-links w-[220px] relative py-3 rounded-r-[10px] {{ request()->routeIs('admin.pending_users') ? 'bg-[maroon] text-white' : '' }}"><a href="{{ route('admin.pending_users') }}" class="relative  hover:text-gray-300  pl-10 pr-14 py-3 ">Account Approval</a></li>
             </ul>
             </nav>
         </div>

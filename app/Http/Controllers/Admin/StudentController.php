@@ -112,7 +112,7 @@ class StudentController extends Controller
         $courses = Course::all();
         $years = Year::all();
 
-        return view('admin.astudents.edit', compact('user', 'organizations', 'courses', 'years'));
+        return view('admin.students.edit', compact('user', 'organizations', 'courses', 'years'));
     }
 
     /**

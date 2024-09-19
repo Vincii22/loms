@@ -6,18 +6,14 @@
                 {{ __('Officer Dashboard') }}
             </h2>
          <!-- Filter Form -->
-<div class="mt-4 flex items-center space-x-4">
-    <!-- Left Side: Semester and Year Filters -->
+<!-- <div class="mt-4 flex items-center space-x-4">
     <form method="GET" action="{{ route('officer.dashboard') }}" class="flex items-center space-x-4">
-        <!-- Semester Filter -->
         <select name="filter_semester" class="bg-gray-100 border border-gray-300 rounded-md py-2 px-4">
             <option value="">Select Semester</option>
             <option value="1">Semester 1</option>
             <option value="2">Semester 2</option>
-            <!-- Add more options as needed -->
         </select>
 
-        <!-- Year Filter -->
         <select name="filter_year" class="bg-gray-100 border border-gray-300 rounded-md py-2 px-4">
             <option value="">Select Year</option>
             @for ($year = date('Y'); $year >= 2000; $year--)
@@ -26,17 +22,16 @@
         </select>
     </form>
 
-    <!-- Right Side: Automatic Barcode Scanner Input -->
     <div class="ml-auto">
         <input type="text" name="barcode" placeholder="Scan Barcode" class="bg-gray-100 border border-gray-300 rounded-md py-2 px-4 w-56" oninput="handleBarcodeInput(this.value)">
     </div>
-</div>
+</div> -->
 
 
         </div>
     </x-slot>
 
-    <div class="py-12">
+    <div class="">
         <div class="max-w-7xl mx-auto sm:px-6 lg:px-8">
             <div class="bg-white overflow-hidden shadow-sm sm:rounded-lg">
                 <div class="p-6 text-gray-900">

@@ -27,8 +27,8 @@
         <div class="flex-1  py-4 w-64 overflow-y-scroll scrollbar-hidden h-[653px] text-black">
             <nav>
                 <ul class="space-y-4 ">
-                    <li class="nav-links w-[220px] relative py-3 rounded-r-[10px] {{ request()->routeIs('officer.dashboard') ? 'bg-[maroon] text-white' : '' }}"><a href="{{ route('officer.dashboard') }}" class="relative  hover:text-gray-300  px-10 ">Dashboard</a></li>
-                    <li class="nav-links w-[220px] relative py-3 rounded-r-[10px] {{ request()->routeIs('students.index') ? 'bg-[maroon] text-white' : '' }}"><a href="{{ route('students.index') }}" class="relative  hover:text-gray-300  px-10 ">Students</a></li>
+                    <li class="nav-links w-[220px] relative py-3 rounded-r-[10px] {{ request()->routeIs('officer.dashboard') ? 'bg-[maroon] text-white' : '' }}"><a href="{{ route('officer.dashboard') }}" class="relative  hover:text-gray-300  pl-10 pr-24 py-3 ">Dashboard</a></li>
+                    <li class="nav-links w-[220px] relative py-3 rounded-r-[10px] {{ request()->routeIs('students.index') ? 'bg-[maroon] text-white' : '' }}"><a href="{{ route('students.index') }}" class="relative  hover:text-gray-300  pl-10 pr-24 py-3 ">Students</a></li>
 
                     <!-- Dropdown for Attendance -->
                     <li class="">
@@ -59,8 +59,8 @@
                         </ul>
                     </li>
 
-                    <li class="nav-links w-[220px] relative py-3 rounded-r-[10px] {{ request()->routeIs('sanctions.index') ? 'bg-[maroon] text-white' : '' }}"><a href="{{ route('sanctions.index') }}" class="relative  hover:text-gray-300  px-10 ">Sanction</a></li>
-                    <li class="nav-links w-[220px] relative py-3 rounded-r-[10px] {{ request()->routeIs('clearances.index') ? 'bg-[maroon] text-white' : '' }}"><a href="{{ route('clearances.index') }}" class="relative  hover:text-gray-300  px-10 ">Clearance</a></li>
+                    <li class="nav-links w-[220px] relative py-3 rounded-r-[10px] {{ request()->routeIs('sanctions.index') ? 'bg-[maroon] text-white' : '' }}"><a href="{{ route('sanctions.index') }}" class="relative  hover:text-gray-300  pl-10 pr-24 py-3 ">Sanction</a></li>
+                    <li class="nav-links w-[220px] relative py-3 rounded-r-[10px] {{ request()->routeIs('clearances.index') ? 'bg-[maroon] text-white' : '' }}"><a href="{{ route('clearances.index') }}" class="relative  hover:text-gray-300  pl-10 pr-24 py-3 ">Clearance</a></li>
 
                     <!-- Dropdown for Reports -->
                     <li >
@@ -71,10 +71,10 @@
                                 </svg>
                             </button>
                         <ul id="reports-dropdown" class="hidden space-y-4">
-                            <li class="pl-14 nav-links w-[220px] relative py-3 rounded-r-[10px] {{ request()->routeIs('reports.attendance') ? 'bg-[maroon] text-white' : '' }}"><a href="{{ route('reports.attendance') }}" class="hover:text-gray-300">Attendance Report</a></li>
-                            <li class="pl-14 nav-links w-[220px] relative py-3 rounded-r-[10px] {{ request()->routeIs('reports.finance') ? 'bg-[maroon] text-white' : '' }}"><a href="{{ route('reports.finance') }}" class="hover:text-gray-300">Finance Report</a></li>
-                            <li class="pl-14 nav-links w-[220px] relative py-3 rounded-r-[10px] {{ request()->routeIs('reports.sanction') ? 'bg-[maroon] text-white' : '' }}"><a href="{{ route('reports.sanction') }}" class="hover:text-gray-300">Sanction Report</a></li>
-                            <li class="pl-14 nav-links w-[220px] relative py-3 rounded-r-[10px] {{ request()->routeIs('reports.clearance') ? 'bg-[maroon] text-white' : '' }}"><a href="{{ route('reports.clearance') }}" class="hover:text-gray-300">Clearance Report</a></li>
+                            <li class="pl-14 nav-links w-[220px] relative py-3 rounded-r-[10px] {{ request()->routeIs('reports.attendance') ? 'bg-[maroon] text-white' : '' }}"><a href="{{ route('reports.attendance') }}" class="hover:text-gray-300 px-auto">Attendance Report</a></li>
+                            <li class="pl-14 nav-links w-[220px] relative py-3 rounded-r-[10px] {{ request()->routeIs('reports.finance') ? 'bg-[maroon] text-white' : '' }}"><a href="{{ route('reports.finance') }}" class="hover:text-gray-300 px-auto">Finance Report</a></li>
+                            <li class="pl-14 nav-links w-[220px] relative py-3 rounded-r-[10px] {{ request()->routeIs('reports.sanction') ? 'bg-[maroon] text-white' : '' }}"><a href="{{ route('reports.sanction') }}" class="hover:text-gray-300 px-auto">Sanction Report</a></li>
+                            <li class="pl-14 nav-links w-[220px] relative py-3 rounded-r-[10px] {{ request()->routeIs('reports.clearance') ? 'bg-[maroon] text-white' : '' }}"><a href="{{ route('reports.clearance') }}" class="hover:text-gray-300 px-auto">Clearance Report</a></li>
                         </ul>
                     </li>
                 </ul>

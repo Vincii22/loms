@@ -85,12 +85,13 @@
                         @endforelse
                     </tbody>
                 </table>
-            </div>
-
-            <!-- Pagination Links -->
+                <!-- Pagination Links -->
             <div class="mt-4">
                 {{ $clearances->links() }}
             </div>
+            </div>
+
+            
         </div>
 
         <script>
@@ -102,5 +103,22 @@
                 });
             });
         </script>
+        <style>
+        .dataTables_paginate{
+            display: none !important;
+        }
+
+        .dataTables_info{
+            display: none !important;
+
+        }
+        .dt-buttons{
+            display: none !important;
+        }
+
+        .dataTables_filter{
+            margin-bottom: 20px;
+        }
+    </style>
     @endsection
 </x-officer-app-layout>
