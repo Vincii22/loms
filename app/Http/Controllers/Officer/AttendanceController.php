@@ -17,25 +17,27 @@ class AttendanceController extends Controller
 {
     public function index(Request $request)
     {
-        $searchName = $request->input('search_name');
-        $searchSchoolId = $request->input('search_school_id');
+
         $filterActivity = $request->input('filter_activity');
+        $filterSemester = $request->input('filter_semester');
+        $filterSchoolYear = $request->input('filter_school_year');
+
 
         $attendancesQuery = Attendance::with('user', 'activity')
-            ->when($searchName, function ($query, $searchName) {
-                return $query->whereHas('user', function ($query) use ($searchName) {
-                    $query->where('name', 'like', '%' . $searchName . '%');
-                });
-            })
-            ->when($searchSchoolId, function ($query, $searchSchoolId) {
-                return $query->whereHas('user', function ($query) use ($searchSchoolId) {
-                    $query->where('school_id', 'like', '%' . $searchSchoolId . '%');
-                });
-            })
-            ->when($filterActivity, function ($query, $filterActivity) {
-                return $query->where('activity_id', $filterActivity);
-            });
 
+        ->when($filterActivity, function ($query, $filterActivity) {
+            return $query->where('activity_id', $filterActivity);
+        })
+        ->when($filterSemester, function ($query, $filterSemester) {
+            return $query->whereHas('activity', function ($query) use ($filterSemester) {
+                $query->where('semester_id', $filterSemester);
+            });
+        })
+        ->when($filterSchoolYear, function ($query, $filterSchoolYear) {
+            return $query->whereHas('activity', function ($query) use ($filterSchoolYear) {
+                $query->where('school_year', $filterSchoolYear);
+            });
+        });
         $attendances = $attendancesQuery->paginate(10);
         $activities = Activity::all();
 
