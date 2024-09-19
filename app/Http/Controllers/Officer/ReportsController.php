@@ -199,50 +199,64 @@ class ReportsController extends Controller
     }
 
     public function sanctionStats(Request $request)
-{
-    // Capture filtering parameters from the request
-    $sanctionTypes = $request->input('filter_type');
-    $semesterId = $request->input('semester_id');
-    $schoolYear = $request->input('school_year');
-    $resolvedStatus = $request->input('resolved'); // Optional filter for resolved status
+    {
+        // Capture filtering parameters from the request
+        $semesterId = $request->input('semester');
+        $schoolYear = $request->input('school_year');
+        $resolvedStatus = $request->input('resolved'); // Optional filter for resolved status
 
-    // Build the query
-    $query = Sanction::with('student', 'semester') // eager load relationships
-    ->when( $sanctionTypes , function ($query, $filterType) {
-        return $query->where('type', $filterType);
-    })
-        ->when($semesterId, function ($q) use ($semesterId) {
-            $q->where('semester_id', $semesterId);
-        })
-        ->when($schoolYear, function ($q) use ($schoolYear) {
-            $q->where('school_year', $schoolYear);
-        })
-        ->when($resolvedStatus, function ($q) use ($resolvedStatus) {
-            $q->where('resolved', $resolvedStatus);
-        });
+        // Build the query
+        $query = Sanction::with('student', 'semester') // eager load relationships
+            ->when($semesterId, function ($q) use ($semesterId) {
+                $q->where('semester_id', $semesterId);
+            })
+            ->when($schoolYear, function ($q) use ($schoolYear) {
+                $q->where('school_year', $schoolYear);
+            })
+            ->when($resolvedStatus, function ($q) use ($resolvedStatus) {
+                $q->where('resolved', $resolvedStatus);
+            });
 
-    // Fetch paginated sanctions
-    $sanctions = $query->paginate(10);
+        // Fetch paginated sanctions
+        $sanctions = $query->paginate(10);
+        $sanctionsCollection = collect($sanctions->items());
 
-    // Convert paginated result to a collection to perform groupBy
-    $sanctionsCollection = collect($sanctions->items());
+        // Prepare data for Status Distribution Chart
+        $statusCounts = $sanctionsCollection->groupBy('resolved')->map->count();
+        $statusLabels = ['Resolved', 'Not Resolved'];
+        $resolvedCount = $statusCounts->get('resolved', 0);  // Default to 0 if not found
+        $notResolvedCount = $statusCounts->get('not resolved', 0);  // Default to 0 if not found
+        $statusData = [
+            $resolvedCount,
+            $notResolvedCount,
+        ];
 
-    // Prepare data for Status Distribution Chart
-    $statusCounts = $sanctionsCollection->groupBy('resolved')->map->count();
-    $statusLabels = ['Resolved', 'Not Resolved'];
-    $statusData = [
-        $statusCounts->get('resolved', 0),  // Resolved count
-        $statusCounts->get('not resolved', 0)  // Not resolved count
-    ];
+        $totalSanctions = $sanctionsCollection->count();
+        $fineData = $sanctionsCollection->groupBy('school_year')->map->sum('fine_amount');
+        $fineLabels = $fineData->keys()->toArray();
+        $resolvedYearCounts = $sanctionsCollection->where('resolved', 'resolved')->groupBy('school_year')->map->count()->values()->toArray();
+        $notResolvedYearCounts = $sanctionsCollection->where('resolved', 'not resolved')->groupBy('school_year')->map->count()->values()->toArray();
+        $semesterCounts = $sanctionsCollection->groupBy('semester_id')->map->count();
 
-    // Fetch available semesters and school years for filters
-    $semesters = Semester::pluck('name', 'id');
-    $schoolYears = Sanction::distinct()->pluck('school_year', 'school_year');
+        // Fetch available semesters and school years for filters
+        $semesters = Semester::pluck('name', 'id');
+        $schoolYears = Sanction::distinct()->pluck('school_year', 'school_year');
 
-    return view('officer.reports.sanction_statistics', compact(
-        'sanctions', 'semesters', 'schoolYears', 'statusLabels', 'statusData'
-    ));
-}
+        return view('officer.reports.sanction_statistics', compact(
+            'sanctions',
+            'semesters',
+            'schoolYears',
+            'statusLabels',
+            'statusData',
+            'fineData',
+            'fineLabels',
+            'resolvedYearCounts',
+            'notResolvedYearCounts',
+            'semesterCounts'
+        ));
+    }
+
+
 
 
 
