@@ -4,9 +4,10 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <meta http-equiv="X-UA-Compatible" content="ie=edge">
-    <title>Document</title>
+    <title>Automated Management System for LICOES Organization</title>
+    <link rel="icon" href="{{ asset('images/licoes.png') }}" type="image/x-icon">
     <script src="https://cdn.tailwindcss.com"></script>
-    
+
 </head>
 <body class="bg-gray-100 h-screen flex items-center justify-center overflow-hidden">
 
@@ -34,9 +35,17 @@
         <div class="flex flex-col items-center justify-evenly w-full md:w-1/2 bg-white px-3 overflow-y-scroll py-5 custom-scroll">
             <div class="space-y-6 w-full px-10 relative">
                 <div class="text">
-                    <h1 class="text-2xl text-center my-1 ">
-                        {{ __('Student Register') }}
-                    </h1>
+                    <div class="text-center mb-4 relative">
+                        <div class="absolute left-0 top-2">
+                            <a href="{{ url('/') }}" class="text-gray-600 hover:text-gray-800">
+                                <svg xmlns="http://www.w3.org/2000/svg" class="h-6 w-6" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2">
+                                    <path stroke-linecap="round" stroke-linejoin="round" d="M10 19l-7-7m0 0l7-7" />
+                                </svg>
+                            </a>
+                        </div>
+                        <h1 class="text-2xl text-center">Student Registration</h1>
+                    </div>
+                    <hr class="pb-5">
                 </div>
                 <!-- Session Status -->
                 <x-auth-session-status class="mb-4" :status="session('status')" />

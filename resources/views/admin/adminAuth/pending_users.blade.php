@@ -77,12 +77,13 @@
                     @endforeach
                 </tbody>
             </table>
+            <div class="mt-6">
+                {{ $pendingUsers->links() }}
+            </div>
         </div>
 
         <!-- Pagination -->
-        <div class="mt-6 flex justify-between">
-            {{ $pendingUsers->links() }}
-        </div>
+        
 
         <!-- Confirmation Dialog -->
         <div id="confirmation-dialog" class="fixed inset-0 bg-gray-800 bg-opacity-50 hidden justify-center items-center">
@@ -96,5 +97,18 @@
         </div>
     </div>
 
+
+
+
+    <style>
+    .dataTables_paginate{
+        display: none !important;
+    }
+
+    .dataTables_info{
+        display: none !important;
+
+    }
+</style>
     @endsection
 </x-admin-app-layout>

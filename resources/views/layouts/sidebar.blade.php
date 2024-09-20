@@ -24,14 +24,14 @@
 
 
         <!-- Sidebar Content -->
-        <div class="flex-1 overflow-auto py-4 w-64" style=" color: black; height: 65%;">
+        <div class="flex-1 overflow-auto mt-16 py-4 w-64" style=" color: black; height: 65%;">
             <nav>
-                <ul class="space-y-9">
-                    <li class="nav-links w-[220px] relative py-3 rounded-r-[10px] {{ request()->routeIs('dashboard') ? 'bg-[maroon] text-white' : '' }}"><a href="{{ route('dashboard') }}" class="relative  hover:text-gray-300  px-10 ">Dashboard</a></li>
-                    <li class="nav-links w-[220px] relative py-3 rounded-r-[10px] {{ request()->routeIs('sAttendance.index') ? 'bg-[maroon] text-white' : '' }}"><a href="{{ route('sAttendance.index') }}" class="relative  hover:text-gray-300  px-10 ">Attendance</a></li>
-                    <li class="nav-links w-[220px] relative py-3 rounded-r-[10px] {{ request()->routeIs('finance.index') ? 'bg-[maroon] text-white' : '' }}"><a href="{{ route('finance.index') }}" class="relative  hover:text-gray-300  px-10 ">Finance</a></li>
-                    <li class="nav-links w-[220px] relative py-3 rounded-r-[10px] {{ request()->routeIs('finance.index') ? 'bg-[maroon] text-white' : '' }}"><a href="{{ route('finance.index') }}" class="relative  hover:text-gray-300  px-10 ">Sanction</a></li>
-                    <li class="nav-links w-[220px] relative py-3 rounded-r-[10px] {{ request()->routeIs('finance.index') ? 'bg-[maroon] text-white' : '' }}"><a href="{{ route('finance.index') }}" class="relative  hover:text-gray-300  px-10 ">Clearance</a></li>
+                <ul class="space-y-4 ">
+                    <li class="nav-links w-[220px] relative py-3 rounded-r-[10px] {{ request()->routeIs('dashboard') ? 'bg-[maroon] text-white' : '' }}"><a href="{{ route('dashboard') }}" class="relative  hover:text-gray-300  pl-10 pr-24 py-3">Dashboard</a></li>
+                    <li class="nav-links w-[220px] relative py-3 rounded-r-[10px] {{ request()->routeIs('sAttendance.index') ? 'bg-[maroon] text-white' : '' }}"><a href="{{ route('sAttendance.index') }}" class="relative  hover:text-gray-300  pl-10 pr-24 py-3">Attendance</a></li>
+                    <li class="nav-links w-[220px] relative py-3 rounded-r-[10px] {{ request()->routeIs('finance.index') ? 'bg-[maroon] text-white' : '' }}"><a href="{{ route('finance.index') }}" class="relative  hover:text-gray-300  pl-10 pr-24 py-3">Finance</a></li>
+                    <li class="nav-links w-[220px] relative py-3 rounded-r-[10px] {{ request()->routeIs('finance.index') ? 'bg-[maroon] text-white' : '' }}"><a href="{{ route('finance.index') }}" class="relative  hover:text-gray-300  pl-10 pr-24 py-3">Sanction</a></li>
+                    <li class="nav-links w-[220px] relative py-3 rounded-r-[10px] {{ request()->routeIs('finance.index') ? 'bg-[maroon] text-white' : '' }}"><a href="{{ route('finance.index') }}" class="relative  hover:text-gray-300  pl-10 pr-24 py-3">Clearance</a></li>
                 </ul>
             </nav>
         </div>

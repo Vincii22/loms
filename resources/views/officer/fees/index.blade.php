@@ -7,7 +7,7 @@
                 <a href="" class="text-indigo-600 uppercase">Fee Management</a>
             </a>
         </x-slot>
-        <div class="max-w-7xl mx-auto p-6 bg-white shadow-lg rounded-lg">
+        <div class="overflow-x-auto">
             <div class="flex justify-end mb-4">
                 <a href="{{ route('fees.create') }}" class="bg-blue-500 text-white px-4 py-2 rounded hover:bg-blue-600">Create Fee</a>
             </div>
@@ -35,38 +35,37 @@
                     </div>
                 </div>
             </form>
-            <table class="min-w-full divide-y divide-gray-200">
+        <div class="overflow-x-auto bg-white p-5 rounded shadow-sm">
+            <table class="min-w-full bg-white border border-gray-200 rounded-lg shadow-md">
                 <thead class="bg-gray-50">
                     <tr>
-                        <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Name</th>
-                        <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Default Amount</th>
-                        <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Semester</th>
-                        <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">School Year</th>
-                        <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Actions</th>
+                        <th class="py-2 px-4 border-b border-r">Name</th>
+                        <th class="py-2 px-4 border-b border-r">Default Amount</th>
+                        <th class="py-2 px-4 border-b border-r">Semester</th>
+                        <th class="py-2 px-4 border-b border-r">School Year</th>
+                        <th class="py-2 px-4 border-b">Actions</th>
                     </tr>
                 </thead>
                 <tbody class="bg-white divide-y divide-gray-200">
                     @foreach ($fees as $fee)
                         <tr>
-                            <td class="px-6 py-4 whitespace-nowrap">{{ $fee->name }}</td>
-                            <td class="px-6 py-4 whitespace-nowrap">{{ $fee->default_amount }}</td>
-                            <td class="px-6 py-4 whitespace-nowrap">{{ $fee->semester ? $fee->semester->name : 'N/A' }}</td>
-                            <td class="px-6 py-4 whitespace-nowrap">{{ $fee->school_year }}</td>
-                            <td class="px-6 py-4 whitespace-nowrap">
-                                <div class="flex space-x-2">
-                                    <!-- Edit Button -->
-                                    <a href="{{ route('fees.edit', $fee->id) }}" class="bg-yellow-500 text-white px-3 py-1 rounded hover:bg-yellow-600">
-                                        Edit
-                                    </a>
-                                    <!-- Delete Button -->
-                                    <form action="{{ route('fees.destroy', $fee->id) }}" method="POST" onsubmit="return confirm('Are you sure you want to delete this fee?');">
-                                        @csrf
-                                        @method('DELETE')
-                                        <button type="submit" class="bg-red-500 text-white px-3 py-1 rounded hover:bg-red-600">
-                                            Delete
-                                        </button>
-                                    </form>
-                                </div>
+                            <td class="py-2 px-4 border-b">{{ $fee->name }}</td>
+                            <td class="py-2 px-4 border-b">{{ $fee->default_amount }}</td>
+                            <td class="py-2 px-4 border-b">{{ $fee->semester ? $fee->semester->name : 'N/A' }}</td>
+                            <td class="py-2 px-4 border-b">{{ $fee->school_year }}</td>
+                            <td class="py-2 px-4 border-b flex justify-center space-x-2">
+                                <!-- Edit Button -->
+                                <a href="{{ route('fees.edit', $fee->id) }}" class="bg-yellow-500 text-white px-3 py-1 rounded-lg shadow hover:bg-yellow-600 transition text-xs">
+                                    Edit
+                                </a>
+                                <!-- Delete Button -->
+                                <form action="{{ route('fees.destroy', $fee->id) }}" method="POST" onsubmit="return confirm('Are you sure you want to delete this fee?');">
+                                    @csrf
+                                    @method('DELETE')
+                                    <button type="submit" class="bg-red-500 text-white px-3 py-1 rounded-lg shadow hover:bg-red-600 transition text-xs">
+                                        Delete
+                                    </button>
+                                </form>
                             </td>
                         </tr>
                     @endforeach

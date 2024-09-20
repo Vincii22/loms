@@ -70,13 +70,13 @@
                             <td class="px-6 py-4 border-b">{{ $activity->location }}</td>
                             <td class="px-6 py-4 border-b">{{ $activity->school_year }}</td>
                             <td class="px-6 py-4 border-b">{{ $activity->semester->name ?? 'N/A' }}</td>
-                            <td class="px-6 py-4 border-b text-center">
-                                <a href="{{ route('activities.edit', $activity->id) }}" class="text-yellow-600 hover:text-yellow-900">Edit</a>
+                            <td class="px-5 py-4 border-b text-center">
+                                <a href="{{ route('activities.edit', $activity->id) }}" class="bg-yellow-500 text-white px-[.55rem] py-1 rounded-lg shadow hover:bg-yellow-600 transition text-xs">Edit</a>
                                 |
                                 <form action="{{ route('activities.destroy', $activity->id) }}" method="POST" class="inline-block">
                                     @csrf
                                     @method('DELETE')
-                                    <button type="submit" class="text-red-600 hover:text-red-900" onclick="return confirm('Are you sure?')">Delete</button>
+                                    <button type="submit" class="bg-red-500 text-white px-[.55rem] py-1 rounded-lg shadow hover:bg-red-600 transition text-xs"" onclick="return confirm('Are you sure?')">Delete</button>
                                 </form>
                             </td>
                         </tr>
