@@ -4,7 +4,7 @@
 
         <header class="bg-white shadow mb-4 px-5 py-5 rounded-[10px]">
             <div class="flex flex-col sm:flex-row justify-between items-center ">
-                
+
                 <h2 class="font-semibold text-xl !text-[#5C0E0F] dark:text-gray-200 leading-tight">
                     {{ __('Dashboard') }}
                 </h2>
@@ -30,8 +30,8 @@
                 </div>
                 <div class="">
                     <h2 class="w-[50rem] mt-8">
-                        
-                        Lorem ipsum dolor sit amet consectetur adipisicing elit. Nulla, repellendus? Ut sed commodi modi quidem est perferendis amet. Eligendi eaque laboriosam esse?
+
+                        Welcome to the Automated Management System, where you can easily track your attendance, fees, sanctions, and clearance status.
                     </h2>
                 </div>
             </div>
@@ -71,7 +71,7 @@
                                             @endif
                                         </div>
                                     </div>
-                                    
+
                                 </li>
                             @empty
                                 <p class="text-gray-600 dark:text-gray-400">No upcoming activities.</p>

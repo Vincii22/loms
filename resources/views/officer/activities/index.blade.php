@@ -39,7 +39,7 @@
         </form>
 
         <a href="{{ route('activities.create') }}" class="bg-blue-500 text-white px-4 py-2 rounded hover:bg-blue-600 mb-4 inline-block">Add New Activity</a>
-
+        <a href="{{ route('activities.archived') }}" class="text-black hover:underline">Archived Activities</a>
         @if(session('success'))
             <div class="bg-green-100 border border-green-400 text-green-700 px-4 py-3 rounded mb-4">
                 {{ session('success') }}
@@ -72,12 +72,12 @@
                             <td class="px-6 py-4 border-b">{{ $activity->semester->name ?? 'N/A' }}</td>
                             <td class="px-5 py-4 border-b text-center">
                                 <a href="{{ route('activities.edit', $activity->id) }}" class="bg-yellow-500 text-white px-[.55rem] py-1 rounded-lg shadow hover:bg-yellow-600 transition text-xs">Edit</a>
-                                |
-                                <form action="{{ route('activities.destroy', $activity->id) }}" method="POST" class="inline-block">
-                                    @csrf
-                                    @method('DELETE')
-                                    <button type="submit" class="bg-red-500 text-white px-[.55rem] py-1 rounded-lg shadow hover:bg-red-600 transition text-xs"" onclick="return confirm('Are you sure?')">Delete</button>
-                                </form>
+                                    |
+                                    <form action="{{ route('activities.archive', $activity->id) }}" method="POST" class="inline-block">
+                                        @csrf
+                                        <button type="submit" class="bg-red-500 text-white px-[.55rem] py-1 rounded-lg shadow hover:bg-red-600 transition text-xs" onclick="return confirm('Are you sure you want to archive this activity?')">Archive</button>
+                                    </form>
+
                             </td>
                         </tr>
                     @endforeach

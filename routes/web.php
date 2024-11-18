@@ -2,6 +2,7 @@
 use App\Http\Controllers\Admin\StudentController;
 use App\Http\Controllers\Admin\AdminController;
 use App\Http\Controllers\Admin\AdminAuthController;
+use App\Http\Controllers\Admin\AcademicYearController;
 use App\Http\Controllers\Admin\OfficerController;
 use App\Http\Controllers\Admin\AdminDashboardController;
 use App\Http\Controllers\StudentAttendanceController;
@@ -45,16 +46,16 @@ Route::middleware('auth')->group(function () {
 
 
 
-Route::prefix('admin')->middleware('auth:admin')->group(function () {
+    Route::prefix('admin')->middleware('auth:admin')->group(function () {
     Route::resource('astudents', StudentController::class);
     Route::resource('officers', OfficerController::class);
     Route::resource('admins', AdminController::class);
-
+    Route::resource('academic_years', AcademicYearController::class);
 
 
     Route::get('pending-users', [AdminAuthController::class, 'index'])->name('admin.pending_users');
 
-    // Separate approval routes for users and officers
+    // Separate approval routes                         users and officers
     Route::post('approve-user/{id}', [AdminAuthController::class, 'approveUser'])->name('admin.approveUser');
     Route::post('approve-officer/{id}', [AdminAuthController::class, 'approveOfficer'])->name('admin.approveOfficer');
 
@@ -98,6 +99,9 @@ Route::prefix('officer')->middleware('auth:officer')->group(function () {
     Route::get('/dashboard', [DashboardController::class, 'index'])->name('officer.dashboard');
 });
 
+Route::post('/activities/{activity}/archive', [ActivityController::class, 'archive'])->name('activities.archive');
+Route::post('/activities/{activity}/unarchive', [ActivityController::class, 'unarchive'])->name('activities.unarchive');
+Route::get('/officer/activities/archived', [ActivityController::class, 'archived'])->name('activities.archived');
 
 
 

@@ -10,6 +10,8 @@ use Illuminate\Database\Eloquent\Relations\BelongsTo;
 use Illuminate\Foundation\Auth\User as Authenticatable;
 use Illuminate\Notifications\Notifiable;
 use Illuminate\Support\Facades\Log;
+use Illuminate\Auth\Notifications\ResetPassword;
+// use Illuminate\Contracts\Auth\CanResetPassword;
 class User extends Authenticatable implements MustVerifyEmailContract
 {
     use HasFactory, Notifiable;
@@ -113,7 +115,12 @@ class User extends Authenticatable implements MustVerifyEmailContract
 
 
 
+    public function sendPasswordResetNotification($token)
+    {
+        $url = url(route('password.reset', ['token' => $token, 'email' => $this->email]));
 
+        $this->notify(new ResetPassword($url));
+    }
     // Hidden attributes
     protected $hidden = [
         'password',
