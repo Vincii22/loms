@@ -2,7 +2,7 @@
     @section('content')
     <x-slot name="header">
             <a class="font-semibold text-lg text-gray-800 leading-tight" href="{{ route('admin.dashboard') }}">
-                {{ __('Admin') }} / 
+                {{ __('Admin') }} /
                 <a class="font-semibold text-gray-800 leading-tight hover:underline" href="{{ route('officers.index') }}">Officer Lists /</a>
                 <a href="" class="font-semibold text-indigo-600 uppercase">Edit Officer</a>
             </a>
@@ -49,7 +49,7 @@
                             </div>
                         </div>
 
-                        <div class="mb-4">
+                        {{-- <div class="mb-4">
                             <x-input-label class="block text-sm font-medium !text-gray-700" for="password" :value="__('Password')" />
                             <x-text-input id="password" class="form-control mt-1 block w-full !text-black !bg-white border-gray-300 rounded-md shadow-sm" type="password" name="password" autocomplete="new-password" />
                             <x-input-error :messages="$errors->get('password')" class="mt-2" />
@@ -59,7 +59,7 @@
                             <x-input-label class="block text-sm font-medium !text-gray-700" for="password_confirmation" :value="__('Confirm Password')" />
                             <x-text-input id="password_confirmation" class="form-control mt-1 block w-full !text-black !bg-white border-gray-300 rounded-md shadow-sm" type="password" name="password_confirmation" autocomplete="new-password" />
                             <x-input-error :messages="$errors->get('password_confirmation')" class="mt-2" />
-                        </div>
+                        </div> --}}
 
                         <div class="mb-4">
                             <x-input-label class="block text-sm font-medium !text-gray-700" for="image" :value="__('Profile Image')" />

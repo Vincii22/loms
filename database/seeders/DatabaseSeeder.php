@@ -23,8 +23,8 @@ class DatabaseSeeder extends Seeder
             UsersTableSeeder::class,
             OfficersTableSeeder::class,
             AdminTableSeeder::class,
-            ActivitiesTableSeeder::class,
-            FeesTableSeeder::class
+            // ActivitiesTableSeeder::class,
+            // FeesTableSeeder::class
             // Add other seeders here
         ]);
     }

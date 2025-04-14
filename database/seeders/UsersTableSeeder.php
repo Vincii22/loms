@@ -15,7 +15,7 @@ class UsersTableSeeder extends Seeder
     {
         $faker = Faker::create();
 
-        for ($i = 1; $i <= 100; $i++) {
+        for ($i = 1; $i <= 3; $i++) {
             $userData = [
                 'name' => $faker->name,
                 'email' => $faker->unique()->safeEmail,

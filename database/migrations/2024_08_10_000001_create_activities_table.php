@@ -22,6 +22,7 @@ return new class extends Migration
             $table->string('school_year')->nullable();
             $table->string('image')->nullable();
             $table->timestamps();
+            $table->timestamp('archived_at')->nullable();
         });
     }
 

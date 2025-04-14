@@ -6,6 +6,8 @@ use Illuminate\Support\ServiceProvider;
 use Illuminate\Support\Facades\Blade;
 use App\Observers\UserObserver;
 use App\Models\User;
+use App\Models\AcademicYear;
+use App\Observers\AcademicYearObserver;
 class AppServiceProvider extends ServiceProvider
 {
     /**
@@ -25,5 +27,6 @@ class AppServiceProvider extends ServiceProvider
         Blade::component('officer-sidebar', \App\View\Components\OfficerSidebar::class);
         Blade::component('admin-sidebar', \App\View\Components\AdminSidebar::class);
         User::observe(UserObserver::class);
+        AcademicYear::observe(AcademicYearObserver::class);
     }
 }

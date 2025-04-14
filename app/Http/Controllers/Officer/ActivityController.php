@@ -8,30 +8,27 @@ use App\Models\Semester;
 use App\Models\User;
 use App\Models\Sanction;
 use Illuminate\Http\Request;
+use Illuminate\Support\Facades\Log;
 use Illuminate\Support\Facades\Storage;
 class ActivityController extends Controller
 {
-    /**
-     * Display a listing of the resource.
-     */
-    public function index(Request $request)
-    {
-        $query = Activity::query();
+public function index(Request $request)
+{
+    $query = Activity::whereNull('archived_at'); // Only non-archived activities
 
-        if ($request->has('semester_id') && $request->input('semester_id') != '') {
-            $query->where('semester_id', $request->input('semester_id'));
-        }
-
-        if ($request->has('school_year') && $request->input('school_year') != '') {
-            $query->where('school_year', $request->input('school_year'));
-        }
-
-        $activities = $query->get();
-        $semesters = Semester::all(); // Fetch all semesters for filter dropdown
-
-        return view('officer.activities.index', compact('activities', 'semesters'));
+    if ($request->has('semester_id') && $request->input('semester_id') != '') {
+        $query->where('semester_id', $request->input('semester_id'));
     }
 
+    if ($request->has('school_year') && $request->input('school_year') != '') {
+        $query->where('school_year', $request->input('school_year'));
+    }
+
+    $activities = $query->get();
+    $semesters = Semester::all();
+
+    return view('officer.activities.index', compact('activities', 'semesters'));
+}
     /**
      * Show the form for creating a new resource.
      */
@@ -132,25 +129,59 @@ class ActivityController extends Controller
         return redirect()->route('activities.index')->with('success', 'Activity updated successfully.');
     }
 
+    public function archive(Activity $activity)
+{
+    // Set archived_at to the current timestamp to archive the activity
+    $activity->update(['archived_at' => now()]);
+
+    // Delete related sanctions as before if needed
+    $sanctions = Sanction::where('type', 'LIKE', "Absence from %")
+        ->whereHas('student.attendances.activity', function ($query) use ($activity) {
+            $query->where('id', $activity->id);
+        })->get();
+
+    foreach ($sanctions as $sanction) {
+        $sanction->delete();
+    }
+
+    return redirect()->route('activities.index')->with('success', 'Activity archived successfully.');
+}
+
+public function archived()
+{
+    Log::info('Archiving activities method hit');  // Check if this log entry appears
+    $archivedActivities = Activity::whereNotNull('archived_at')->get();
+    return view('officer.activities.archived', compact('archivedActivities'));
+}
+
+public function unarchive(Activity $activity)
+{
+    $activity->update(['archived_at' => null]);
+    return redirect()->route('activities.archived')->with('success', 'Activity unarchived successfully.');
+}
     /**
      * Remove the specified resource from storage.
      */
-    public function destroy(Activity $activity)
-    {
-         // Find all sanctions related to this activity
-    $sanctions = Sanction::where('type', 'LIKE', "Absence from %")
-    ->whereHas('student.attendances.activity', function ($query) use ($activity) {
-        $query->where('id', $activity->id);
-    })->get();
+    // public function destroy(Activity $activity)
+    // {
+    //      // Find all sanctions related to this activity
+    // $sanctions = Sanction::where('type', 'LIKE', "Absence from %")
+    // ->whereHas('student.attendances.activity', function ($query) use ($activity) {
+    //     $query->where('id', $activity->id);
+    // })->get();
 
-    // Delete the sanctions
-    foreach ($sanctions as $sanction) {
-    $sanction->delete();
-    }
+    // // Delete the sanctions
+    // foreach ($sanctions as $sanction) {
+    // $sanction->delete();
+    // }
 
 
-        $activity->delete();
-        return redirect()->route('activities.index')->with('success', 'Activity deleted successfully.');
-    }
+    //     $activity->delete();
+    //     return redirect()->route('activities.index')->with('success', 'Activity deleted successfully.');
+    // }
+
+
+
+
     }
 
