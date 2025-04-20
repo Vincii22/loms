@@ -20,6 +20,8 @@ use App\Http\Controllers\ProfileController;
 use App\Http\Controllers\UserController;
 use App\Http\Controllers\StudentFinanceController;
 use App\Http\Controllers\StudentDashboardController;
+use App\Http\Controllers\StudentSanctionController;
+use App\Http\Controllers\StudentClearanceController;
 use App\Http\Middleware\CheckFinanceRole;
 use Illuminate\Support\Facades\Route;
 
@@ -44,7 +46,12 @@ Route::middleware('auth')->group(function () {
 
 });
 
+Route::get('/sanction', [StudentSanctionController::class, 'index'])->name('sanction.index');
+Route::get('/sanction/{id}', [StudentSanctionController::class, 'show'])->name('sanctions.show');
 
+
+Route::get('/clearance', [StudentClearanceController::class, 'index'])->name('clearance.index');
+Route::get('/clearance/{id}', [StudentClearanceController::class, 'show'])->name('clearance.show');
 
     Route::prefix('admin')->middleware('auth:admin')->group(function () {
     Route::resource('astudents', StudentController::class);

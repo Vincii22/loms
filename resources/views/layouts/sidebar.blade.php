@@ -30,8 +30,8 @@
                     <li class="nav-links w-[220px] relative py-3 rounded-r-[10px] {{ request()->routeIs('dashboard') ? 'bg-[maroon] text-white' : '' }}"><a href="{{ route('dashboard') }}" class="relative  hover:text-gray-300  pl-10 pr-24 py-3">Dashboard</a></li>
                     <li class="nav-links w-[220px] relative py-3 rounded-r-[10px] {{ request()->routeIs('sAttendance.index') ? 'bg-[maroon] text-white' : '' }}"><a href="{{ route('sAttendance.index') }}" class="relative  hover:text-gray-300  pl-10 pr-24 py-3">Attendance</a></li>
                     <li class="nav-links w-[220px] relative py-3 rounded-r-[10px] {{ request()->routeIs('finance.index') ? 'bg-[maroon] text-white' : '' }}"><a href="{{ route('finance.index') }}" class="relative  hover:text-gray-300  pl-10 pr-24 py-3">Finance</a></li>
-                    <li class="nav-links w-[220px] relative py-3 rounded-r-[10px] {{ request()->routeIs('finance.index') ? 'bg-[maroon] text-white' : '' }}"><a href="{{ route('finance.index') }}" class="relative  hover:text-gray-300  pl-10 pr-24 py-3">Sanction</a></li>
-                    <li class="nav-links w-[220px] relative py-3 rounded-r-[10px] {{ request()->routeIs('finance.index') ? 'bg-[maroon] text-white' : '' }}"><a href="{{ route('finance.index') }}" class="relative  hover:text-gray-300  pl-10 pr-24 py-3">Clearance</a></li>
+                    <li class="nav-links w-[220px] relative py-3 rounded-r-[10px] {{ request()->routeIs('sanction.index') ? 'bg-[maroon] text-white' : '' }}"><a href="{{ route('sanction.index') }}" class="relative  hover:text-gray-300  pl-10 pr-24 py-3">Sanction</a></li>
+                    <li class="nav-links w-[220px] relative py-3 rounded-r-[10px] {{ request()->routeIs('clearance.index') ? 'bg-[maroon] text-white' : '' }}"><a href="{{ route('clearance.index') }}" class="relative  hover:text-gray-300  pl-10 pr-24 py-3">Clearance</a></li>
                 </ul>
             </nav>
         </div>
@@ -40,7 +40,7 @@
         <footer class="flex items-center justify-center p-4 border-t border-gray-200" style="height: 5%;">
             <p class="text-sm text-gray-500">© {{ date('Y') }} Your Company</p>
         </footer>
-        
+
     </div>
 </aside>
 
